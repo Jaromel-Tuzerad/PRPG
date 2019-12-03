@@ -5,23 +5,27 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import resources.Map;
+import resources.Player;
 
 public class Main extends Application {
 
+    static Player player;
+    static Map currentMap;
+
     @Override
     public void start(Stage primaryStage) throws Exception{
-        int height = 600;
-        int width = 600;
-
         Parent root = FXMLLoader.load(getClass().getResource("GamePanel.fxml"));
         primaryStage.setTitle("Witcher 4: Lidl edition");
-        primaryStage.setScene(new Scene(root, height, width));
-        primaryStage.setMinHeight(height);
-        primaryStage.setMinWidth(width);
+        primaryStage.setScene(new Scene(root, 600, 600));
+        primaryStage.setMinHeight(600);
+        primaryStage.setMinWidth(600);
         primaryStage.show();
     }
 
     public static void main(String[] args) {
+        player = new Player("Sharpain");
+        currentMap = new Map(0);
         launch(args);
     }
 }

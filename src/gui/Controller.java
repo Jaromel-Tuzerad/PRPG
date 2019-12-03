@@ -1,25 +1,21 @@
 package gui;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
-import resources.Map;
-import resources.Player;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
-
-    private Player player;
-    private Map currentMap;
-
+    
+    //Game map (0, 1)
     @FXML
     private GridPane gridPaneMap;
 
+    //Move buttons (0, 2)
     @FXML
     private Button buttonNorth;
     @FXML
@@ -29,20 +25,25 @@ public class Controller implements Initializable {
     @FXML
     private Button buttonWest;
 
-    private void loadMap(Map map) {
+    private void reloadMap() {
         for(int i = 0; i<gridPaneMap.getChildren().size(); i++) {
-            int row = i%9;
-            int col = i/9;
-            ((Label)gridPaneMap.getChildren().get(i)).setText("[" + String.valueOf(map.getTileByCoords(row, col).getIcon()) + "]");
+            int y = i%9;
+            int x = i/9;
+            setTileChar(x, y, Main.currentMap.getTileByCoords(x, y).getIcon());
         }
+    }
+
+    //Makes small changes to map tiles (quicker than refreshing the whole map)
+    private void setTileChar(int x, int y, char c) {
+        ((Label)gridPaneMap.getChildren().get(x*9+y)).setText("[" + c + "]");
     }
 
     @FXML
     private void moveNorth() {
-        ((Label)gridPaneMap.getChildren().get(player.getX()*9+player.getY())).setText("[" + currentMap.getTileByCoords(player.getX(), player.getY()).getIcon() + "]");
-        player.move(0, -1);
-        ((Label)gridPaneMap.getChildren().get(player.getX()*9+player.getY())).setText("[" + String.valueOf(player.getIcon()) + "]");
-        switch (player.getY()) {
+        setTileChar(Main.player.getX(), Main.player.getY(), Main.currentMap.getTileByCoords(Main.player.getX(), Main.player.getY()).getIcon());
+        Main.player.move(0, -1);
+        setTileChar(Main.player.getX(), Main.player.getY(), Main.player.getIcon());
+        switch (Main.player.getY()) {
             case 0:
                 buttonNorth.setDisable(true);
                 break;
@@ -54,10 +55,10 @@ public class Controller implements Initializable {
 
     @FXML
     private void moveSouth() {
-        ((Label)gridPaneMap.getChildren().get(player.getX()*9+player.getY())).setText("[" + currentMap.getTileByCoords(player.getX(), player.getY()).getIcon() + "]");
-        player.move(0, 1);
-        ((Label)gridPaneMap.getChildren().get(player.getX()*9+player.getY())).setText("[" + String.valueOf(player.getIcon()) + "]");
-        switch (player.getY()) {
+        setTileChar(Main.player.getX(), Main.player.getY(), Main.currentMap.getTileByCoords(Main.player.getX(), Main.player.getY()).getIcon());
+        Main.player.move(0, 1);
+        setTileChar(Main.player.getX(), Main.player.getY(), Main.player.getIcon());
+        switch (Main.player.getY()) {
             case 1:
                 buttonNorth.setDisable(false);
                 break;
@@ -69,10 +70,10 @@ public class Controller implements Initializable {
 
     @FXML
     private void moveEast() {
-        ((Label)gridPaneMap.getChildren().get(player.getX()*9+player.getY())).setText("[" + currentMap.getTileByCoords(player.getX(), player.getY()).getIcon() + "]");
-        player.move(1, 0);
-        ((Label)gridPaneMap.getChildren().get(player.getX()*9+player.getY())).setText("[" + String.valueOf(player.getIcon()) + "]");
-        switch (player.getX()) {
+        setTileChar(Main.player.getX(), Main.player.getY(), Main.currentMap.getTileByCoords(Main.player.getX(), Main.player.getY()).getIcon());
+        Main.player.move(1, 0);
+        setTileChar(Main.player.getX(), Main.player.getY(), Main.player.getIcon());
+        switch (Main.player.getX()) {
             case 1:
                 buttonWest.setDisable(false);
                 break;
@@ -84,10 +85,10 @@ public class Controller implements Initializable {
 
     @FXML
     private void moveWest() {
-        ((Label)gridPaneMap.getChildren().get(player.getX()*9+player.getY())).setText("[" + currentMap.getTileByCoords(player.getX(), player.getY()).getIcon() + "]");
-        player.move(-1, 0);
-        ((Label)gridPaneMap.getChildren().get(player.getX()*9+player.getY())).setText("[" + String.valueOf(player.getIcon()) + "]");
-        switch (player.getX()) {
+        setTileChar(Main.player.getX(), Main.player.getY(), Main.currentMap.getTileByCoords(Main.player.getX(), Main.player.getY()).getIcon());
+        Main.player.move(-1, 0);
+        setTileChar(Main.player.getX(), Main.player.getY(), Main.player.getIcon());
+        switch (Main.player.getX()) {
             case 0:
                 buttonWest.setDisable(true);
                 break;
@@ -98,10 +99,8 @@ public class Controller implements Initializable {
     }
 
     public void initialize(URL url, ResourceBundle rb) {
-        currentMap = new Map(0);
-        loadMap(currentMap);
-        player = new Player("Sharpain");
-        ((Label)gridPaneMap.getChildren().get(40)).setText("[" + String.valueOf(player.getIcon()) + "]");
+        reloadMap();
+        setTileChar(4, 4, Main.player.getIcon());
     }
 
 }
