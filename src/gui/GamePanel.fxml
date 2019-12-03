@@ -453,10 +453,10 @@
       </GridPane>
       <AnchorPane prefHeight="200.0" prefWidth="300.0" GridPane.rowIndex="2">
          <children>
-            <Button layoutX="150.0" layoutY="65.0" minHeight="30.0" minWidth="60.0" mnemonicParsing="false" onAction="#moveNorth" prefHeight="35.0" prefWidth="50.0" text="North" />
-            <Button layoutX="100.0" layoutY="100.0" minHeight="30.0" minWidth="60.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="50.0" text="West" />
-            <Button layoutX="200.0" layoutY="100.0" minHeight="30.0" minWidth="60.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="50.0" text="East" />
-            <Button layoutX="150.0" layoutY="135.0" minHeight="30.0" minWidth="60.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="50.0" text="South" />
+            <Button fx:id="buttonNorth" layoutX="150.0" layoutY="65.0" minHeight="30.0" minWidth="60.0" mnemonicParsing="false" onAction="#moveNorth" prefHeight="35.0" prefWidth="50.0" text="North" />
+            <Button fx:id="buttonWest" layoutX="100.0" layoutY="100.0" minHeight="30.0" minWidth="60.0" mnemonicParsing="false" onAction="#moveWest" prefHeight="35.0" prefWidth="50.0" text="West" />
+            <Button fx:id="buttonEast" layoutX="200.0" layoutY="100.0" minHeight="30.0" minWidth="60.0" mnemonicParsing="false" onAction="#moveEast" prefHeight="35.0" prefWidth="50.0" text="East" />
+            <Button fx:id="buttonSouth" layoutX="150.0" layoutY="135.0" minHeight="30.0" minWidth="60.0" mnemonicParsing="false" onAction="#moveSouth" prefHeight="35.0" prefWidth="50.0" text="South" />
          </children>
    </AnchorPane>
    </children>
