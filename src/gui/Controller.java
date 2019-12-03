@@ -45,8 +45,10 @@ public class Controller implements Initializable {
         switch (player.getY()) {
             case 0:
                 buttonNorth.setDisable(true);
+                break;
             case 7:
                 buttonSouth.setDisable(false);
+                break;
         }
     }
 
@@ -58,8 +60,10 @@ public class Controller implements Initializable {
         switch (player.getY()) {
             case 1:
                 buttonNorth.setDisable(false);
+                break;
             case 8:
                 buttonSouth.setDisable(true);
+                break;
         }
     }
 
@@ -71,8 +75,10 @@ public class Controller implements Initializable {
         switch (player.getX()) {
             case 1:
                 buttonWest.setDisable(false);
+                break;
             case 8:
                 buttonEast.setDisable(true);
+                break;
         }
     }
 
@@ -84,8 +90,10 @@ public class Controller implements Initializable {
         switch (player.getX()) {
             case 0:
                 buttonWest.setDisable(true);
+                break;
             case 7:
                 buttonEast.setDisable(false);
+                break;
         }
     }
 
