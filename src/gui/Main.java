@@ -14,10 +14,10 @@ public class Main extends Application {
         int width = 600;
 
         Parent root = FXMLLoader.load(getClass().getResource("GamePanel.fxml"));
-        primaryStage.setTitle("Hello World");
+        primaryStage.setTitle("Witcher 4: Lidl edition");
         primaryStage.setScene(new Scene(root, height, width));
-        primaryStage.setMaxHeight(height);
-        primaryStage.setMaxWidth(width);
+        primaryStage.setMinHeight(height);
+        primaryStage.setMinWidth(width);
         primaryStage.show();
     }
 
