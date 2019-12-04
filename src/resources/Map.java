@@ -7,7 +7,7 @@ public class Map {
     public Map(int difficultyLevel) {
         for(int x = 0; x<9; x++) {
             for(int y = 0; y<9; y++) {
-                this.tileMap[x][y] = new Tile('Δ');
+                this.tileMap[x][y] = new Tile('Δ', "You are in a forest");
             }
         }
         this.difficultyLevel = difficultyLevel;
