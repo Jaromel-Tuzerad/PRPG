@@ -5,6 +5,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import resources.Entity;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -25,6 +26,10 @@ public class Controller implements Initializable {
     @FXML
     private Button buttonWest;
 
+    //Tile description (1, 1)
+    @FXML
+    private Label LabelTileDescription;
+
     private void reloadMap() {
         for(int i = 0; i<gridPaneMap.getChildren().size(); i++) {
             int y = i%9;
@@ -38,11 +43,22 @@ public class Controller implements Initializable {
         ((Label)gridPaneMap.getChildren().get(x*9+y)).setText("[" + c + "]");
     }
 
+    private void movePlayer(int dX, int dY) {
+        setTileChar(Main.player.getX(), Main.player.getY(), Main.currentMap.getTileByCoords(Main.player.getX(), Main.player.getY()).getIcon());
+        Main.player.move(dX, dY);
+        setTileChar(Main.player.getX(), Main.player.getY(), Main.player.getIcon());
+        String tileDescription = Main.currentMap.getTileByCoords(Main.player.getX(), Main.player.getY()).getDescription();
+        if(!Main.currentMap.getTileByCoords(Main.player.getX(), Main.player.getY()).getEntities().isEmpty()) {
+            for(Entity e : Main.currentMap.getTileByCoords(Main.player.getX(), Main.player.getY()).getEntities()) {
+                tileDescription += ("\n" + e.getDescription());
+            }
+        }
+        LabelTileDescription.setText(tileDescription);
+    }
+
     @FXML
     private void moveNorth() {
-        setTileChar(Main.player.getX(), Main.player.getY(), Main.currentMap.getTileByCoords(Main.player.getX(), Main.player.getY()).getIcon());
-        Main.player.move(0, -1);
-        setTileChar(Main.player.getX(), Main.player.getY(), Main.player.getIcon());
+        movePlayer(0, -1);
         switch (Main.player.getY()) {
             case 0:
                 buttonNorth.setDisable(true);
@@ -55,9 +71,7 @@ public class Controller implements Initializable {
 
     @FXML
     private void moveSouth() {
-        setTileChar(Main.player.getX(), Main.player.getY(), Main.currentMap.getTileByCoords(Main.player.getX(), Main.player.getY()).getIcon());
-        Main.player.move(0, 1);
-        setTileChar(Main.player.getX(), Main.player.getY(), Main.player.getIcon());
+        movePlayer(0, 1);
         switch (Main.player.getY()) {
             case 1:
                 buttonNorth.setDisable(false);
@@ -70,9 +84,7 @@ public class Controller implements Initializable {
 
     @FXML
     private void moveEast() {
-        setTileChar(Main.player.getX(), Main.player.getY(), Main.currentMap.getTileByCoords(Main.player.getX(), Main.player.getY()).getIcon());
-        Main.player.move(1, 0);
-        setTileChar(Main.player.getX(), Main.player.getY(), Main.player.getIcon());
+        movePlayer(1, 0);
         switch (Main.player.getX()) {
             case 1:
                 buttonWest.setDisable(false);
@@ -85,9 +97,7 @@ public class Controller implements Initializable {
 
     @FXML
     private void moveWest() {
-        setTileChar(Main.player.getX(), Main.player.getY(), Main.currentMap.getTileByCoords(Main.player.getX(), Main.player.getY()).getIcon());
-        Main.player.move(-1, 0);
-        setTileChar(Main.player.getX(), Main.player.getY(), Main.player.getIcon());
+        movePlayer(-1, 0);
         switch (Main.player.getX()) {
             case 0:
                 buttonWest.setDisable(true);
@@ -100,6 +110,13 @@ public class Controller implements Initializable {
 
     public void initialize(URL url, ResourceBundle rb) {
         reloadMap();
+        StringBuilder tileDescription = new StringBuilder(Main.currentMap.getTileByCoords(Main.player.getX(), Main.player.getY()).getDescription());
+        if(!Main.currentMap.getTileByCoords(Main.player.getX(), Main.player.getY()).getEntities().isEmpty()) {
+            for(Entity e : Main.currentMap.getTileByCoords(Main.player.getX(), Main.player.getY()).getEntities()) {
+                tileDescription.append("\n").append(e.getDescription());
+            }
+        }
+        LabelTileDescription.setText(tileDescription.toString());
         setTileChar(4, 4, Main.player.getIcon());
     }
 

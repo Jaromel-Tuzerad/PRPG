@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import resources.Entity;
 import resources.Map;
+import resources.NPC;
 import resources.Player;
 
 import java.util.ArrayList;
@@ -15,7 +16,6 @@ public class Main extends Application {
 
     static Player player;
     static Map currentMap;
-    static ArrayList<Entity> entities;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -30,7 +30,9 @@ public class Main extends Application {
     public static void main(String[] args) {
         player = new Player("Sharpain", 4, 4);
         currentMap = new Map(0);
-        entities = new ArrayList<>();
+        currentMap.getTileByCoords(1, 1).addEntity(new NPC(1, 1, "Adam"));
+        currentMap.getTileByCoords(1, 1).addEntity(new NPC(1, 1, "Michael"));
+        currentMap.getTileByCoords(4, 4).addEntity(new NPC(4, 4, "Petr"));
         launch(args);
     }
 }

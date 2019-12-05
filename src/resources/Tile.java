@@ -25,4 +25,9 @@ public class Tile {
     public ArrayList<Entity> getEntities() {
         return entities;
     }
+
+    public void addEntity(Entity entity) {
+        this.entities.add(entity);
+    }
+
 }
