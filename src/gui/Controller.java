@@ -1,17 +1,26 @@
 package gui;
 
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import resources.Entity;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import static javafx.scene.input.KeyCode.*;
+
 public class Controller implements Initializable {
-    
+
+    //Global
+    @FXML
+    private GridPane gridPaneGlobal;
+
     //Game map (0, 1)
     @FXML
     private GridPane gridPaneMap;
@@ -58,53 +67,29 @@ public class Controller implements Initializable {
 
     @FXML
     private void moveNorth() {
-        movePlayer(0, -1);
-        switch (Main.player.getY()) {
-            case 0:
-                buttonNorth.setDisable(true);
-                break;
-            case 7:
-                buttonSouth.setDisable(false);
-                break;
+        if(Main.player.getY() > 0) {
+            movePlayer(0, -1);
         }
     }
 
     @FXML
     private void moveSouth() {
-        movePlayer(0, 1);
-        switch (Main.player.getY()) {
-            case 1:
-                buttonNorth.setDisable(false);
-                break;
-            case 8:
-                buttonSouth.setDisable(true);
-                break;
+        if(Main.player.getY() < 8) {
+            movePlayer(0, 1);
         }
     }
 
     @FXML
     private void moveEast() {
-        movePlayer(1, 0);
-        switch (Main.player.getX()) {
-            case 1:
-                buttonWest.setDisable(false);
-                break;
-            case 8:
-                buttonEast.setDisable(true);
-                break;
+        if(Main.player.getX() < 8) {
+            movePlayer(1, 0);
         }
     }
 
     @FXML
     private void moveWest() {
-        movePlayer(-1, 0);
-        switch (Main.player.getX()) {
-            case 0:
-                buttonWest.setDisable(true);
-                break;
-            case 7:
-                buttonEast.setDisable(false);
-                break;
+        if(Main.player.getX() > 0) {
+            movePlayer(-1, 0);
         }
     }
 
@@ -118,6 +103,23 @@ public class Controller implements Initializable {
         }
         LabelTileDescription.setText(tileDescription.toString());
         setTileChar(4, 4, Main.player.getIcon());
+
+        gridPaneGlobal.setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case W:
+                    moveNorth();
+                    break;
+                case A:
+                    moveWest();
+                    break;
+                case S:
+                    moveSouth();
+                    break;
+                case D:
+                    moveEast();
+                    break;
+            }
+        });
     }
 
 }

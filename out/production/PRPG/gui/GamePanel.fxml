@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<GridPane maxHeight="600.0" maxWidth="600.0" minHeight="600.0" minWidth="600.0" prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.Controller">
+<GridPane fx:id="gridPaneGlobal" gridLinesVisible="true" maxHeight="600.0" maxWidth="600.0" minHeight="600.0" minWidth="600.0" prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.Controller">
   <columnConstraints>
     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -19,7 +19,6 @@
     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <Label fx:id="LabelTileDescription" alignment="TOP_LEFT" prefHeight="200.0" prefWidth="300.0" text="I am going to tell you what this tile contains" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
       <GridPane fx:id="gridPaneMap" GridPane.rowIndex="1">
         <columnConstraints>
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -459,5 +458,10 @@
             <Button fx:id="buttonSouth" layoutX="150.0" layoutY="135.0" minHeight="30.0" minWidth="60.0" mnemonicParsing="false" onAction="#moveSouth" prefHeight="35.0" prefWidth="50.0" text="South" />
          </children>
    </AnchorPane>
+      <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+         <children>
+            <Label fx:id="LabelTileDescription" alignment="TOP_LEFT" layoutX="10.0" layoutY="10.0" prefHeight="180.0" prefWidth="280.0" text="I am going to tell you what this tile contains" wrapText="true" />
+         </children>
+      </AnchorPane>
    </children>
 </GridPane>

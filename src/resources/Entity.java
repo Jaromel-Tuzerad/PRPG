@@ -7,6 +7,8 @@ public abstract class Entity {
     private String description;
     private int[] position;
     private char icon;
+    private float health;
+    private final int MAX_HEALTH = 100;
 
     public Entity(int x, int y, String description, char icon) {
         this.description = description;
@@ -16,6 +18,7 @@ public abstract class Entity {
         this.icon = icon;
         this.id = numberOfEntities;
         numberOfEntities+=1;
+        this.health = MAX_HEALTH;
     }
 
     public String getDescription() {
@@ -36,6 +39,10 @@ public abstract class Entity {
 
     public int getId() {
         return this.id;
+    }
+
+    public float getHealth() {
+        return health;
     }
 
     public void move(int dX, int dY) {
