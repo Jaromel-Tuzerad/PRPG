@@ -2,6 +2,7 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -463,5 +464,18 @@
             <Label fx:id="LabelTileDescription" alignment="TOP_LEFT" layoutX="10.0" layoutY="10.0" prefHeight="180.0" prefWidth="280.0" text="I am going to tell you what this tile contains" wrapText="true" />
          </children>
       </AnchorPane>
+      <AnchorPane prefHeight="200.0" prefWidth="200.0">
+         <children>
+            <Label fx:id="labelHealth" layoutX="12.0" layoutY="21.0" text="Health (100 %)" />
+            <Label fx:id="labelHunger" layoutX="9.0" layoutY="69.0" text="Hunger (100 %)" />
+            <ProgressBar fx:id="progressBarEnergy" layoutX="112.0" layoutY="118.0" prefHeight="18.0" prefWidth="174.0" progress="0.0" />
+            <ProgressBar fx:id="progressBarHealth" layoutX="112.0" layoutY="21.0" prefHeight="18.0" prefWidth="174.0" progress="0.0" />
+            <Label fx:id="labelEnergy" layoutX="19.0" layoutY="118.0" text="Energy (0/0)" />
+            <ProgressBar fx:id="progressBarMana" layoutX="112.0" layoutY="163.0" prefHeight="18.0" prefWidth="174.0" progress="0.0" />
+            <ProgressBar fx:id="progressBarHunger" layoutX="112.0" layoutY="69.0" prefHeight="18.0" prefWidth="174.0" progress="0.0" />
+            <Label fx:id="labelMana" layoutX="21.0" layoutY="163.0" text="Mana (0/0)" />
+         </children>
+      </AnchorPane>
+      <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
    </children>
 </GridPane>

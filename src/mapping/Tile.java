@@ -1,4 +1,6 @@
-package resources;
+package mapping;
+
+import gameResources.Entity;
 
 import java.util.ArrayList;
 
@@ -18,9 +20,7 @@ public class Tile {
         return icon;
     }
 
-    public String getDescription() {
-        return description;
-    }
+    public String getDescription() { return description; }
 
     public ArrayList<Entity> getEntities() {
         return entities;

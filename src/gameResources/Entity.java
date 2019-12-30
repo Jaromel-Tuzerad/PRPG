@@ -1,4 +1,4 @@
-package resources;
+package gameResources;
 
 public abstract class Entity {
 
@@ -7,18 +7,17 @@ public abstract class Entity {
     private String description;
     private int[] position;
     private char icon;
-    private float health;
-    private final int MAX_HEALTH = 100;
+    private String displayName;
 
-    public Entity(int x, int y, String description, char icon) {
+    public Entity(int x, int y, String displayName, String description, char icon) {
         this.description = description;
         this.position = new int[2];
         this.position[0] = x;
         this.position[1] = y;
         this.icon = icon;
+        this.displayName = displayName;
         this.id = numberOfEntities;
         numberOfEntities+=1;
-        this.health = MAX_HEALTH;
     }
 
     public String getDescription() {
@@ -41,9 +40,7 @@ public abstract class Entity {
         return this.id;
     }
 
-    public float getHealth() {
-        return health;
-    }
+    public String getDisplayName() {return this.displayName;}
 
     public void move(int dX, int dY) {
         this.position[0] += dX;

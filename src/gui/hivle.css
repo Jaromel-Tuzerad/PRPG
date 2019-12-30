@@ -1,0 +1,15 @@
+/*.progress-bar .bar {
+    -fx-background-insets: 0;
+}
+#progressBarHealth .bar {
+    -fx-background-color: green;
+}
+#progressBarHunger .bar {
+    -fx-background-color: green;
+}
+#progressBarEnergy .bar {
+    -fx-background-color: yellow;
+}
+#progressBarMana .bar {
+    -fx-background-color: blue;
+}*/

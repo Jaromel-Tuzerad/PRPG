@@ -1,4 +1,4 @@
-package resources;
+package miscResources;
 
 import java.util.Random;
 

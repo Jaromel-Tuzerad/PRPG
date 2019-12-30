@@ -1,4 +1,6 @@
-package resources;
+package mapping;
+
+import miscResources.MiscFunctions;
 
 public class Map {
     private Tile[][] tileMap = new Tile[9][9];
@@ -18,11 +20,9 @@ public class Map {
                         this.tileMap[x][y] = new Tile((char)0x1f304, "You are in the plains");
                     }
                 }
-
-
-
             }
         }
+
         this.difficultyLevel = difficultyLevel;
     }
 

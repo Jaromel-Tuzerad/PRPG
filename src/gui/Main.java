@@ -1,13 +1,13 @@
 package gui;
 
+import gameResources.Mob;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import resources.Map;
-import resources.NPC;
-import resources.Player;
+import mapping.Map;
+import gameResources.Player;
 
 public class Main extends Application {
 
@@ -21,15 +21,16 @@ public class Main extends Application {
         primaryStage.setScene(new Scene(root, 600, 600));
         primaryStage.setMinHeight(600);
         primaryStage.setMinWidth(600);
+        primaryStage.getScene().getStylesheets().add("gui/hivle.css");
         primaryStage.show();
     }
 
     public static void main(String[] args) {
         player = new Player("Sharpain", 4, 4);
         currentMap = new Map(0);
-        currentMap.getTileByCoords(1, 2).addEntity(new NPC(1, 2, "Adam"));
-        currentMap.getTileByCoords(1, 2).addEntity(new NPC(1, 2, "Michael"));
-        currentMap.getTileByCoords(4, 4).addEntity(new NPC(4, 4, "Petr"));
+        currentMap.getTileByCoords(1, 2).addEntity(new Mob(1, 2, "Adam", "Adam is walking around here", '¥', 10, 0, 0, 0, 0,0));
+        currentMap.getTileByCoords(1, 2).addEntity(new Mob(1, 2, "Michael", "Michael is walking around here", '¥', 10, 0, 0, 0, 0,0));
+        currentMap.getTileByCoords(4, 4).addEntity(new Mob(4, 4, "Petr", "Petr is walking around here", '¥', 10, 0, 0, 0, 0,0));
         launch(args);
     }
 }
