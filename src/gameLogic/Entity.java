@@ -1,13 +1,13 @@
-package gameResources;
+package gameLogic;
 
 public abstract class Entity {
 
-    private static int numberOfEntities;
-    private int id;
-    private String description;
-    private int[] position;
-    private char icon;
-    private String displayName;
+    protected static int numberOfEntities;
+    protected int id;
+    protected String description;
+    protected int[] position;
+    protected char icon;
+    protected String displayName;
 
     public Entity(int x, int y, String displayName, String description, char icon) {
         this.description = description;

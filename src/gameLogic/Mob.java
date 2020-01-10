@@ -1,16 +1,18 @@
-package gameResources;
+package gameLogic;
 
-public class Mob extends Entity {
+import exceptions.EntityDiedException;
 
-    private int health;
-    private int maxHealth;
-    private int armor;
-    private int level;
+public abstract class Mob extends Entity {
+
+    protected int health;
+    protected int maxHealth;
+    protected int armor;
+    protected int level;
 
     //Skills
-    private int strength;
-    private int dexterity;
-    private int intelligence;
+    protected int strength;
+    protected int dexterity;
+    protected int intelligence;
 
     public Mob(int x, int y, String name, String description,  char icon, int maxHealth, int armor, int level, int strength, int dexterity, int intelligence) {
         super(x, y, name, description, icon);
@@ -49,5 +51,16 @@ public class Mob extends Entity {
 
     public int getIntelligence() {
         return intelligence;
+    }
+
+    public void die() throws EntityDiedException {
+
+    }
+
+    public void addHealth(int points) throws EntityDiedException {
+        this.health += points;
+        if(this.health <= 0) {
+            this.die();
+        }
     }
 }

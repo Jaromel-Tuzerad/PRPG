@@ -1,8 +1,8 @@
-/*.progress-bar .bar {
+.progress-bar .bar {
     -fx-background-insets: 0;
 }
 #progressBarHealth .bar {
-    -fx-background-color: green;
+    -fx-background-color: red;
 }
 #progressBarHunger .bar {
     -fx-background-color: green;
@@ -12,4 +12,4 @@
 }
 #progressBarMana .bar {
     -fx-background-color: blue;
-}*/
+}

@@ -1,6 +1,6 @@
 package mapping;
 
-import gameResources.Entity;
+import gameLogic.Entity;
 
 import java.util.ArrayList;
 
@@ -28,6 +28,10 @@ public class Tile {
 
     public void addEntity(Entity entity) {
         this.entities.add(entity);
+    }
+
+    public void removeEntity(Entity entity) {
+        this.entities.remove(entity);
     }
 
 }

@@ -1,12 +1,14 @@
 package gui;
 
+import exceptions.EntityDiedException;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.GridPane;
-import gameResources.Entity;
+import gameLogic.Entity;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -16,6 +18,7 @@ public class Controller implements Initializable {
     //Global
     @FXML
     private GridPane gridPaneGlobal;
+    private int turnsPassed;
 
     //Status bars and labels (0, 0)
     @FXML
@@ -54,6 +57,13 @@ public class Controller implements Initializable {
     @FXML
     private Label LabelTileDescription;
 
+    //Entities and actions (1, 2)
+    @FXML
+    private ListView listViewEntities;
+    @FXML
+    private ListView listViewActions;
+
+    //Refresh the map
     private void reloadMap() {
         for(int i = 0; i<gridPaneMap.getChildren().size(); i++) {
             int y = i%9;
@@ -67,6 +77,7 @@ public class Controller implements Initializable {
         ((Label)gridPaneMap.getChildren().get(x*9+y)).setText("[" + c + "]");
     }
 
+    //Move player in a relative direction and refreshes tile description and entities
     private void movePlayer(int dX, int dY) {
         setTileChar(Main.player.getX(), Main.player.getY(), Main.currentMap.getTileByCoords(Main.player.getX(), Main.player.getY()).getIcon());
         Main.player.move(dX, dY);
@@ -78,6 +89,7 @@ public class Controller implements Initializable {
             }
         }
         LabelTileDescription.setText(tileDescription.toString());
+        passTurn();
     }
 
     @FXML
@@ -106,6 +118,30 @@ public class Controller implements Initializable {
         if(Main.player.getX() > 0) {
             movePlayer(-1, 0);
         }
+    }
+
+    //This happens when a turn passes
+    private void passTurn() {
+        try {
+            if (Main.player.getHunger() > 0) {
+                Main.player.decreaseHunger();
+                progressBarHunger.setProgress(((double) Main.player.getHunger()) / 100);
+                labelHunger.setText("Hunger (" + Main.player.getHunger() + " %)");
+            } else {
+                Main.player.starve();
+                progressBarHealth.setProgress(((double) Main.player.getHealth()) / Main.player.getMaxHealth() * 100);
+                labelHealth.setText("Hunger (" + String.valueOf((double) Main.player.getHealth() / Main.player.getMaxHealth() * 100) + " %)");
+            }
+            turnsPassed += 1;
+
+        } catch(EntityDiedException e) {
+            gameOver();
+        }
+    }
+
+    //Called when a game ends (player dies)
+    public void gameOver() {
+
     }
 
     public void initialize(URL url, ResourceBundle rb) {
@@ -137,16 +173,16 @@ public class Controller implements Initializable {
 
         gridPaneGlobal.setOnKeyPressed(event -> {
             switch (event.getCode()) {
-                case W:
+                case UP:
                     moveNorth();
                     break;
-                case A:
+                case LEFT:
                     moveWest();
                     break;
-                case S:
+                case DOWN:
                     moveSouth();
                     break;
-                case D:
+                case RIGHT:
                     moveEast();
                     break;
             }
