@@ -1,24 +1,25 @@
 package gui;
 
 import exceptions.EntityDiedException;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ProgressBar;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import gameLogic.Entity;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class Controller implements Initializable {
+public class GameController implements Initializable {
 
     //Global
     @FXML
     private GridPane gridPaneGlobal;
+    //TODO - find a use for turns
     private int turnsPassed;
+    private ObservableList<Entity> tileEntities;
 
     //Status bars and labels (0, 0)
     @FXML
@@ -44,6 +45,7 @@ public class Controller implements Initializable {
     private GridPane gridPaneMap;
 
     //Move buttons (0, 2)
+    //TODO - obsolete?
     @FXML
     private Button buttonNorth;
     @FXML
@@ -52,6 +54,7 @@ public class Controller implements Initializable {
     private Button buttonSouth;
     @FXML
     private Button buttonWest;
+
 
     //Tile description (1, 1)
     @FXML
@@ -72,24 +75,18 @@ public class Controller implements Initializable {
         }
     }
 
-    //Makes small changes to map tiles (quicker than refreshing the whole map)
+    //Makes small changes to map tile icons (quicker than refreshing the whole map)
     private void setTileChar(int x, int y, char c) {
         ((Label)gridPaneMap.getChildren().get(x*9+y)).setText("[" + c + "]");
     }
 
-    //Move player in a relative direction and refreshes tile description and entities
+    //Move player in a relative direction, passes a turn and refreshes the GUI
     private void movePlayer(int dX, int dY) {
         setTileChar(Main.player.getX(), Main.player.getY(), Main.currentMap.getTileByCoords(Main.player.getX(), Main.player.getY()).getIcon());
         Main.player.move(dX, dY);
         setTileChar(Main.player.getX(), Main.player.getY(), Main.player.getIcon());
-        StringBuilder tileDescription = new StringBuilder(Main.currentMap.getTileByCoords(Main.player.getX(), Main.player.getY()).getDescription());
-        if(!Main.currentMap.getTileByCoords(Main.player.getX(), Main.player.getY()).getEntities().isEmpty()) {
-            for(Entity e : Main.currentMap.getTileByCoords(Main.player.getX(), Main.player.getY()).getEntities()) {
-                tileDescription.append("\n").append(e.getDescription());
-            }
-        }
-        LabelTileDescription.setText(tileDescription.toString());
         passTurn();
+        refreshGUI();
     }
 
     @FXML
@@ -120,36 +117,44 @@ public class Controller implements Initializable {
         }
     }
 
-    //This happens when a turn passes
+    //This happens when a turn passes - player either moves or waits
     private void passTurn() {
         try {
             if (Main.player.getHunger() > 0) {
                 Main.player.decreaseHunger();
-                progressBarHunger.setProgress(((double) Main.player.getHunger()) / 100);
-                labelHunger.setText("Hunger (" + Main.player.getHunger() + " %)");
             } else {
                 Main.player.starve();
-                progressBarHealth.setProgress(((double) Main.player.getHealth()) / Main.player.getMaxHealth() * 100);
-                labelHealth.setText("Hunger (" + String.valueOf((double) Main.player.getHealth() / Main.player.getMaxHealth() * 100) + " %)");
             }
             turnsPassed += 1;
-
         } catch(EntityDiedException e) {
             gameOver();
         }
     }
 
-    //Called when a game ends (player dies)
-    public void gameOver() {
+    //Refreshes the progressBars and listViews
+    public void refreshGUI() {
 
-    }
+        //Refreshes progress bars
+        labelHealth.setText("Health (" + (double) Main.player.getHealth() / Main.player.getMaxHealth() * 100 + " %)");
+        progressBarHealth.setProgress(((double) Main.player.getHealth()) / Main.player.getMaxHealth());
+        labelHunger.setText("Hunger (" + Main.player.getHunger() + " %)");
+        progressBarHunger.setProgress(((double) Main.player.getHunger()) / 100);
+        progressBarEnergy.setProgress(((double) (Main.player.getEnergy())) / (double) (Main.player.getMaxEnergy()));
+        labelEnergy.setText("Energy (" + Main.player.getEnergy() + "/" + Main.player.getMaxEnergy() + ")");
+        progressBarMana.setProgress(((double) (Main.player.getEnergy())) / (double) (Main.player.getMaxEnergy()));
+        labelMana.setText("Mana (" + Main.player.getMana() + "/" + Main.player.getMaxMana() + ")");
 
-    public void initialize(URL url, ResourceBundle rb) {
+        //Refreshes entities and actions
+        //TODO - add actions
+        tileEntities.clear();
+        for(Entity entity : Main.currentMap.getTileByCoords(Main.player.getX(), Main.player.getY()).getEntities()) {
+            tileEntities.add(entity);
+            listViewEntities.setItems(tileEntities);
+        }
+        listViewEntities.refresh();
 
-        //Map render
-        reloadMap();
-
-        //Setting description for player's initial starting position
+        //Refreshes tile description
+        //TODO - Learn about the StringBuilder class
         StringBuilder tileDescription = new StringBuilder(Main.currentMap.getTileByCoords(Main.player.getX(), Main.player.getY()).getDescription());
         if(!Main.currentMap.getTileByCoords(Main.player.getX(), Main.player.getY()).getEntities().isEmpty()) {
             for(Entity e : Main.currentMap.getTileByCoords(Main.player.getX(), Main.player.getY()).getEntities()) {
@@ -158,35 +163,59 @@ public class Controller implements Initializable {
         }
         LabelTileDescription.setText(tileDescription.toString());
 
+    }
+
+    //Called when a game ends (player dies)
+    public void gameOver() {
+        System.out.println("You are dead, you shouldn't be moving...");
+    }
+
+    public void initialize(URL url, ResourceBundle rb) {
+
+        //Map render
+        reloadMap();
+
+        //Initialize listView arrayLists
+        tileEntities = FXCollections.observableArrayList();
+
+        //Resets the GUI look according to current values
+        refreshGUI();
+
+        //Sets the tile which the player is initially on to display his icon
         setTileChar(Main.player.getX(), Main.player.getY(), Main.player.getIcon());
 
-        //Setting the initial status bars percentage
-        double healthPercentage = (double) Main.player.getHealth() / Main.player.getMaxHealth();
-        progressBarHealth.setProgress(healthPercentage);
-        labelHealth.setText("Health (" + (int) healthPercentage*100 + " %)");
-        progressBarHunger.setProgress((double) Main.player.getHunger()/100);
-        labelHunger.setText("Hunger (" + Main.player.getHunger() + " %)");
-        progressBarEnergy.setProgress(((double) (Main.player.getEnergy())) / (double) (Main.player.getMaxEnergy()));
-        labelEnergy.setText("Energy (" + Main.player.getEnergy() + "/" + Main.player.getMaxEnergy() + ")");
-        progressBarMana.setProgress(((double) (Main.player.getEnergy())) / (double) (Main.player.getMaxEnergy()));
-        labelMana.setText("Mana (" + Main.player.getMana() + "/" + Main.player.getMaxMana() + ")");
-
+        //Enables movement with the WASD keys by binding their events to buttons
+        //TODO - not my code
         gridPaneGlobal.setOnKeyPressed(event -> {
             switch (event.getCode()) {
-                case UP:
+                case W:
                     moveNorth();
                     break;
-                case LEFT:
+                case A:
                     moveWest();
                     break;
-                case DOWN:
+                case S:
                     moveSouth();
                     break;
-                case RIGHT:
+                case D:
                     moveEast();
                     break;
             }
         });
-    }
 
+        //Sets the manner in which objects in listViews is displayed
+        //TODO - not my code
+        listViewEntities.setCellFactory(lv -> new ListCell<Entity>() {
+            @Override
+            public void updateItem(Entity item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setText(null);
+                } else {
+                    String text = item.getDisplayName();
+                    setText(text);
+                }
+            }
+        });
+    }
 }

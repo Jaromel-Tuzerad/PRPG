@@ -63,6 +63,6 @@ public class Player extends Mob {
     }
 
     public void starve() throws EntityDiedException {
-        this.addHealth(-this.getMaxHealth()/20);
+        this.addHealth(0- (int) Math.ceil(((double) this.maxHealth)/20));
     }
 }

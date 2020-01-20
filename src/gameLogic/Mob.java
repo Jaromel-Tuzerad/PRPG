@@ -54,7 +54,7 @@ public abstract class Mob extends Entity {
     }
 
     public void die() throws EntityDiedException {
-
+        throw new EntityDiedException(this.displayName + " has died.");
     }
 
     public void addHealth(int points) throws EntityDiedException {

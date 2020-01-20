@@ -5,6 +5,7 @@ public abstract class Entity {
     protected static int numberOfEntities;
     protected int id;
     protected String description;
+    //TODO - Tile instead of Array
     protected int[] position;
     protected char icon;
     protected String displayName;
