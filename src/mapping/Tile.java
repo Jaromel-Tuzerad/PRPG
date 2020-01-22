@@ -1,6 +1,6 @@
 package mapping;
 
-import gameLogic.Entity;
+import gameLogic.entities.Entity;
 
 import java.util.ArrayList;
 
@@ -9,8 +9,10 @@ public class Tile {
     private char icon;
     private String description;
     private ArrayList<Entity> entities;
+    int posX;
+    int posY;
 
-    public Tile(char icon, String description) {
+    public Tile(int x, int y, char icon, String description) {
         this.icon = icon;
         this.description = description;
         this.entities = new ArrayList<>();
@@ -32,6 +34,14 @@ public class Tile {
 
     public void removeEntity(Entity entity) {
         this.entities.remove(entity);
+    }
+
+    public int getPosX() {
+        return posX;
+    }
+
+    public int getPosY() {
+        return posY;
     }
 
 }

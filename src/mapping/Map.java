@@ -11,13 +11,13 @@ public class Map {
         for(int x = 0; x<9; x++) {
             for(int y = 0; y<9; y+=1) {
                 if(x == y) {
-                    this.tileMap[x][y] = new Tile('~', "You are drowning in a river...");
+                    this.tileMap[x][y] = new Tile(x, y, '~', "You are drowning in a river...");
                 } else {
                     int tileType = MiscFunctions.getRandomNumberInRange(0, 1);
                     if(tileType == 0) {
-                        this.tileMap[x][y] = new Tile('Δ', "You are in a forest");
+                        this.tileMap[x][y] = new Tile(x, y, 'Δ', "You are in a forest");
                     } else {
-                        this.tileMap[x][y] = new Tile((char)0x1f304, "You are in the plains");
+                        this.tileMap[x][y] = new Tile(x, y, (char)0x1f304, "You are in the plains");
                     }
                 }
             }

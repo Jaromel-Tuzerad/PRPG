@@ -480,10 +480,17 @@
       <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
          <children>
             <ListView fx:id="listViewEntities" layoutY="18.0" prefHeight="180.0" prefWidth="150.0" />
-            <ListView fx:id="listViewActions" layoutX="150.0" layoutY="18.0" prefHeight="80.0" prefWidth="150.0" />
-            <Label layoutX="64.0" layoutY="2.0" text="Entites" />
-            <Label layoutX="211.0" layoutY="1.0" text="Actions" />
-            <Button layoutX="190.0" layoutY="131.0" mnemonicParsing="false" text="Just DO IT" />
+            <ListView fx:id="listViewEntityActions" layoutX="150.0" layoutY="18.0" prefHeight="180.0" prefWidth="150.0" />
+            <Label layoutX="57.0" layoutY="1.0" text="Entites" />
+            <Label layoutX="205.0" layoutY="1.0" text="Actions" />
          </children></AnchorPane>
+      <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1">
+         <children>
+            <ListView fx:id="listViewInventory" layoutY="23.0" prefHeight="180.0" prefWidth="150.0" />
+            <Label layoutX="50.0" layoutY="5.0" text="Inventory" />
+            <ListView fx:id="listViewInventoryActions" layoutX="150.0" layoutY="23.0" prefHeight="180.0" prefWidth="150.0" />
+            <Label layoutX="205.0" layoutY="5.0" text="Actions" />
+         </children>
+      </AnchorPane>
    </children>
 </GridPane>

@@ -1,6 +1,7 @@
-package gameLogic;
+package gameLogic.entities;
 
-import exceptions.EntityDiedException;
+import exceptions.ExceptionAlert;
+import gameLogic.inventory.InventoryItem;
 
 import java.util.ArrayList;
 
@@ -13,9 +14,10 @@ public class Player extends Mob {
     private int mana;
     private int experience;
     private ArrayList<InventoryItem> inventory;
+    private char icon = '@';
 
-    public Player(String username, int x, int y) {
-        super(x, y, username,"", '@', 10, 0, 0, 5, 5, 5);
+    public Player(int x, int y, String username) {
+        super(x, y, username, "" , 10, 0, 5, 5, 5);
         this.maxEnergy = 5;
         this.maxMana = 5;
         this.hunger = 100;
@@ -49,9 +51,11 @@ public class Player extends Mob {
         return this.experience;
     }
 
-    public void pickUp(Item item) {
-        this.inventory.add(item.toInventoryItem());
+    public char getIcon() {
+        return this.icon;
     }
+
+    public void pickUpItem(InventoryItem item) { this.inventory.add(item); }
 
     public void decreaseHunger() {
         int points = miscResources.MiscFunctions.getRandomNumberInRange(1, 5);
@@ -62,7 +66,12 @@ public class Player extends Mob {
         }
     }
 
-    public void starve() throws EntityDiedException {
+    public void starve() throws ExceptionAlert {
         this.addHealth(0- (int) Math.ceil(((double) this.maxHealth)/20));
     }
+
+    public ArrayList<InventoryItem> getInventory() {
+        return inventory;
+    }
+
 }

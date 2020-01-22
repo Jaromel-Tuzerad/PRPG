@@ -1,12 +1,13 @@
-package gameLogic;
+package gameLogic.entities;
 
-import exceptions.EntityDiedException;
+import exceptions.ExceptionAlert;
+import gameLogic.entities.Entity;
+import gui.GameController;
 
 public abstract class Mob extends Entity {
 
     protected int health;
     protected int maxHealth;
-    protected int armor;
     protected int level;
 
     //Skills
@@ -14,9 +15,8 @@ public abstract class Mob extends Entity {
     protected int dexterity;
     protected int intelligence;
 
-    public Mob(int x, int y, String name, String description,  char icon, int maxHealth, int armor, int level, int strength, int dexterity, int intelligence) {
-        super(x, y, name, description, icon);
-        this.armor = armor;
+    public Mob(int x, int y, String name, String description, int maxHealth, int level, int strength, int dexterity, int intelligence) {
+        super(x, y, name, description);
         this.level = level;
         this.health = maxHealth;
         this.maxHealth = maxHealth;
@@ -37,10 +37,6 @@ public abstract class Mob extends Entity {
         return maxHealth;
     }
 
-    public int getArmor() {
-        return armor;
-    }
-
     public int getStrength() {
         return strength;
     }
@@ -53,14 +49,19 @@ public abstract class Mob extends Entity {
         return intelligence;
     }
 
-    public void die() throws EntityDiedException {
-        throw new EntityDiedException(this.displayName + " has died.");
+    public void die() throws ExceptionAlert {
+        throw new ExceptionAlert("An entity is dead", "An entity is dead", this.displayName + " has died.");
     }
 
-    public void addHealth(int points) throws EntityDiedException {
+    public void addHealth(int points) throws ExceptionAlert {
         this.health += points;
         if(this.health <= 0) {
             this.die();
         }
     }
+
+    public void fight() {
+        GameController.callAlert("Combat", "A fight starts", "You are now fighting " + this.displayName);
+    }
+
 }
