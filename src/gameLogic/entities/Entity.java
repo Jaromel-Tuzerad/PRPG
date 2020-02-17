@@ -1,6 +1,6 @@
 package gameLogic.entities;
 
-public abstract class Entity {
+public class Entity {
 
     protected static int numberOfEntities;
     protected int id;

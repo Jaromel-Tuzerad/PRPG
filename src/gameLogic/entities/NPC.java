@@ -1,5 +1,6 @@
 package gameLogic.entities;
 
+import exceptions.ExceptionAlert;
 import gui.GameController;
 
 public class NPC extends Mob {
@@ -8,7 +9,7 @@ public class NPC extends Mob {
     }
 
     public void talk() {
-        GameController.callAlert("Conversation", this.displayName + " tells you:", "Hi, it is a lovely day, isn't it?");
+        GameController.callAlert(new ExceptionAlert("Conversation", this.displayName + " tells you:", "Hi, it is a lovely day, isn't it?"));
     }
 
 }

@@ -6,8 +6,8 @@ public class Equipment extends InventoryItem {
     private int addedDexterity;
     private int addedIntelligence;
 
-    public Equipment(String displayName, int addedStrength, int addedDexterity, int addedIntelligence) {
-        super(displayName);
+    public Equipment(String displayName, int addedStrength, int addedDexterity, int addedIntelligence, ItemType type) {
+        super(displayName, type);
         this.addedStrength = addedStrength;
         this.addedDexterity = addedDexterity;
         this.addedIntelligence = addedIntelligence;

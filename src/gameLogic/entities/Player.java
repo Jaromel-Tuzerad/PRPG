@@ -1,7 +1,9 @@
 package gameLogic.entities;
 
 import exceptions.ExceptionAlert;
+import gameLogic.inventory.Food;
 import gameLogic.inventory.InventoryItem;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -13,6 +15,10 @@ public class Player extends Mob {
     private int hunger;
     private int mana;
     private int experience;
+    private InventoryItem equippedHeadArmor;
+    private InventoryItem equippedBodyArmor;
+    private InventoryItem equippedLegArmor;
+    private InventoryItem equippedWeapon;
     private ArrayList<InventoryItem> inventory;
     private char icon = '@';
 
@@ -68,6 +74,46 @@ public class Player extends Mob {
 
     public void starve() throws ExceptionAlert {
         this.addHealth(0- (int) Math.ceil(((double) this.maxHealth)/20));
+    }
+
+    public void eat(Food food) throws ExceptionAlert {
+        if(this.inventory.contains(food)) {
+            int saturationValue = food.getSaturationValue();
+            if(this.hunger + saturationValue <= 100) {
+                this.hunger += saturationValue;
+            } else {
+                this.hunger = 100;
+            }
+            this.inventory.remove(food);
+        } else {
+            throw new ExceptionAlert("Item error", "An error occurred while trying to eat food", "Selected food is not in player's inventory");
+        }
+    }
+
+    public void equipItem(InventoryItem item) throws ExceptionAlert {
+        if(this.inventory.contains(item)) {
+            switch(item.getType()) {
+                case HEADWEAR:
+                    this.equippedHeadArmor = item;
+                    break;
+                case BODYWEAR:
+                    this.equippedBodyArmor = item;
+                    break;
+                case LEGWEAR:
+                    this.equippedLegArmor = item;
+                    break;
+                case WEAPON:
+                    this.equippedWeapon = item;
+                    break;
+                default:
+                    throw new ExceptionAlert("Item error", "An error occurred while trying to equip item " + item.getDisplayName(), "Item is not equipable");
+            }
+            this.inventory.remove(item);
+        } else {
+            throw new ExceptionAlert("Equipment error", "An error occurred while trying to equip item " + item.getDisplayName(), "Item is not in player's inventory");
+        }
+
+
     }
 
     public ArrayList<InventoryItem> getInventory() {

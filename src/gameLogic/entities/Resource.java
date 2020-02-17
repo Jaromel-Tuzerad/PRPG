@@ -1,5 +1,6 @@
 package gameLogic.entities;
 
+import exceptions.ExceptionAlert;
 import gui.GameController;
 
 public class Resource extends Object {
@@ -8,7 +9,7 @@ public class Resource extends Object {
     }
 
     public void gather() {
-        GameController.callAlert("Resource", "You are gathering resources", "Gathering from " + this.displayName);
+        GameController.callAlert(new ExceptionAlert("Resource", "You are gathering resources", "Gathering from " + this.displayName));
     }
 
 }

@@ -4,7 +4,7 @@ import exceptions.ExceptionAlert;
 import gameLogic.entities.Entity;
 import gui.GameController;
 
-public abstract class Mob extends Entity {
+public class Mob extends Entity {
 
     protected int health;
     protected int maxHealth;
@@ -61,7 +61,7 @@ public abstract class Mob extends Entity {
     }
 
     public void fight() {
-        GameController.callAlert("Combat", "A fight starts", "You are now fighting " + this.displayName);
+        GameController.callAlert(new ExceptionAlert("Combat", "A fight starts", "You are now fighting " + this.displayName));
     }
 
 }

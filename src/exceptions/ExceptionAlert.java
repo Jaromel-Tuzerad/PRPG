@@ -20,7 +20,7 @@ public class ExceptionAlert extends Exception {
         return alertHeader;
     }
 
-    public String getAlertMessage() {
+    public String getAlertContent() {
         return alertMessage;
     }
 

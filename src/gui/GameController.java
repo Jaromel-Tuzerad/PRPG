@@ -2,6 +2,8 @@ package gui;
 
 import exceptions.ExceptionAlert;
 import gameLogic.entities.*;
+import gameLogic.inventory.Equipment;
+import gameLogic.inventory.Food;
 import gameLogic.inventory.InventoryItem;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
@@ -26,19 +28,17 @@ import java.util.ResourceBundle;
 
 public class GameController implements Initializable {
 
-    //Global
+    // Global
     @FXML
     private GridPane gridPaneGlobal;
-    //TODO - find a use for turns
+    // TODO - find a use for turns
     private int turnsPassed;
-    private ObservableList<Entity> tileEntities;
-    private ObservableList<String> entityActions;
-    private ObservableList<InventoryItem> inventoryItems;
-    private ObservableList<String> inventoryItemActions;
+
+
     private Player player;
     private Map currentMap;
 
-    //Status bars and labels (0, 0)
+    // Status bars and labels (0, 0)
     @FXML
     private ProgressBar progressBarHealth;
     @FXML
@@ -57,12 +57,12 @@ public class GameController implements Initializable {
     @FXML
     private Label labelMana;
 
-    //Game map (0, 1)
+    // Game map (0, 1)
     @FXML
     private GridPane gridPaneMap;
 
-    //Move buttons (0, 2)
-    //TODO - obsolete?
+    // Move buttons (0, 2)
+    // TODO - obsolete?
     @FXML
     private Button buttonNorth;
     @FXML
@@ -72,31 +72,36 @@ public class GameController implements Initializable {
     @FXML
     private Button buttonWest;
 
-
-    //Tile description (1, 1)
+    // Inventory (1, 0)
+    @FXML
+    private ListView listViewInventory;
+    private ObservableList<InventoryItem> inventoryItems;
+    @FXML
+    private ListView listViewInventoryActions;
+    private ObservableList<String> inventoryItemActions;
+    
+    // Tile description (1, 1)
     @FXML
     private Label LabelTileDescription;
 
-    //Entities and actions (1, 2)
+    // Entities and actions (1, 2)
     @FXML
     private ListView listViewEntities;
+    private ObservableList<Entity> tileEntities;
     @FXML
     private ListView listViewEntityActions;
-    @FXML
-    private ListView listViewInventory;
-    @FXML
-    private ListView listViewInventoryActions;
+    private ObservableList<String> entityActions;
 
-    //Calls an alert when an error arises
-    public static void callAlert(String title, String header, String content) {
+    // Calls an alert when an error arises
+    public static void callAlert(ExceptionAlert exc) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(header);
-        alert.setContentText(content);
+        alert.setTitle(exc.getAlertTitle());
+        alert.setHeaderText(exc.getAlertHeader());
+        alert.setContentText(exc.getAlertContent());
         alert.showAndWait();
     }
 
-    //Refresh the map
+    // Refresh the map
     private void reloadMap() {
         for (int i = 0; i < gridPaneMap.getChildren().size(); i++) {
             int y = i % 9;
@@ -105,12 +110,12 @@ public class GameController implements Initializable {
         }
     }
 
-    //Makes small changes to map tile icons (quicker than refreshing the whole map)
+    // Makes small changes to map tile icons (quicker than refreshing the whole map)
     private void setTileChar(int x, int y, char c) {
         ((Label) gridPaneMap.getChildren().get(x * 9 + y)).setText("[" + c + "]");
     }
 
-    //Move player in a relative direction, passes a turn and refreshes the GUI
+    // Move player in a relative direction, passes a turn and refreshes the GUI
     private void movePlayer(int dX, int dY) {
         setTileChar(player.getX(), player.getY(), currentMap.getTileByCoords(player.getX(), player.getY()).getIcon());
         player.moveBy(dX, dY);
@@ -157,15 +162,13 @@ public class GameController implements Initializable {
             }
             turnsPassed += 1;
         } catch (ExceptionAlert e) {
-            callAlert(e.getAlertTitle(), e.getAlertHeader(), e.getAlertMessage());
+            callAlert(e);
             gameOver();
         }
     }
 
-    //Refreshes the progressBars and listViews
-    private void refreshGUI() {
-
-        //Refreshes progress bars
+    // Refreshes progress bars
+    private void refreshProgressBars() {
         labelHealth.setText("Health (" + (double) player.getHealth() / player.getMaxHealth() * 100 + " %)");
         progressBarHealth.setProgress(((double) player.getHealth()) / player.getMaxHealth());
         labelHunger.setText("Hunger (" + player.getHunger() + " %)");
@@ -174,24 +177,26 @@ public class GameController implements Initializable {
         labelEnergy.setText("Energy (" + player.getEnergy() + "/" + player.getMaxEnergy() + ")");
         progressBarMana.setProgress(((double) (player.getEnergy())) / (double) (player.getMaxEnergy()));
         labelMana.setText("Mana (" + player.getMana() + "/" + player.getMaxMana() + ")");
+    }
 
-        // Refreshes entities in listViewEntities
+    // Refreshes detected entities
+    private void refreshEntities() {
         tileEntities.clear();
-        for(Entity entity : currentMap.getTileByCoords(player.getX(), player.getY()).getEntities()) {
-            tileEntities.add(entity);
-        }
+        tileEntities.addAll(currentMap.getTileByCoords(player.getX(), player.getY()).getEntities());
         listViewEntities.setItems(tileEntities);
         listViewEntities.refresh();
+    }
 
-        // Refreshes inventory items in listViewInventory
+    // Refreshes items in inventory
+    private void refreshItems() {
         inventoryItems.clear();
-        for(InventoryItem item : player.getInventory()) {
-            inventoryItems.add(item);
-        }
+        inventoryItems.addAll(player.getInventory());
         listViewInventory.setItems(inventoryItems);
         listViewInventory.refresh();
+    }
 
-        // Refreshes tile description
+    // Refreshes tile description
+    private void refreshDescription() {
         StringBuilder tileDescription = new StringBuilder(currentMap.getTileByCoords(player.getX(), player.getY()).getDescription());
         if (!currentMap.getTileByCoords(player.getX(), player.getY()).getEntities().isEmpty()) {
             for (Entity e : currentMap.getTileByCoords(player.getX(), player.getY()).getEntities()) {
@@ -201,7 +206,17 @@ public class GameController implements Initializable {
         LabelTileDescription.setText(tileDescription.toString());
     }
 
-    //Lists actions in listViewActions for the selected entity according to it's type
+    // Refreshes the whole pane
+    private void refreshGUI() {
+
+        refreshProgressBars();
+        refreshEntities();
+        refreshItems();
+        refreshDescription();
+
+    }
+
+    // Lists actions in listViewActions for the selected entity according to it's type
     private void displayActionsForEntity(Entity entity) {
         entityActions.clear();
         if (entity instanceof Enemy) {
@@ -220,26 +235,21 @@ public class GameController implements Initializable {
         listViewEntityActions.refresh();
     }
 
-    // TODO - Add actions to listViewItemActions depending on item type
-    /*private void displayActionsForInventoryItem(InventoryItem item) {
-        entityActions.clear();
-        if (item.getType().equals(Item.ItemType.FOOD)) {
+    // Adds actions to listViewItemActions depending on item type
+    private void displayActionsForInventoryItem(InventoryItem item) {
+        inventoryItemActions.clear();
+        if (item instanceof Food) {
             inventoryItemActions.add("Eat");
         } else {
-            if (item.getType().equals(Item.ItemType.FOOD)) {
-                entityActions.add("Pick up");
-            } else {
-                if (entity instanceof NPC) {
-                    entityActions.add("Talk");
-                    entityActions.add("Fight");
-                }
+            if (item instanceof Equipment) {
+                inventoryItemActions.add("Equip");
             }
         }
-        listViewEntityActions.setItems(entityActions);
-        listViewEntityActions.refresh();
-    }*/
+        listViewInventoryActions.setItems(inventoryItemActions);
+        listViewInventoryActions.refresh();
+    }
 
-    //Executes selected action
+    //Executes selected action on specified entity
     private void executeActionOnEntity(String actionName, Entity entity) {
         if (actionName != null) {
             switch (actionName) {
@@ -250,15 +260,31 @@ public class GameController implements Initializable {
                     ((Mob) entity).fight();
                     break;
                 case "Pick up":
-                    player.pickUpItem(((Item) entity).toInventoryItem());
+                    player.pickUpItem(((Item) entity).getItem());
                     currentMap.getTileByCoords(entity.getX(), entity.getY()).removeEntity(entity);
-                    refreshGUI();
+                    refreshItems();
+                    refreshDescription();
+                    refreshEntities();
                     break;
             }
         }
     }
 
-    //
+    //Executes selected action for the selected item
+    private void executeActionOnItem(String actionName, InventoryItem item) throws ExceptionAlert {
+        if (actionName != null) {
+            switch (actionName) {
+                case "Eat":
+                    player.eat((Food) item);
+                    refreshProgressBars();
+                    refreshItems();
+                    break;
+                case "Equip":
+                    player.equipItem(item);
+                    break;
+            }
+        }
+    }
 
     // Called when the game ends (player dies)
     private void gameOver() {
@@ -280,18 +306,19 @@ public class GameController implements Initializable {
 
     public void initialize(URL url, ResourceBundle rb) {
 
-        //Initial entities and the player are created
+        // Initial entities and the player are created
         player = new Player(4, 4, "Sharpain");
+        // TODO - map generation
         currentMap = new Map(0);
-        currentMap.getTileByCoords(1, 2).addEntity(new NPC(1, 2, "Adam", "Adam is walking around here", '¥', 10,  0, 0, 0, 0));
+        currentMap.getTileByCoords(1, 2).addEntity(new NPC(1, 2, "Adam", "Adam is walking around here", '¥', 10, 0, 0, 0, 0));
         currentMap.getTileByCoords(1, 2).addEntity(new NPC(1, 2, "Michael", "Michael is walking around here", '¥', 10, 0, 0, 0, 0));
         currentMap.getTileByCoords(4, 4).addEntity(new NPC(4, 4, "Petr", "Petr is walking around here", '¥', 10, 0, 0, 0, 0));
-        currentMap.getTileByCoords(4, 4).addEntity(new Item(4, 4, "Food", "Food is floating in the river", Item.ItemType.FOOD, 0, 0, 0));
-        currentMap.getTileByCoords(4, 4).addEntity(new Enemy(4, 4, "Monster", "There's a Shoggoth swimming in the river", 0, 0,  0, 0, 0));
-        currentMap.getTileByCoords(4, 4).addEntity(new Item(4, 4, "Food", "Food is floating in the river", Item.ItemType.FOOD, 0, 0, 0));
-        currentMap.getTileByCoords(4, 4).addEntity(new Item(4, 4, "Food", "Food is floating in the river", Item.ItemType.FOOD, 0, 0, 0));
+        currentMap.getTileByCoords(4, 4).addEntity(new Item(4, 4, "Food", "Food is floating in the river", new Food("Food", 25)));
+        currentMap.getTileByCoords(4, 4).addEntity(new Enemy(4, 4, "Monster", "There's a Shoggoth swimming in the river", 0, 0, 0, 0, 0));
+        currentMap.getTileByCoords(4, 4).addEntity(new Item(4, 4, "Food", "Food is floating in the river", new Food("Food", 25)));
+        currentMap.getTileByCoords(4, 4).addEntity(new Item(4, 4, "Food", "Food is floating in the river", new Food("Food", 25)));
 
-        //Map render
+        // Map render
         reloadMap();
 
         // Initialize listView arrayLists
@@ -301,21 +328,29 @@ public class GameController implements Initializable {
         inventoryItemActions = FXCollections.observableArrayList();
 
         // Sets the ChangeListener for the selected item in listView - sets what happens when an item is selected
+
         listViewEntities.getSelectionModel().selectedItemProperty().addListener((ChangeListener<Entity>) (observable, oldValue, newValue) -> {
             // What is supposed to happen when the selected item changes
-            displayActionsForEntity((Entity) listViewEntities.getSelectionModel().getSelectedItem());
+            displayActionsForEntity(newValue);
         });
+
         listViewEntityActions.getSelectionModel().selectedItemProperty().addListener((ChangeListener<String>) (observable, oldValue, newValue) -> {
             // What is supposed to happen when the selected item changes
-            executeActionOnEntity((String) listViewEntityActions.getSelectionModel().getSelectedItem(), (Entity) listViewEntities.getSelectionModel().getSelectedItem());
+            executeActionOnEntity(newValue, (Entity) listViewEntities.getSelectionModel().getSelectedItem());
         });
+
         listViewInventory.getSelectionModel().selectedItemProperty().addListener((ChangeListener<InventoryItem>) (observable, oldValue, newValue) -> {
             // What is supposed to happen when the selected item changes
-            //TODO Function for inventorzitem selection
+            displayActionsForInventoryItem(newValue);
         });
+
         listViewInventoryActions.getSelectionModel().selectedItemProperty().addListener((ChangeListener<String>) (observable, oldValue, newValue) -> {
             // What is supposed to happen when the selected item changes
-            //TODO function for inventory item action selection
+            try {
+                executeActionOnItem(newValue, (InventoryItem) listViewInventory.getSelectionModel().getSelectedItem());
+            } catch (ExceptionAlert exceptionAlert) {
+                callAlert(exceptionAlert);
+            }
         });
 
         // Resets the GUI look according to current values
@@ -343,7 +378,6 @@ public class GameController implements Initializable {
         });
 
         //Sets the manner in which objects in listViews is displayed
-        //TODO - not my code
         listViewEntities.setCellFactory(lv -> new ListCell<Entity>() {
             @Override
             public void updateItem(Entity item, boolean empty) {
@@ -368,6 +402,5 @@ public class GameController implements Initializable {
                 }
             }
         });
-
     }
 }

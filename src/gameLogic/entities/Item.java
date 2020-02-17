@@ -4,29 +4,15 @@ import gameLogic.inventory.InventoryItem;
 
 public class Item extends Object {
 
-    public enum ItemType {
-        QUEST,
-        BODYWEAR,
-        HEADWEAR,
-        LEGWEAR,
-        WEAPON,
-        FOOD
-    }
+    private InventoryItem item;
 
-    private int addedStrength;
-    private int addedDexterity;
-    private int addedIntelligence;
-
-    private ItemType type;
-
-    public Item(int x, int y, String displayName, String description, ItemType type, int addedStrength, int addedDexterity, int addedIntelligence) {
+    public Item(int x, int y, String displayName, String description, InventoryItem item) {
         super(x, y, displayName, description);
-        this.type = type;
+        this.item = item;
     }
 
-    public InventoryItem toInventoryItem() {
-        //todo: add switch that decides which class the item belongs to based on type
-        return null;
+    public InventoryItem getItem() {
+        return this.item;
     }
 
 }

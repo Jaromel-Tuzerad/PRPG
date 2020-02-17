@@ -5,7 +5,7 @@ public class Food extends InventoryItem {
     int saturationValue;
 
     public Food(String displayName, int saturationValue) {
-        super(displayName);
+        super(displayName + " (" + saturationValue + ")", ItemType.FOOD);
         this.saturationValue = saturationValue;
     }
 
