@@ -1,7 +1,7 @@
 package gameLogic.entities;
 
 import exceptions.ExceptionAlert;
-import gui.GameController;
+import gui.GamePanelController;
 
 public class Resource extends Object {
     public Resource(int x, int y, String displayName, String description) {
@@ -9,7 +9,7 @@ public class Resource extends Object {
     }
 
     public void gather() {
-        GameController.callAlert(new ExceptionAlert("Resource", "You are gathering resources", "Gathering from " + this.displayName));
+        GamePanelController.callAlert(new ExceptionAlert("Resource", "You are gathering resources", "Gathering from " + this.displayName));
     }
 
 }

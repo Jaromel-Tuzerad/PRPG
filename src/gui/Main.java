@@ -1,20 +1,25 @@
 package gui;
 
+import gameLogic.entities.Player;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import mapping.Map;
 
 public class Main extends Application {
+
+    public static Player player;
+    public static Map currentMap;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("MainMenu.fxml"));
         primaryStage.setTitle("Hexer IV: Lidl edition");
-        primaryStage.setScene(new Scene(root, 300, 300));
-        primaryStage.setMinHeight(300);
-        primaryStage.setMinWidth(300);
+        primaryStage.setScene(new Scene(root, 600, 600));
+        primaryStage.setMinHeight(600);
+        primaryStage.setMinWidth(600);
         primaryStage.getScene().getStylesheets().add("gui/hivle.css");
         primaryStage.show();
     }

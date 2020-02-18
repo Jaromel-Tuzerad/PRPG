@@ -8,6 +8,7 @@ import gameLogic.inventory.InventoryItem;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -26,17 +27,13 @@ import mapping.Map;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class GameController implements Initializable {
+public class GamePanelController implements Initializable {
 
     // Global
     @FXML
     private GridPane gridPaneGlobal;
     // TODO - find a use for turns
     private int turnsPassed;
-
-
-    private Player player;
-    private Map currentMap;
 
     // Status bars and labels (0, 0)
     @FXML
@@ -71,14 +68,6 @@ public class GameController implements Initializable {
     private Button buttonSouth;
     @FXML
     private Button buttonWest;
-
-    // Inventory (1, 0)
-    @FXML
-    private ListView listViewInventory;
-    private ObservableList<InventoryItem> inventoryItems;
-    @FXML
-    private ListView listViewInventoryActions;
-    private ObservableList<String> inventoryItemActions;
     
     // Tile description (1, 1)
     @FXML
@@ -91,6 +80,66 @@ public class GameController implements Initializable {
     @FXML
     private ListView listViewEntityActions;
     private ObservableList<String> entityActions;
+
+    @FXML
+    private void moveNorth() {
+        if (Main.player.getY() > 0) {
+            movePlayer(0, -1);
+        }
+    }
+
+    @FXML
+    private void moveSouth() {
+        if (Main.player.getY() < 8) {
+            movePlayer(0, 1);
+        }
+    }
+
+    @FXML
+    private void moveEast() {
+        if (Main.player.getX() < 8) {
+            movePlayer(1, 0);
+        }
+    }
+
+    @FXML
+    private void moveWest() {
+        if (Main.player.getX() > 0) {
+            movePlayer(-1, 0);
+        }
+    }
+
+    @FXML
+    private void openInventory(ActionEvent event) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("Inventory.fxml"));
+            Stage inventoryStage = new Stage();
+            inventoryStage.setTitle("Inventory");
+            inventoryStage.setScene(new Scene(root, 600, 600));
+            inventoryStage.setMinWidth(600);
+            inventoryStage.setMinHeight(600);
+            inventoryStage.getScene().getStylesheets().add("gui/hivle.css");
+            inventoryStage.show();
+            gridPaneGlobal.getScene().getWindow().hide();
+        } catch(Exception ex1) {
+            ex1.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void saveGame() {
+        // TODO - serializace
+    }
+
+    @FXML
+    private void loadGame() {
+        // TODO
+    }
+
+    @FXML
+    private void openMainMenu() {
+        // TODO
+    }
 
     // Calls an alert when an error arises
     public static void callAlert(ExceptionAlert exc) {
@@ -106,7 +155,7 @@ public class GameController implements Initializable {
         for (int i = 0; i < gridPaneMap.getChildren().size(); i++) {
             int y = i % 9;
             int x = i / 9;
-            setTileChar(x, y, currentMap.getTileByCoords(x, y).getIcon());
+            setTileChar(x, y, Main.currentMap.getTileByCoords(x, y).getIcon());
         }
     }
 
@@ -115,50 +164,22 @@ public class GameController implements Initializable {
         ((Label) gridPaneMap.getChildren().get(x * 9 + y)).setText("[" + c + "]");
     }
 
-    // Move player in a relative direction, passes a turn and refreshes the GUI
+    // Move Main.player in a relative direction, passes a turn and refreshes the GUI
     private void movePlayer(int dX, int dY) {
-        setTileChar(player.getX(), player.getY(), currentMap.getTileByCoords(player.getX(), player.getY()).getIcon());
-        player.moveBy(dX, dY);
-        setTileChar(player.getX(), player.getY(), player.getIcon());
+        setTileChar(Main.player.getX(), Main.player.getY(), Main.currentMap.getTileByCoords(Main.player.getX(), Main.player.getY()).getIcon());
+        Main.player.moveBy(dX, dY);
+        setTileChar(Main.player.getX(), Main.player.getY(), Main.player.getIcon());
         passTurn();
         refreshGUI();
     }
 
-    @FXML
-    private void moveNorth() {
-        if (player.getY() > 0) {
-            movePlayer(0, -1);
-        }
-    }
-
-    @FXML
-    private void moveSouth() {
-        if (player.getY() < 8) {
-            movePlayer(0, 1);
-        }
-    }
-
-    @FXML
-    private void moveEast() {
-        if (player.getX() < 8) {
-            movePlayer(1, 0);
-        }
-    }
-
-    @FXML
-    private void moveWest() {
-        if (player.getX() > 0) {
-            movePlayer(-1, 0);
-        }
-    }
-
-    //This happens when a turn passes - player either moves or waits
+    //This happens when a turn passes - Main.player either moves or waits
     private void passTurn() {
         try {
-            if (player.getHunger() > 0) {
-                player.decreaseHunger();
+            if (Main.player.getHunger() > 0) {
+                Main.player.decreaseHunger();
             } else {
-                player.starve();
+                Main.player.starve();
             }
             turnsPassed += 1;
         } catch (ExceptionAlert e) {
@@ -169,37 +190,29 @@ public class GameController implements Initializable {
 
     // Refreshes progress bars
     private void refreshProgressBars() {
-        labelHealth.setText("Health (" + (double) player.getHealth() / player.getMaxHealth() * 100 + " %)");
-        progressBarHealth.setProgress(((double) player.getHealth()) / player.getMaxHealth());
-        labelHunger.setText("Hunger (" + player.getHunger() + " %)");
-        progressBarHunger.setProgress(((double) player.getHunger()) / 100);
-        progressBarEnergy.setProgress(((double) (player.getEnergy())) / (double) (player.getMaxEnergy()));
-        labelEnergy.setText("Energy (" + player.getEnergy() + "/" + player.getMaxEnergy() + ")");
-        progressBarMana.setProgress(((double) (player.getEnergy())) / (double) (player.getMaxEnergy()));
-        labelMana.setText("Mana (" + player.getMana() + "/" + player.getMaxMana() + ")");
+        labelHealth.setText("Health (" + (double) Main.player.getHealth() / Main.player.getMaxHealth() * 100 + " %)");
+        progressBarHealth.setProgress(((double) Main.player.getHealth()) / Main.player.getMaxHealth());
+        labelHunger.setText("Hunger (" + Main.player.getHunger() + " %)");
+        progressBarHunger.setProgress(((double) Main.player.getHunger()) / 100);
+        progressBarEnergy.setProgress(((double) (Main.player.getEnergy())) / (double) (Main.player.getMaxEnergy()));
+        labelEnergy.setText("Energy (" + Main.player.getEnergy() + "/" + Main.player.getMaxEnergy() + ")");
+        progressBarMana.setProgress(((double) (Main.player.getEnergy())) / (double) (Main.player.getMaxEnergy()));
+        labelMana.setText("Mana (" + Main.player.getMana() + "/" + Main.player.getMaxMana() + ")");
     }
 
     // Refreshes detected entities
     private void refreshEntities() {
         tileEntities.clear();
-        tileEntities.addAll(currentMap.getTileByCoords(player.getX(), player.getY()).getEntities());
+        tileEntities.addAll(Main.currentMap.getTileByCoords(Main.player.getX(), Main.player.getY()).getEntities());
         listViewEntities.setItems(tileEntities);
         listViewEntities.refresh();
     }
 
-    // Refreshes items in inventory
-    private void refreshItems() {
-        inventoryItems.clear();
-        inventoryItems.addAll(player.getInventory());
-        listViewInventory.setItems(inventoryItems);
-        listViewInventory.refresh();
-    }
-
     // Refreshes tile description
     private void refreshDescription() {
-        StringBuilder tileDescription = new StringBuilder(currentMap.getTileByCoords(player.getX(), player.getY()).getDescription());
-        if (!currentMap.getTileByCoords(player.getX(), player.getY()).getEntities().isEmpty()) {
-            for (Entity e : currentMap.getTileByCoords(player.getX(), player.getY()).getEntities()) {
+        StringBuilder tileDescription = new StringBuilder(Main.currentMap.getTileByCoords(Main.player.getX(), Main.player.getY()).getDescription());
+        if (!Main.currentMap.getTileByCoords(Main.player.getX(), Main.player.getY()).getEntities().isEmpty()) {
+            for (Entity e : Main.currentMap.getTileByCoords(Main.player.getX(), Main.player.getY()).getEntities()) {
                 tileDescription.append("\n").append(e.getDescription());
             }
         }
@@ -211,7 +224,6 @@ public class GameController implements Initializable {
 
         refreshProgressBars();
         refreshEntities();
-        refreshItems();
         refreshDescription();
 
     }
@@ -235,20 +247,6 @@ public class GameController implements Initializable {
         listViewEntityActions.refresh();
     }
 
-    // Adds actions to listViewItemActions depending on item type
-    private void displayActionsForInventoryItem(InventoryItem item) {
-        inventoryItemActions.clear();
-        if (item instanceof Food) {
-            inventoryItemActions.add("Eat");
-        } else {
-            if (item instanceof Equipment) {
-                inventoryItemActions.add("Equip");
-            }
-        }
-        listViewInventoryActions.setItems(inventoryItemActions);
-        listViewInventoryActions.refresh();
-    }
-
     //Executes selected action on specified entity
     private void executeActionOnEntity(String actionName, Entity entity) {
         if (actionName != null) {
@@ -260,9 +258,8 @@ public class GameController implements Initializable {
                     ((Mob) entity).fight();
                     break;
                 case "Pick up":
-                    player.pickUpItem(((Item) entity).getItem());
-                    currentMap.getTileByCoords(entity.getX(), entity.getY()).removeEntity(entity);
-                    refreshItems();
+                    Main.player.pickUpItem(((Item) entity).getItem());
+                    Main.currentMap.getTileByCoords(entity.getX(), entity.getY()).removeEntity(entity);
                     refreshDescription();
                     refreshEntities();
                     break;
@@ -270,23 +267,7 @@ public class GameController implements Initializable {
         }
     }
 
-    //Executes selected action for the selected item
-    private void executeActionOnItem(String actionName, InventoryItem item) throws ExceptionAlert {
-        if (actionName != null) {
-            switch (actionName) {
-                case "Eat":
-                    player.eat((Food) item);
-                    refreshProgressBars();
-                    refreshItems();
-                    break;
-                case "Equip":
-                    player.equipItem(item);
-                    break;
-            }
-        }
-    }
-
-    // Called when the game ends (player dies)
+    // Called when the game ends (Main.player dies)
     private void gameOver() {
         Stage stage = (Stage) gridPaneGlobal.getScene().getWindow();
         stage.close();
@@ -306,17 +287,22 @@ public class GameController implements Initializable {
 
     public void initialize(URL url, ResourceBundle rb) {
 
-        // Initial entities and the player are created
-        player = new Player(4, 4, "Sharpain");
+        // Initial entities and the Main.player are created
+        if(Main.player == null) {
+            Main.player = new Player(4, 4, "Sharpain");
+        }
+
         // TODO - map generation
-        currentMap = new Map(0);
-        currentMap.getTileByCoords(1, 2).addEntity(new NPC(1, 2, "Adam", "Adam is walking around here", '¥', 10, 0, 0, 0, 0));
-        currentMap.getTileByCoords(1, 2).addEntity(new NPC(1, 2, "Michael", "Michael is walking around here", '¥', 10, 0, 0, 0, 0));
-        currentMap.getTileByCoords(4, 4).addEntity(new NPC(4, 4, "Petr", "Petr is walking around here", '¥', 10, 0, 0, 0, 0));
-        currentMap.getTileByCoords(4, 4).addEntity(new Item(4, 4, "Food", "Food is floating in the river", new Food("Food", 25)));
-        currentMap.getTileByCoords(4, 4).addEntity(new Enemy(4, 4, "Monster", "There's a Shoggoth swimming in the river", 0, 0, 0, 0, 0));
-        currentMap.getTileByCoords(4, 4).addEntity(new Item(4, 4, "Food", "Food is floating in the river", new Food("Food", 25)));
-        currentMap.getTileByCoords(4, 4).addEntity(new Item(4, 4, "Food", "Food is floating in the river", new Food("Food", 25)));
+        if(Main.currentMap == null) {
+            Main.currentMap = new Map(0);
+            Main.currentMap.getTileByCoords(1, 2).addEntity(new NPC(1, 2, "Adam", "Adam is walking around here", '¥', 10, 0, 0, 0, 0));
+            Main.currentMap.getTileByCoords(1, 2).addEntity(new NPC(1, 2, "Michael", "Michael is walking around here", '¥', 10, 0, 0, 0, 0));
+            Main.currentMap.getTileByCoords(4, 4).addEntity(new NPC(4, 4, "Petr", "Petr is walking around here", '¥', 10, 0, 0, 0, 0));
+            Main.currentMap.getTileByCoords(4, 4).addEntity(new Item(4, 4, "Food", "Food is floating in the river", new Food("Food", 25)));
+            Main.currentMap.getTileByCoords(4, 4).addEntity(new Enemy(4, 4, "Monster", "There's a Shoggoth swimming in the river", 0, 0, 0, 0, 0));
+            Main.currentMap.getTileByCoords(4, 4).addEntity(new Item(4, 4, "Food", "Food is floating in the river", new Food("Food", 25)));
+            Main.currentMap.getTileByCoords(4, 4).addEntity(new Item(4, 4, "Spoon of Doom", "Spoon of Doom is laying on the beach", new Equipment("Spoon of Doom", 25, 25, 25, InventoryItem.ItemType.WEAPON)));
+        }
 
         // Map render
         reloadMap();
@@ -324,8 +310,6 @@ public class GameController implements Initializable {
         // Initialize listView arrayLists
         tileEntities = FXCollections.observableArrayList();
         entityActions = FXCollections.observableArrayList();
-        inventoryItems = FXCollections.observableArrayList();
-        inventoryItemActions = FXCollections.observableArrayList();
 
         // Sets the ChangeListener for the selected item in listView - sets what happens when an item is selected
 
@@ -339,25 +323,11 @@ public class GameController implements Initializable {
             executeActionOnEntity(newValue, (Entity) listViewEntities.getSelectionModel().getSelectedItem());
         });
 
-        listViewInventory.getSelectionModel().selectedItemProperty().addListener((ChangeListener<InventoryItem>) (observable, oldValue, newValue) -> {
-            // What is supposed to happen when the selected item changes
-            displayActionsForInventoryItem(newValue);
-        });
-
-        listViewInventoryActions.getSelectionModel().selectedItemProperty().addListener((ChangeListener<String>) (observable, oldValue, newValue) -> {
-            // What is supposed to happen when the selected item changes
-            try {
-                executeActionOnItem(newValue, (InventoryItem) listViewInventory.getSelectionModel().getSelectedItem());
-            } catch (ExceptionAlert exceptionAlert) {
-                callAlert(exceptionAlert);
-            }
-        });
-
         // Resets the GUI look according to current values
         refreshGUI();
 
-        // Sets the tile which the player is initially on to display his icon
-        setTileChar(player.getX(), player.getY(), player.getIcon());
+        // Sets the tile which the Main.player is initially on to display his icon
+        setTileChar(Main.player.getX(), Main.player.getY(), Main.player.getIcon());
 
         // Enables movement using the keyboard by binding key pressed events to buttons
         gridPaneGlobal.setOnKeyPressed(event -> {
@@ -390,17 +360,6 @@ public class GameController implements Initializable {
                 }
             }
         });
-        listViewInventory.setCellFactory(lv -> new ListCell<InventoryItem>() {
-            @Override
-            public void updateItem(InventoryItem item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
-                    setText(null);
-                } else {
-                    String text = item.getDisplayName();
-                    setText(text);
-                }
-            }
-        });
+
     }
 }

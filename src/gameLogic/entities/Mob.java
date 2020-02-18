@@ -1,16 +1,16 @@
 package gameLogic.entities;
 
 import exceptions.ExceptionAlert;
-import gameLogic.entities.Entity;
-import gui.GameController;
+import gui.GamePanelController;
 
 public class Mob extends Entity {
 
+    // Stats
     protected int health;
     protected int maxHealth;
     protected int level;
 
-    //Skills
+    // Attributes
     protected int strength;
     protected int dexterity;
     protected int intelligence;
@@ -26,27 +26,27 @@ public class Mob extends Entity {
     }
 
     public int getLevel() {
-        return level;
+        return this.level;
     }
 
     public int getHealth() {
-        return health;
+        return this.health;
     }
 
     public int getMaxHealth() {
-        return maxHealth;
+        return this.maxHealth;
     }
 
     public int getStrength() {
-        return strength;
+        return this.strength;
     }
 
     public int getDexterity() {
-        return dexterity;
+        return this.dexterity;
     }
 
     public int getIntelligence() {
-        return intelligence;
+        return this.intelligence;
     }
 
     public void die() throws ExceptionAlert {
@@ -61,7 +61,7 @@ public class Mob extends Entity {
     }
 
     public void fight() {
-        GameController.callAlert(new ExceptionAlert("Combat", "A fight starts", "You are now fighting " + this.displayName));
+        GamePanelController.callAlert(new ExceptionAlert("Combat", "A fight starts", "You are now fighting " + this.displayName));
     }
 
 }

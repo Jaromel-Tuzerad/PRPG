@@ -30,7 +30,6 @@ public class MainMenuController implements Initializable {
         gameStage.setMinWidth(600);
         gameStage.getScene().getStylesheets().add("gui/hivle.css");
         gameStage.show();
-
         exit();
     }
 

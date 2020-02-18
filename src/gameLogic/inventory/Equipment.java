@@ -24,4 +24,12 @@ public class Equipment extends InventoryItem {
     public int getAddedIntelligence() {
         return addedIntelligence;
     }
+
+    public String getDisplayName() {
+        return this.displayName + " (" + addedStrength + ", " + addedDexterity + ", " + addedIntelligence +")";
+    }
+
+    public String getDescription() {
+        return (this.displayName + "\nStrength: " + this.addedStrength + "\nDexterity: " + this.addedDexterity + "\nIntelligence: " + this.addedIntelligence);
+    }
 }

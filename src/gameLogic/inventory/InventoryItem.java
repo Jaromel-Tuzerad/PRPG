@@ -2,7 +2,7 @@ package gameLogic.inventory;
 
 import gameLogic.entities.Item;
 
-public class InventoryItem {
+public abstract class InventoryItem {
 
     public enum ItemType {
         QUEST,
@@ -14,22 +14,16 @@ public class InventoryItem {
     }
 
     private static int numberOfItems = 0;
-    private int id;
-    private String displayName;
-    private ItemType type;
+    protected int id;
+    protected String displayName;
+    protected ItemType type;
 
-    private int addedStrength;
-    private int addedDexterity;
-    private int addedIntelligence;
 
     public InventoryItem(String displayName, ItemType type) {
         this.id = numberOfItems;
         numberOfItems += 1;
         this.displayName = displayName;
         this.type = type;
-        this.addedDexterity = addedDexterity;
-        this.addedStrength = addedStrength;
-        this.addedIntelligence = addedIntelligence;
     }
 
     public Item dropItemAt(int x, int y) {
@@ -44,8 +38,8 @@ public class InventoryItem {
         return this.type;
     }
 
-    public String getDisplayName() {
-        return displayName;
-    }
+    public abstract String getDisplayName();
+
+    public abstract String getDescription();
 
 }
