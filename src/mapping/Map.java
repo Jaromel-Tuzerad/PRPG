@@ -1,6 +1,6 @@
 package mapping;
 
-import miscResources.MiscFunctions;
+import miscResources.RandomFunctions;
 
 public class Map {
     private Tile[][] tileMap = new Tile[9][9];
@@ -13,7 +13,7 @@ public class Map {
                 if(x == y) {
                     this.tileMap[x][y] = new Tile(x, y, '~', "You are drowning in a river...");
                 } else {
-                    int tileType = MiscFunctions.getRandomNumberInRange(0, 1);
+                    int tileType = RandomFunctions.getRandomNumberInRange(0, 1);
                     if(tileType == 0) {
                         this.tileMap[x][y] = new Tile(x, y, 'Δ', "You are in a forest");
                     } else {

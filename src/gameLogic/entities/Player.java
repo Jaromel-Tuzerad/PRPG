@@ -1,18 +1,17 @@
 package gameLogic.entities;
 
 import exceptions.ExceptionAlert;
+import exceptions.MobDiedException;
 import gameLogic.inventory.Equipment;
 import gameLogic.inventory.Food;
 import gameLogic.inventory.InventoryItem;
-import org.jetbrains.annotations.NotNull;
+import miscResources.RandomFunctions;
 
 import java.util.ArrayList;
 
 public class Player extends Mob {
 
     private int maxMana;
-    private int maxEnergy;
-    private int energy;
     private int hunger;
     private int mana;
     private int experience;
@@ -24,11 +23,9 @@ public class Player extends Mob {
     private char icon = '@';
 
     public Player(int x, int y, String username) {
-        super(x, y, username, "" , 10, 0, 5, 5, 5);
-        this.maxEnergy = 5;
+        super(x, y, username, "" , 50, 0, 5, 5, 5);
         this.maxMana = 5;
         this.hunger = 100;
-        this.energy = maxEnergy;
         this.mana = maxMana;
         this.experience = 0;
         this.inventory = new ArrayList<InventoryItem>();
@@ -36,14 +33,6 @@ public class Player extends Mob {
 
     public int getMaxMana() {
         return maxMana;
-    }
-
-    public int getMaxEnergy() {
-        return maxEnergy;
-    }
-
-    public int getEnergy() {
-        return this.energy;
     }
 
     public int getHunger() {
@@ -116,7 +105,7 @@ public class Player extends Mob {
     }
 
     public void decreaseHunger() {
-        int points = miscResources.MiscFunctions.getRandomNumberInRange(1, 5);
+        int points = RandomFunctions.getRandomNumberInRange(1, 5);
         if(this.hunger - points >= 0) {
             this.hunger -= points;
         } else {
@@ -124,7 +113,7 @@ public class Player extends Mob {
         }
     }
 
-    public void starve() throws ExceptionAlert {
+    public void starve() throws MobDiedException {
         this.addHealth(0- (int) Math.ceil(((double) this.maxHealth)/20));
     }
 
@@ -146,15 +135,27 @@ public class Player extends Mob {
         if(this.inventory.contains(item)) {
             switch(item.getType()) {
                 case HEADWEAR:
+                    if(this.equippedHeadArmor != null) {
+                        this.inventory.add(this.equippedHeadArmor);
+                    }
                     this.equippedHeadArmor = item;
                     break;
                 case BODYWEAR:
+                    if(this.equippedBodyArmor != null) {
+                        this.inventory.add(this.equippedBodyArmor);
+                    }
                     this.equippedBodyArmor = item;
                     break;
                 case LEGWEAR:
+                    if(this.equippedLegArmor != null) {
+                        this.inventory.add(this.equippedLegArmor);
+                    }
                     this.equippedLegArmor = item;
                     break;
                 case WEAPON:
+                    if(this.equippedWeapon != null) {
+                        this.inventory.add(this.equippedWeapon);
+                    }
                     this.equippedWeapon = item;
                     break;
                 default:
@@ -166,7 +167,7 @@ public class Player extends Mob {
         }
     }
 
-    public void deequipItem(InventoryItem.ItemType type) throws ExceptionAlert {
+    public void UnequipItem(InventoryItem.ItemType type) throws ExceptionAlert {
         switch(type) {
             case HEADWEAR:
                 if(this.equippedHeadArmor != null) {
@@ -205,8 +206,8 @@ public class Player extends Mob {
         }
     }
 
-    public void deequipItem(InventoryItem item) throws ExceptionAlert {
-        deequipItem(item.getType());
+    public void UnequipItem(InventoryItem item) throws ExceptionAlert {
+        UnequipItem(item.getType());
     }
 
     public ArrayList<InventoryItem> getInventory() {

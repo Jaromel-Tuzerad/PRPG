@@ -1,10 +1,12 @@
-package gui;
+package gui.gamePanel;
 
 import exceptions.ExceptionAlert;
+import exceptions.MobDiedException;
 import gameLogic.entities.*;
 import gameLogic.inventory.Equipment;
 import gameLogic.inventory.Food;
 import gameLogic.inventory.InventoryItem;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -29,6 +31,10 @@ import java.util.ResourceBundle;
 
 public class GamePanelController implements Initializable {
 
+    public static Player player;
+    public static Map currentMap;
+    public static Enemy fightingEnemy;
+    
     // Global
     @FXML
     private GridPane gridPaneGlobal;
@@ -83,36 +89,62 @@ public class GamePanelController implements Initializable {
 
     @FXML
     private void moveNorth() {
-        if (Main.player.getY() > 0) {
-            movePlayer(0, -1);
+        try {
+            if (player.getY() > 0) {
+                movePlayer(0, -1);
+            }
+        } catch (MobDiedException mobDiedException) {
+            callAlert(new ExceptionAlert("Player is dead", player.getDisplayName() + " has starved to death", "Better luck next time!"));
+            gameOver();
         }
     }
 
     @FXML
     private void moveSouth() {
-        if (Main.player.getY() < 8) {
-            movePlayer(0, 1);
+        try {
+            if (player.getY() < 8) {
+                movePlayer(0, 1);
+            }
+        } catch (MobDiedException mobDiedException) {
+            callAlert(new ExceptionAlert("Player is dead", player.getDisplayName() + " has starved to death", "Better luck next time!"));
+            gameOver();
         }
     }
 
     @FXML
     private void moveEast() {
-        if (Main.player.getX() < 8) {
-            movePlayer(1, 0);
+        try {
+            if (player.getX() < 8) {
+                movePlayer(1, 0);
+            }
+        } catch (MobDiedException mobDiedException) {
+            callAlert(new ExceptionAlert("Player is dead", player.getDisplayName() + " has starved to death", "Better luck next time!"));
+            gameOver();
         }
     }
 
     @FXML
     private void moveWest() {
-        if (Main.player.getX() > 0) {
-            movePlayer(-1, 0);
+        try {
+            if (player.getX() > 0) {
+                movePlayer(-1, 0);
+            }
+        } catch (MobDiedException mobDiedException) {
+            callAlert(new ExceptionAlert("Player is dead", player.getDisplayName() + " has starved to death", "Better luck next time!"));
+            gameOver();
         }
     }
 
     @FXML
-    private void openInventory(ActionEvent event) {
+    private void waitTurn() throws MobDiedException {
+        passTurn();
+        refreshGUI();
+    }
+
+    @FXML
+    private void openInventory() {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("Inventory.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("../inventory/Inventory.fxml"));
             Stage inventoryStage = new Stage();
             inventoryStage.setTitle("Inventory");
             inventoryStage.setScene(new Scene(root, 600, 600));
@@ -139,6 +171,7 @@ public class GamePanelController implements Initializable {
     @FXML
     private void openMainMenu() {
         // TODO
+        gameOver();
     }
 
     // Calls an alert when an error arises
@@ -155,7 +188,7 @@ public class GamePanelController implements Initializable {
         for (int i = 0; i < gridPaneMap.getChildren().size(); i++) {
             int y = i % 9;
             int x = i / 9;
-            setTileChar(x, y, Main.currentMap.getTileByCoords(x, y).getIcon());
+            setTileChar(x, y, currentMap.getTileByCoords(x, y).getIcon());
         }
     }
 
@@ -164,55 +197,47 @@ public class GamePanelController implements Initializable {
         ((Label) gridPaneMap.getChildren().get(x * 9 + y)).setText("[" + c + "]");
     }
 
-    // Move Main.player in a relative direction, passes a turn and refreshes the GUI
-    private void movePlayer(int dX, int dY) {
-        setTileChar(Main.player.getX(), Main.player.getY(), Main.currentMap.getTileByCoords(Main.player.getX(), Main.player.getY()).getIcon());
-        Main.player.moveBy(dX, dY);
-        setTileChar(Main.player.getX(), Main.player.getY(), Main.player.getIcon());
-        passTurn();
-        refreshGUI();
+    // Move GamePanelController.player in a relative direction, passes a turn and refreshes the GUI
+    private void movePlayer(int dX, int dY) throws MobDiedException {
+        setTileChar(player.getX(), player.getY(), currentMap.getTileByCoords(player.getX(), player.getY()).getIcon());
+        player.moveBy(dX, dY);
+        setTileChar(player.getX(), player.getY(), player.getIcon());
+        waitTurn();
     }
 
-    //This happens when a turn passes - Main.player either moves or waits
-    private void passTurn() {
-        try {
-            if (Main.player.getHunger() > 0) {
-                Main.player.decreaseHunger();
-            } else {
-                Main.player.starve();
-            }
-            turnsPassed += 1;
-        } catch (ExceptionAlert e) {
-            callAlert(e);
-            gameOver();
+    //This happens when a turn passes - GamePanelController.player either moves or waits
+    private void passTurn() throws MobDiedException{
+        if (player.getHunger() > 0) {
+            player.decreaseHunger();
+        } else {
+            player.starve();
         }
+        turnsPassed += 1;
     }
 
     // Refreshes progress bars
     private void refreshProgressBars() {
-        labelHealth.setText("Health (" + (double) Main.player.getHealth() / Main.player.getMaxHealth() * 100 + " %)");
-        progressBarHealth.setProgress(((double) Main.player.getHealth()) / Main.player.getMaxHealth());
-        labelHunger.setText("Hunger (" + Main.player.getHunger() + " %)");
-        progressBarHunger.setProgress(((double) Main.player.getHunger()) / 100);
-        progressBarEnergy.setProgress(((double) (Main.player.getEnergy())) / (double) (Main.player.getMaxEnergy()));
-        labelEnergy.setText("Energy (" + Main.player.getEnergy() + "/" + Main.player.getMaxEnergy() + ")");
-        progressBarMana.setProgress(((double) (Main.player.getEnergy())) / (double) (Main.player.getMaxEnergy()));
-        labelMana.setText("Mana (" + Main.player.getMana() + "/" + Main.player.getMaxMana() + ")");
+        labelHealth.setText("Health (" + (double) player.getHealth() / player.getMaxHealth() * 100 + " %)");
+        progressBarHealth.setProgress(((double) player.getHealth()) / player.getMaxHealth());
+        labelHunger.setText("Hunger (" + player.getHunger() + " %)");
+        progressBarHunger.setProgress(((double) player.getHunger()) / 100);
+        labelMana.setText("Mana (" + player.getMana() + "/" + player.getMaxMana() + ")");
+        progressBarMana.setProgress(((double) (player.getMana())) / (double) (player.getMaxMana()));
     }
 
     // Refreshes detected entities
     private void refreshEntities() {
         tileEntities.clear();
-        tileEntities.addAll(Main.currentMap.getTileByCoords(Main.player.getX(), Main.player.getY()).getEntities());
+        tileEntities.addAll(currentMap.getTileByCoords(player.getX(), player.getY()).getEntities());
         listViewEntities.setItems(tileEntities);
         listViewEntities.refresh();
     }
 
     // Refreshes tile description
     private void refreshDescription() {
-        StringBuilder tileDescription = new StringBuilder(Main.currentMap.getTileByCoords(Main.player.getX(), Main.player.getY()).getDescription());
-        if (!Main.currentMap.getTileByCoords(Main.player.getX(), Main.player.getY()).getEntities().isEmpty()) {
-            for (Entity e : Main.currentMap.getTileByCoords(Main.player.getX(), Main.player.getY()).getEntities()) {
+        StringBuilder tileDescription = new StringBuilder(currentMap.getTileByCoords(player.getX(), player.getY()).getDescription());
+        if (!currentMap.getTileByCoords(player.getX(), player.getY()).getEntities().isEmpty()) {
+            for (Entity e : currentMap.getTileByCoords(player.getX(), player.getY()).getEntities()) {
                 tileDescription.append("\n").append(e.getDescription());
             }
         }
@@ -239,7 +264,6 @@ public class GamePanelController implements Initializable {
             } else {
                 if (entity instanceof NPC) {
                     entityActions.add("Talk");
-                    entityActions.add("Fight");
                 }
             }
         }
@@ -255,11 +279,11 @@ public class GamePanelController implements Initializable {
                     ((NPC) entity).talk();
                     break;
                 case "Fight":
-                    ((Mob) entity).fight();
+                    fight((Enemy) entity);
                     break;
                 case "Pick up":
-                    Main.player.pickUpItem(((Item) entity).getItem());
-                    Main.currentMap.getTileByCoords(entity.getX(), entity.getY()).removeEntity(entity);
+                    player.pickUpItem(((Item) entity).getItem());
+                    currentMap.getTileByCoords(entity.getX(), entity.getY()).removeEntity(entity);
                     refreshDescription();
                     refreshEntities();
                     break;
@@ -267,12 +291,34 @@ public class GamePanelController implements Initializable {
         }
     }
 
-    // Called when the game ends (Main.player dies)
-    private void gameOver() {
-        Stage stage = (Stage) gridPaneGlobal.getScene().getWindow();
-        stage.close();
+    // Starts fighting with an enemy
+    private void fight(Enemy enemy) {
+        fightingEnemy = enemy;
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("MainMenu.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("../fightPanel/FightPanel.fxml"));
+            Stage gameStage = new Stage();
+            gameStage.setTitle("Hexer IV: Lidl edition");
+            gameStage.setScene(new Scene(root, 650, 510));
+            gameStage.setMinWidth(650);
+            gameStage.setMinHeight(510);
+            gameStage.setMaxWidth(650);
+            gameStage.setMaxHeight(510);
+            gameStage.getScene().getStylesheets().add("gui/hivle.css");
+            gameStage.show();
+            Stage stage = (Stage) gridPaneGlobal.getScene().getWindow();
+            stage.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Called when the game ends (GamePanelController.player dies)
+    private void gameOver() {
+        try {
+            player = null;
+            fightingEnemy = null;
+            currentMap = null;
+            Parent root = FXMLLoader.load(getClass().getResource("../mainMenu/MainMenu.fxml"));
             Stage gameStage = new Stage();
             gameStage.setTitle("Hexer IV: Lidl edition");
             gameStage.setScene(new Scene(root, 600, 600));
@@ -280,28 +326,31 @@ public class GamePanelController implements Initializable {
             gameStage.setMinWidth(600);
             gameStage.getScene().getStylesheets().add("gui/hivle.css");
             gameStage.show();
+            Stage stage = (Stage) gridPaneGlobal.getScene().getWindow();
+            stage.close();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
     public void initialize(URL url, ResourceBundle rb) {
 
-        // Initial entities and the Main.player are created
-        if(Main.player == null) {
-            Main.player = new Player(4, 4, "Sharpain");
+        // Initial entities and the GamePanelController.player are created
+        if(player == null) {
+            player = new Player(4, 4, "Sharpain");
         }
 
         // TODO - map generation
-        if(Main.currentMap == null) {
-            Main.currentMap = new Map(0);
-            Main.currentMap.getTileByCoords(1, 2).addEntity(new NPC(1, 2, "Adam", "Adam is walking around here", '¥', 10, 0, 0, 0, 0));
-            Main.currentMap.getTileByCoords(1, 2).addEntity(new NPC(1, 2, "Michael", "Michael is walking around here", '¥', 10, 0, 0, 0, 0));
-            Main.currentMap.getTileByCoords(4, 4).addEntity(new NPC(4, 4, "Petr", "Petr is walking around here", '¥', 10, 0, 0, 0, 0));
-            Main.currentMap.getTileByCoords(4, 4).addEntity(new Item(4, 4, "Food", "Food is floating in the river", new Food("Food", 25)));
-            Main.currentMap.getTileByCoords(4, 4).addEntity(new Enemy(4, 4, "Monster", "There's a Shoggoth swimming in the river", 0, 0, 0, 0, 0));
-            Main.currentMap.getTileByCoords(4, 4).addEntity(new Item(4, 4, "Food", "Food is floating in the river", new Food("Food", 25)));
-            Main.currentMap.getTileByCoords(4, 4).addEntity(new Item(4, 4, "Spoon of Doom", "Spoon of Doom is laying on the beach", new Equipment("Spoon of Doom", 25, 25, 25, InventoryItem.ItemType.WEAPON)));
+        if(currentMap == null) {
+            currentMap = new Map(0);
+            currentMap.getTileByCoords(1, 2).addEntity(new NPC(1, 2, "Adam", "Adam is walking around here", '¥', 10, 0, 0, 0, 0));
+            currentMap.getTileByCoords(1, 2).addEntity(new NPC(1, 2, "Michael", "Michael is walking around here", '¥', 10, 0, 0, 0, 0));
+            currentMap.getTileByCoords(4, 4).addEntity(new NPC(4, 4, "Petr", "Petr is walking around here", '¥', 10, 0, 0, 0, 0));
+            currentMap.getTileByCoords(4, 4).addEntity(new Item(4, 4, "Food", "Food is floating in the river", new Food("Food", 25)));
+            currentMap.getTileByCoords(4, 4).addEntity(new Enemy(4, 4, "Monster", "There's a Shoggoth swimming in the river", 50, 1, 5, 5, 5));
+            currentMap.getTileByCoords(4, 4).addEntity(new Item(4, 4, "Food", "Food is floating in the river", new Food("Food", 25)));
+            currentMap.getTileByCoords(4, 4).addEntity(new Item(4, 4, "Spoon of Doom", "Spoon of Doom is laying on the beach", new Equipment("Spoon of Doom", 25, 25, 25, InventoryItem.ItemType.WEAPON)));
+            currentMap.getTileByCoords(4, 4).addEntity(new Item(4, 4, "Fiddlestick", "Fiddlestick is laying on the beach", new Equipment("Fiddlestick", -3, -3, 99, InventoryItem.ItemType.WEAPON)));
         }
 
         // Map render
@@ -315,19 +364,19 @@ public class GamePanelController implements Initializable {
 
         listViewEntities.getSelectionModel().selectedItemProperty().addListener((ChangeListener<Entity>) (observable, oldValue, newValue) -> {
             // What is supposed to happen when the selected item changes
-            displayActionsForEntity(newValue);
+            Platform.runLater(() -> displayActionsForEntity(newValue) );
         });
 
         listViewEntityActions.getSelectionModel().selectedItemProperty().addListener((ChangeListener<String>) (observable, oldValue, newValue) -> {
             // What is supposed to happen when the selected item changes
-            executeActionOnEntity(newValue, (Entity) listViewEntities.getSelectionModel().getSelectedItem());
+            Platform.runLater(() -> executeActionOnEntity(newValue, (Entity) listViewEntities.getSelectionModel().getSelectedItem()) );
         });
 
         // Resets the GUI look according to current values
         refreshGUI();
 
-        // Sets the tile which the Main.player is initially on to display his icon
-        setTileChar(Main.player.getX(), Main.player.getY(), Main.player.getIcon());
+        // Sets the tile which the GamePanelController.player is initially on to display his icon
+        setTileChar(player.getX(), player.getY(), player.getIcon());
 
         // Enables movement using the keyboard by binding key pressed events to buttons
         gridPaneGlobal.setOnKeyPressed(event -> {

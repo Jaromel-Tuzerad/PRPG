@@ -1,9 +1,11 @@
-package gui;
+package gui.inventory;
 
 import exceptions.ExceptionAlert;
 import gameLogic.inventory.Equipment;
 import gameLogic.inventory.Food;
 import gameLogic.inventory.InventoryItem;
+import gui.gamePanel.GamePanelController;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -62,7 +64,7 @@ public class InventoryController implements Initializable {
     private void returnToMap() {
         try {
             Stage primaryStage = new Stage();
-            Parent root = FXMLLoader.load(getClass().getResource("GamePanel.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("../gamePanel/GamePanel.fxml"));
             primaryStage.setTitle("Hexer IV: Lidl edition");
             primaryStage.setScene(new Scene(root, 600, 600));
             primaryStage.setMinHeight(600);
@@ -79,7 +81,7 @@ public class InventoryController implements Initializable {
     @FXML
     private void deequipHead() {
         try {
-            Main.player.deequipItem(InventoryItem.ItemType.HEADWEAR);
+            GamePanelController.player.UnequipItem(InventoryItem.ItemType.HEADWEAR);
             refreshGUI();
         } catch(ExceptionAlert e) {
             GamePanelController.callAlert(e);
@@ -90,7 +92,7 @@ public class InventoryController implements Initializable {
     @FXML
     private void deequipBody() {
         try {
-            Main.player.deequipItem(InventoryItem.ItemType.BODYWEAR);
+            GamePanelController.player.UnequipItem(InventoryItem.ItemType.BODYWEAR);
             refreshGUI();
         } catch(ExceptionAlert e) {
             GamePanelController.callAlert(e);
@@ -99,20 +101,19 @@ public class InventoryController implements Initializable {
     }
 
     @FXML
-    private void deequipWeapon() {
+    private void UnequipWeapon() {
         try {
-            Main.player.deequipItem(InventoryItem.ItemType.WEAPON);
+            GamePanelController.player.UnequipItem(InventoryItem.ItemType.WEAPON);
             refreshGUI();
         } catch(ExceptionAlert e) {
             GamePanelController.callAlert(e);
         }
-
     }
 
     @FXML
     private void deequipLeg() {
         try {
-            Main.player.deequipItem(InventoryItem.ItemType.LEGWEAR);
+            GamePanelController.player.UnequipItem(InventoryItem.ItemType.LEGWEAR);
             refreshGUI();
         } catch(ExceptionAlert e) {
             GamePanelController.callAlert(e);
@@ -120,46 +121,55 @@ public class InventoryController implements Initializable {
 
     }
 
+    // Sets an item to be described
+    private void setItemToDescribe(InventoryItem item) {
+        if(item != null) {
+            labelItemDescription.setText(item.getDescription());
+        } else {
+            labelItemDescription.setText("N/A");
+        }
+    }
+
     // Refreshes stats
     private void refreshStats() {
-        labelStrength.setText(String.valueOf(Main.player.getTotalStrength()));
-        labelDexterity.setText(String.valueOf(Main.player.getTotalDexterity()));
-        labelIntelligence.setText(String.valueOf(Main.player.getTotalIntelligence()));
+        labelStrength.setText(String.valueOf(GamePanelController.player.getTotalStrength()));
+        labelDexterity.setText(String.valueOf(GamePanelController.player.getTotalDexterity()));
+        labelIntelligence.setText(String.valueOf(GamePanelController.player.getTotalIntelligence()));
     }
 
     // Refreshes inventory items
     private void refreshItems() {
         inventoryItems.clear();
-        inventoryItems.addAll(Main.player.getInventory());
+        inventoryItems.addAll(GamePanelController.player.getInventory());
         listViewInventory.setItems(inventoryItems);
         listViewInventory.refresh();
     }
 
     // Refreshes equipment
     private void refreshEquipment() {
-        if(Main.player.getEquippedHeadArmor() != null) {
-            labelHead.setText(Main.player.getEquippedHeadArmor().getDisplayName());
+        if(GamePanelController.player.getEquippedHeadArmor() != null) {
+            labelHead.setText(GamePanelController.player.getEquippedHeadArmor().getDisplayName());
             buttonDeequipHead.setVisible(true);
         } else {
             labelHead.setText("N/A");
             buttonDeequipHead.setVisible(false);
         }
-        if(Main.player.getEquippedBodyArmor() != null) {
-            labelBody.setText(Main.player.getEquippedBodyArmor().getDisplayName());
+        if(GamePanelController.player.getEquippedBodyArmor() != null) {
+            labelBody.setText(GamePanelController.player.getEquippedBodyArmor().getDisplayName());
             buttonDeequipBody.setVisible(true);
         } else {
             labelBody.setText("N/A");
             buttonDeequipBody.setVisible(false);
         }
-        if(Main.player.getEquippedLegArmor() != null) {
-            labelLeg.setText(Main.player.getEquippedLegArmor().getDisplayName());
+        if(GamePanelController.player.getEquippedLegArmor() != null) {
+            labelLeg.setText(GamePanelController.player.getEquippedLegArmor().getDisplayName());
             buttonDeequipLeg.setVisible(true);
         } else {
             labelLeg.setText("N/A");
             buttonDeequipLeg.setVisible(false);
         }
-        if(Main.player.getEquippedWeapon() != null) {
-            labelWeapon.setText(Main.player.getEquippedWeapon().getDisplayName());
+        if(GamePanelController.player.getEquippedWeapon() != null) {
+            labelWeapon.setText(GamePanelController.player.getEquippedWeapon().getDisplayName());
             buttonDeequipWeapon.setVisible(true);
         } else {
             labelWeapon.setText("N/A");
@@ -193,10 +203,10 @@ public class InventoryController implements Initializable {
         if (actionName != null) {
             switch (actionName) {
                 case "Eat":
-                    Main.player.eat((Food) item);
+                    GamePanelController.player.eat((Food) item);
                     break;
                 case "Equip":
-                    Main.player.equipItem((Equipment)item);
+                    GamePanelController.player.equipItem((Equipment)item);
                     break;
             }
         }
@@ -212,17 +222,22 @@ public class InventoryController implements Initializable {
 
         listViewInventory.getSelectionModel().selectedItemProperty().addListener((ChangeListener<InventoryItem>) (observable, oldValue, newValue) -> {
             // What is supposed to happen when the selected item changes
-            displayActionsForInventoryItem(newValue);
+            Platform.runLater(() -> {
+                displayActionsForInventoryItem(newValue);
+                setItemToDescribe(newValue);
+            });
         });
 
         listViewInventoryActions.getSelectionModel().selectedItemProperty().addListener((ChangeListener<String>) (observable, oldValue, newValue) -> {
             // What is supposed to happen when the selected item changes
-            try {
-                executeActionOnItem(newValue, (InventoryItem) listViewInventory.getSelectionModel().getSelectedItem());
-                refreshGUI();
-            } catch (ExceptionAlert exceptionAlert) {
-                GamePanelController.callAlert(exceptionAlert);
-            }
+            Platform.runLater(() -> {
+                try {
+                    executeActionOnItem(newValue, (InventoryItem) listViewInventory.getSelectionModel().getSelectedItem());
+                    refreshGUI();
+                } catch (ExceptionAlert exceptionAlert) {
+                    GamePanelController.callAlert(exceptionAlert);
+                }
+            });
         });
 
         listViewInventory.setCellFactory(lv -> new ListCell<InventoryItem>() {

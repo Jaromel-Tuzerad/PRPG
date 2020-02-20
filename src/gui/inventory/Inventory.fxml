@@ -15,7 +15,7 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.shape.Rectangle?>
 
-<GridPane gridLinesVisible="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="630.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.InventoryController">
+<GridPane gridLinesVisible="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="630.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.inventory.InventoryController">
    <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
       <children>
           <ListView fx:id="listViewInventory" layoutY="27.0" prefHeight="173.0" prefWidth="200.0" />
@@ -41,7 +41,7 @@
    <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
       <children>
          <Label layoutX="54.0" layoutY="5.0" text="Item description" />
-         <Label fx:id="labelItemDescription" layoutX="89.0" layoutY="29.0" text="N/A" />
+         <Label fx:id="labelItemDescription" alignment="TOP_CENTER" contentDisplay="TEXT_ONLY" layoutX="12.0" layoutY="23.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="166.0" prefWidth="176.0" text="N/A" textAlignment="CENTER" />
       </children>
    </AnchorPane>
    <GridPane minWidth="-Infinity" prefWidth="200.0" GridPane.rowIndex="2">
@@ -68,10 +68,10 @@
          <Button fx:id="buttonDeequipHead" minHeight="-Infinity" mnemonicParsing="false" onAction="#deequipHead" prefHeight="25.0" text="Deequip" GridPane.rowIndex="2" />
          <Label text="BODY ARMOR" GridPane.rowIndex="3" />
          <Label fx:id="labelBody" text="N/A" GridPane.rowIndex="4" />
-         <Button fx:id="buttonDeequipBody" minHeight="-Infinity" mnemonicParsing="false" onAction="#deequipBody" prefHeight="25.0" text="Deequip" GridPane.rowIndex="5" />
+         <Button fx:id="buttonDeequipBody" minHeight="-Infinity" mnemonicParsing="false" onAction="#deequipBody" prefHeight="30.0" text="Deequip" GridPane.rowIndex="5" />
          <Label text="WEAPON" GridPane.rowIndex="6" />
          <Label fx:id="labelWeapon" text="N/A" GridPane.rowIndex="7" />
-         <Button fx:id="buttonDeequipWeapon" minHeight="-Infinity" mnemonicParsing="false" onAction="#deequipWeapon" prefHeight="25.0" text="Deequip" GridPane.rowIndex="8" />
+         <Button fx:id="buttonDeequipWeapon" minHeight="-Infinity" mnemonicParsing="false" onAction="#UnequipWeapon" prefHeight="30.0" text="Deequip" GridPane.rowIndex="8" />
          <Label text="LEG ARMOR" GridPane.rowIndex="9" />
          <Label fx:id="labelLeg" text="N/A" GridPane.rowIndex="10" />
          <Button fx:id="buttonDeequipLeg" minHeight="-Infinity" mnemonicParsing="false" onAction="#deequipLeg" prefHeight="25.0" text="Deequip" GridPane.rowIndex="11" />

@@ -1,7 +1,7 @@
 package gameLogic.entities;
 
 import exceptions.ExceptionAlert;
-import gui.GamePanelController;
+import gui.gamePanel.GamePanelController;
 
 public class NPC extends Mob {
     public NPC(int x, int y, String name, String description, char icon, int maxHealth, int level, int strength, int dexterity, int intelligence) {

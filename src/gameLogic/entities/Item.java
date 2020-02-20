@@ -2,7 +2,7 @@ package gameLogic.entities;
 
 import gameLogic.inventory.InventoryItem;
 
-public class Item extends Object {
+public class Item extends GameObject {
 
     private InventoryItem item;
 

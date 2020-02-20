@@ -4,6 +4,12 @@
 #progressBarHealth .bar {
     -fx-background-color: red;
 }
+#progressBarPlayerHealth .bar {
+    -fx-background-color: red;
+}
+#progressBarMonsterHealth .bar {
+    -fx-background-color: red;
+}
 #progressBarHunger .bar {
     -fx-background-color: green;
 }

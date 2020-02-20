@@ -1,7 +1,8 @@
 package gameLogic.entities;
 
 import exceptions.ExceptionAlert;
-import gui.GamePanelController;
+import exceptions.MobDiedException;
+import gui.gamePanel.GamePanelController;
 
 public class Mob extends Entity {
 
@@ -49,13 +50,16 @@ public class Mob extends Entity {
         return this.intelligence;
     }
 
-    public void die() throws ExceptionAlert {
-        throw new ExceptionAlert("An entity is dead", "An entity is dead", this.displayName + " has died.");
+    // TODO - what happens when an entity dies
+    public void die() throws MobDiedException {
+        throw new MobDiedException(this);
     }
 
-    public void addHealth(int points) throws ExceptionAlert {
+    public void addHealth(int points) throws MobDiedException {
         this.health += points;
-        if(this.health <= 0) {
+        if(this.health > this.maxHealth) {
+            this.health = this.maxHealth;
+        } else if(this.health <= 0) {
             this.die();
         }
     }
