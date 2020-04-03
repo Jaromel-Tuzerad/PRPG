@@ -1,11 +1,11 @@
-package gameLogic.entities;
+package gameLogic.entities.mobs;
 
 import exceptions.ExceptionAlert;
 import gui.gamePanel.GamePanelController;
 
 public class NPC extends Mob {
-    public NPC(int x, int y, String name, String description, char icon, int maxHealth, int level, int strength, int dexterity, int intelligence) {
-        super(x, y, name, description, maxHealth, level, strength, dexterity, intelligence);
+    public NPC(String name, String description, char icon, int maxHealth) {
+        super(name, description, maxHealth, 0, 0, 0, 0);
     }
 
     public void talk() {

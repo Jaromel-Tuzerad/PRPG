@@ -1,6 +1,6 @@
 package mapping;
 
-import miscResources.RandomFunctions;
+import gameLogic.RandomFunctions;
 
 public class Map {
     private Tile[][] tileMap = new Tile[9][9];

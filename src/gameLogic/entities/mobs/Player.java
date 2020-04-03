@@ -1,50 +1,77 @@
-package gameLogic.entities;
+package gameLogic.entities.mobs;
 
 import exceptions.ExceptionAlert;
+import exceptions.LevelUpException;
 import exceptions.MobDiedException;
 import gameLogic.inventory.Equipment;
 import gameLogic.inventory.Food;
 import gameLogic.inventory.InventoryItem;
-import miscResources.RandomFunctions;
+import gameLogic.RandomFunctions;
 
 import java.util.ArrayList;
 
 public class Player extends Mob {
 
-    private int maxMana;
     private int hunger;
-    private int mana;
     private int experience;
+    private int experienceToNextLevel;
     private Equipment equippedHeadArmor;
     private Equipment equippedBodyArmor;
     private Equipment equippedLegArmor;
     private Equipment equippedWeapon;
     private ArrayList<InventoryItem> inventory;
     private char icon = '@';
+    private int posX;
+    private int posY;
 
-    public Player(int x, int y, String username) {
-        super(x, y, username, "" , 50, 0, 5, 5, 5);
-        this.maxMana = 5;
+    public Player(int x, int y, String username, int maxHealth, int strength, int dexterity, int intelligence) {
+        super(username, "" , maxHealth, 1, strength, dexterity, intelligence);
         this.hunger = 100;
-        this.mana = maxMana;
         this.experience = 0;
-        this.inventory = new ArrayList<InventoryItem>();
+        this.experienceToNextLevel = 100;
+        this.inventory = new ArrayList<>();
+        this.posX = x;
+        this.posY = y;
     }
 
-    public int getMaxMana() {
-        return maxMana;
+    public void setPos(int x, int y) {
+        this.posX = x;
+        this.posY = y;
+    }
+
+    public void moveBy(int dX, int dY) {
+        this.posX += dX;
+        this.posY += dY;
+    }
+
+    public int getX() {
+        return posX;
+    }
+
+    public int getY() {
+        return posY;
     }
 
     public int getHunger() {
         return this.hunger;
     }
 
-    public int getMana() {
-        return this.mana;
-    }
-
     public int getExperience() {
         return this.experience;
+    }
+
+    public void addExperience(int addedExperience) throws LevelUpException {
+        this.experience += addedExperience;
+        if(this.experience >= this.experienceToNextLevel) {
+            this.levelUp();
+            throw new LevelUpException();
+        }
+    }
+
+    public void levelUp() {
+        this.level+=1;
+        this.experienceToNextLevel *= 2;
+        this.experience = this.experience - this.experienceToNextLevel;
     }
 
     public char getIcon() {
@@ -52,6 +79,8 @@ public class Player extends Mob {
     }
 
     public void pickUpItem(InventoryItem item) { this.inventory.add(item); }
+
+    public void dropItem(InventoryItem item) { this.inventory.remove(item); }
 
     public int getTotalStrength() {
         int output = this.strength;
@@ -90,16 +119,16 @@ public class Player extends Mob {
     public int getTotalIntelligence() {
         int output = this.strength;
         if(this.equippedHeadArmor != null) {
-            output += this.equippedHeadArmor.getAddedIntelligence();
+            output += this.equippedHeadArmor.getAddedDefense();
         }
         if(this.equippedBodyArmor != null) {
-            output += this.equippedBodyArmor.getAddedIntelligence();
+            output += this.equippedBodyArmor.getAddedDefense();
         }
         if(this.equippedWeapon != null) {
-            output += this.equippedWeapon.getAddedIntelligence();
+            output += this.equippedWeapon.getAddedDefense();
         }
         if(this.equippedLegArmor != null) {
-            output += this.equippedLegArmor.getAddedIntelligence();
+            output += this.equippedLegArmor.getAddedDefense();
         }
         return output;
     }

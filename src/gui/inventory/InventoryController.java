@@ -14,10 +14,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.net.URL;
@@ -57,7 +54,7 @@ public class InventoryController implements Initializable {
     private Label labelIntelligence;
 
     @FXML
-    private Label labelItemDescription;
+    private TextArea textAreaItemDescription;
 
     // Returns back to map
     @FXML
@@ -77,7 +74,7 @@ public class InventoryController implements Initializable {
         }
     }
 
-    // Methods on buttons for deequipping items
+    // Methods on buttons for unequipping items
     @FXML
     private void deequipHead() {
         try {
@@ -124,9 +121,9 @@ public class InventoryController implements Initializable {
     // Sets an item to be described
     private void setItemToDescribe(InventoryItem item) {
         if(item != null) {
-            labelItemDescription.setText(item.getDescription());
+            textAreaItemDescription.setText(item.getDescription());
         } else {
-            labelItemDescription.setText("N/A");
+            textAreaItemDescription.setText("N/A");
         }
     }
 
@@ -137,7 +134,7 @@ public class InventoryController implements Initializable {
         labelIntelligence.setText(String.valueOf(GamePanelController.player.getTotalIntelligence()));
     }
 
-    // Refreshes inventory items
+    // Refreshes inventory items.txt
     private void refreshItems() {
         inventoryItems.clear();
         inventoryItems.addAll(GamePanelController.player.getInventory());

@@ -4,13 +4,13 @@ public class Equipment extends InventoryItem {
 
     private int addedStrength;
     private int addedDexterity;
-    private int addedIntelligence;
+    private int addedDefense;
 
-    public Equipment(String displayName, int addedStrength, int addedDexterity, int addedIntelligence, ItemType type) {
+    public Equipment(String displayName, int addedStrength, int addedDexterity, int addedDefense, ItemType type) {
         super(displayName, type);
         this.addedStrength = addedStrength;
         this.addedDexterity = addedDexterity;
-        this.addedIntelligence = addedIntelligence;
+        this.addedDefense = addedDefense;
     }
 
     public int getAddedStrength() {
@@ -21,15 +21,15 @@ public class Equipment extends InventoryItem {
         return addedDexterity;
     }
 
-    public int getAddedIntelligence() {
-        return addedIntelligence;
+    public int getAddedDefense() {
+        return addedDefense;
     }
 
     public String getDisplayName() {
-        return this.displayName + " (" + addedStrength + ", " + addedDexterity + ", " + addedIntelligence +")";
+        return this.displayName + " (" + addedStrength + ", " + addedDexterity + ", " + addedDefense +")";
     }
 
     public String getDescription() {
-        return (this.displayName + "\nStrength: " + this.addedStrength + "\nDexterity: " + this.addedDexterity + "\nIntelligence: " + this.addedIntelligence);
+        return (this.displayName + "\nStrength: " + this.addedStrength + "\nDexterity: " + this.addedDexterity + "\nIntelligence: " + this.addedDefense);
     }
 }

@@ -1,4 +1,4 @@
-package miscResources;
+package gameLogic;
 
 import java.util.Random;
 

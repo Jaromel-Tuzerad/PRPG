@@ -1,6 +1,6 @@
 package gameLogic.inventory;
 
-import gameLogic.entities.Item;
+import gameLogic.entities.objects.Item;
 
 public abstract class InventoryItem {
 
@@ -18,16 +18,11 @@ public abstract class InventoryItem {
     protected String displayName;
     protected ItemType type;
 
-
     public InventoryItem(String displayName, ItemType type) {
         this.id = numberOfItems;
         numberOfItems += 1;
         this.displayName = displayName;
         this.type = type;
-    }
-
-    public Item dropItemAt(int x, int y) {
-        return new Item(x, y, this.displayName, this.displayName + " is laying on the ground", this);
     }
 
     public int getId() {

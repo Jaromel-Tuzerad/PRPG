@@ -1,6 +1,6 @@
 package exceptions;
 
-import gameLogic.entities.Mob;
+import gameLogic.entities.mobs.Mob;
 
 public class MobDiedException extends Exception {
 

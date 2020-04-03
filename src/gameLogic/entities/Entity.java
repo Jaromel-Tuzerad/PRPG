@@ -6,12 +6,8 @@ public class Entity {
     protected int id;
     protected String description;
     protected String displayName;
-    protected int posX;
-    protected int posY;
 
-    public Entity(int x, int y, String displayName, String description) {
-        this.posX = x;
-        this.posY = y;
+    public Entity(String displayName, String description) {
         this.description = description;
         this.displayName = displayName;
         this.id = numberOfEntities;
@@ -28,19 +24,6 @@ public class Entity {
 
     public String getDisplayName() {
         return this.displayName;
-    }
-
-    public int getX() {
-        return posX;
-    }
-
-    public int getY() {
-        return posY;
-    }
-
-    public void moveBy(int dX, int dY) {
-        this.posX += dX;
-        this.posY += dY;
     }
 
 }

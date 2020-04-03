@@ -2,7 +2,13 @@ package gui.gamePanel;
 
 import exceptions.ExceptionAlert;
 import exceptions.MobDiedException;
-import gameLogic.entities.*;
+import gameLogic.EntityFactory;
+import gameLogic.RandomFunctions;
+import gameLogic.entities.mobs.Enemy;
+import gameLogic.entities.Entity;
+import gameLogic.entities.mobs.NPC;
+import gameLogic.entities.mobs.Player;
+import gameLogic.entities.objects.Item;
 import gameLogic.inventory.Equipment;
 import gameLogic.inventory.Food;
 import gameLogic.inventory.InventoryItem;
@@ -10,23 +16,19 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ProgressBar;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import mapping.Map;
 
+import java.io.IOException;
 import java.net.URL;
+import java.util.Random;
 import java.util.ResourceBundle;
 
 public class GamePanelController implements Initializable {
@@ -34,37 +36,29 @@ public class GamePanelController implements Initializable {
     public static Player player;
     public static Map currentMap;
     public static Enemy fightingEnemy;
+    public static EntityFactory entFact;
     
     // Global
     @FXML
     private GridPane gridPaneGlobal;
-    // TODO - find a use for turns
     private int turnsPassed;
 
-    // Status bars and labels (0, 0)
+    // Status bars and labels (0, 1)
     @FXML
     private ProgressBar progressBarHealth;
     @FXML
     private ProgressBar progressBarHunger;
-    @FXML
-    private ProgressBar progressBarEnergy;
-    @FXML
-    private ProgressBar progressBarMana;
 
     @FXML
     private Label labelHealth;
     @FXML
     private Label labelHunger;
-    @FXML
-    private Label labelEnergy;
-    @FXML
-    private Label labelMana;
 
-    // Game map (0, 1)
+    // Game map (0, 2)
     @FXML
     private GridPane gridPaneMap;
 
-    // Move buttons (0, 2)
+    // Move buttons (0, 3)
     // TODO - obsolete?
     @FXML
     private Button buttonNorth;
@@ -75,11 +69,11 @@ public class GamePanelController implements Initializable {
     @FXML
     private Button buttonWest;
     
-    // Tile description (1, 1)
+    // Tile description (1, 2)
     @FXML
-    private Label LabelTileDescription;
+    private TextArea textAreaDescription;
 
-    // Entities and actions (1, 2)
+    // Entities and actions (1, 3)
     @FXML
     private ListView listViewEntities;
     private ObservableList<Entity> tileEntities;
@@ -212,17 +206,20 @@ public class GamePanelController implements Initializable {
         } else {
             player.starve();
         }
+        if(turnsPassed % 10 == 0) {
+            int tileX = RandomFunctions.getRandomNumberInRange(0, 8);
+            int tileY = RandomFunctions.getRandomNumberInRange(0, 8);
+            currentMap.getTileByCoords(tileX, tileY).addEntity(entFact.getRandomEnemy());
+        }
         turnsPassed += 1;
     }
 
     // Refreshes progress bars
     private void refreshProgressBars() {
-        labelHealth.setText("Health (" + (double) player.getHealth() / player.getMaxHealth() * 100 + " %)");
-        progressBarHealth.setProgress(((double) player.getHealth()) / player.getMaxHealth());
+        labelHealth.setText("Health (" + (int)((double) player.getHealth() / player.getMaxHealth() * 100) + " %)");
+        progressBarHealth.setProgress((double) player.getHealth() / player.getMaxHealth());
         labelHunger.setText("Hunger (" + player.getHunger() + " %)");
         progressBarHunger.setProgress(((double) player.getHunger()) / 100);
-        labelMana.setText("Mana (" + player.getMana() + "/" + player.getMaxMana() + ")");
-        progressBarMana.setProgress(((double) (player.getMana())) / (double) (player.getMaxMana()));
     }
 
     // Refreshes detected entities
@@ -241,7 +238,7 @@ public class GamePanelController implements Initializable {
                 tileDescription.append("\n").append(e.getDescription());
             }
         }
-        LabelTileDescription.setText(tileDescription.toString());
+        textAreaDescription.setText(tileDescription.toString());
     }
 
     // Refreshes the whole pane
@@ -283,7 +280,7 @@ public class GamePanelController implements Initializable {
                     break;
                 case "Pick up":
                     player.pickUpItem(((Item) entity).getItem());
-                    currentMap.getTileByCoords(entity.getX(), entity.getY()).removeEntity(entity);
+                    currentMap.getTileByCoords(player.getX(), player.getY()).removeEntity(entity);
                     refreshDescription();
                     refreshEntities();
                     break;
@@ -335,22 +332,33 @@ public class GamePanelController implements Initializable {
 
     public void initialize(URL url, ResourceBundle rb) {
 
+        if(entFact == null) {
+            try {
+                entFact = new EntityFactory();
+            } catch(IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         // Initial entities and the GamePanelController.player are created
         if(player == null) {
-            player = new Player(4, 4, "Sharpain");
+            player = new Player(4, 4, "Sharpain", 50, 5, 5, 5);
         }
 
         // TODO - map generation
         if(currentMap == null) {
             currentMap = new Map(0);
-            currentMap.getTileByCoords(1, 2).addEntity(new NPC(1, 2, "Adam", "Adam is walking around here", '¥', 10, 0, 0, 0, 0));
-            currentMap.getTileByCoords(1, 2).addEntity(new NPC(1, 2, "Michael", "Michael is walking around here", '¥', 10, 0, 0, 0, 0));
-            currentMap.getTileByCoords(4, 4).addEntity(new NPC(4, 4, "Petr", "Petr is walking around here", '¥', 10, 0, 0, 0, 0));
-            currentMap.getTileByCoords(4, 4).addEntity(new Item(4, 4, "Food", "Food is floating in the river", new Food("Food", 25)));
-            currentMap.getTileByCoords(4, 4).addEntity(new Enemy(4, 4, "Monster", "There's a Shoggoth swimming in the river", 50, 1, 5, 5, 5));
-            currentMap.getTileByCoords(4, 4).addEntity(new Item(4, 4, "Food", "Food is floating in the river", new Food("Food", 25)));
-            currentMap.getTileByCoords(4, 4).addEntity(new Item(4, 4, "Spoon of Doom", "Spoon of Doom is laying on the beach", new Equipment("Spoon of Doom", 25, 25, 25, InventoryItem.ItemType.WEAPON)));
-            currentMap.getTileByCoords(4, 4).addEntity(new Item(4, 4, "Fiddlestick", "Fiddlestick is laying on the beach", new Equipment("Fiddlestick", -3, -3, 99, InventoryItem.ItemType.WEAPON)));
+            for(int i = 0; i < 10; i++) {
+                currentMap.getTileByCoords(RandomFunctions.getRandomNumberInRange(0, 8), RandomFunctions.getRandomNumberInRange(0, 8)).addEntity(entFact.getRandomEnemy());
+            }
+            currentMap.getTileByCoords(1, 2).addEntity(new NPC("Adam", "Adam is walking around here", '¥', 10));
+            currentMap.getTileByCoords(1, 2).addEntity(new NPC("Michael", "Michael is walking around here", '¥', 10));
+            currentMap.getTileByCoords(4, 4).addEntity(new NPC("Petr", "Petr is walking around here", '¥', 10));
+            currentMap.getTileByCoords(4, 4).addEntity(new Item("Food", "Food is floating in the river", new Food("Food", 25)));
+            currentMap.getTileByCoords(4, 4).addEntity(new Item("Food", "Food is floating in the river", new Food("Food", 25)));
+            currentMap.getTileByCoords(4, 4).addEntity(new Item("Spoon of Doom", "Spoon of Doom is laying on the beach", new Equipment("Spoon of Doom", 25, 25, 25, InventoryItem.ItemType.WEAPON)));
+            currentMap.getTileByCoords(4, 4).addEntity(new Item("Fiddlestick", "Fiddlestick is laying on the beach", new Equipment("Fiddlestick", -3, -3, 99, InventoryItem.ItemType.WEAPON)));
+
         }
 
         // Map render
