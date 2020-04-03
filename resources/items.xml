@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE items [
+<!ELEMENT items (item+)>
+             
+<!ELEMENT item (id, displayName, addedStrength*, addedDexterity*, addedDefense*, saturationValue*)>
+
+<!ELEMENT id  (#PCDATA)> 
+<!ELEMENT displayName  (#PCDATA)>
+ 
+<!ELEMENT addedStrength  (#PCDATA)>
+<!ELEMENT addedDexterity  (#PCDATA)>
+<!ELEMENT addedDefense  (#PCDATA)>
+<!ELEMENT saturationValue  (#PCDATA)>
+
+<!ATTLIST item type (QUEST|BODYWEAR|HEADWEAR|LEGWEAR|WEAPON|FOOD) "QUEST">
+]>
+
+<items>
+  <item type="FOOD">
+    <id>0</id>
+    <displayName>Rabbit meat</displayName> 
+    <saturationValue>20</saturationValue>
+  </item>
+  <item type="FOOD">
+    <id>1</id>
+    <displayName>Deer meat</displayName>
+    <saturationValue>30</saturationValue>
+  </item>
+  <item type="FOOD">
+    <id>2</id>
+    <displayName>Bear meat</displayName>
+    <saturationValue>40</saturationValue>
+  </item>
+  <item type="FOOD">
+    <id>3</id>
+    <displayName>Honey</displayName>
+    <saturationValue>20</saturationValue>
+  </item>
+</items>
