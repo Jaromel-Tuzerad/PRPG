@@ -19,3 +19,6 @@
 #progressBarMana .bar {
     -fx-background-color: blue;
 }
+#progressBarExperience .bar {
+    -fx-background-color: cyan;
+}

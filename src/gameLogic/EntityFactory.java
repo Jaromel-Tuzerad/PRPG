@@ -49,8 +49,10 @@ public class EntityFactory {
         for (int temp = 0; temp < droppedItemsNodeList.getLength(); temp++) {
             Node nNode = droppedItemsNodeList.item(temp);
             Element eElement = (Element) nNode;
-            int itemID = Integer.parseInt(eElement.getElementsByTagName("itemId").item(0).getTextContent());
-            droppedItems.add(getItemByID(itemID));
+            if(RandomFunctions.randomChance(Double.parseDouble(eElement.getElementsByTagName("dropChance").item(0).getTextContent()))) {
+                int itemID = Integer.parseInt(eElement.getElementsByTagName("itemId").item(0).getTextContent());
+                droppedItems.add(getItemByID(itemID));
+            }
         }
 
         return new Enemy(enemyElement.getElementsByTagName("name").item(0).getTextContent(),

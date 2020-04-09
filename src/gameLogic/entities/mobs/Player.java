@@ -1,7 +1,6 @@
 package gameLogic.entities.mobs;
 
 import exceptions.ExceptionAlert;
-import exceptions.LevelUpException;
 import exceptions.MobDiedException;
 import gameLogic.inventory.Equipment;
 import gameLogic.inventory.Food;
@@ -15,6 +14,7 @@ public class Player extends Mob {
     private int hunger;
     private int experience;
     private int experienceToNextLevel;
+    private int statPoints;
     private Equipment equippedHeadArmor;
     private Equipment equippedBodyArmor;
     private Equipment equippedLegArmor;
@@ -24,11 +24,12 @@ public class Player extends Mob {
     private int posX;
     private int posY;
 
-    public Player(int x, int y, String username, int maxHealth, int strength, int dexterity, int intelligence) {
-        super(username, "" , maxHealth, 1, strength, dexterity, intelligence);
+    public Player(int x, int y, String username, int strength, int dexterity, int intelligence) {
+        super(username, "" , 100, 1, strength, dexterity, intelligence);
         this.hunger = 100;
         this.experience = 0;
         this.experienceToNextLevel = 100;
+        this.statPoints = 0;
         this.inventory = new ArrayList<>();
         this.posX = x;
         this.posY = y;
@@ -44,34 +45,20 @@ public class Player extends Mob {
         this.posY += dY;
     }
 
-    public int getX() {
-        return posX;
-    }
-
-    public int getY() {
-        return posY;
-    }
-
-    public int getHunger() {
-        return this.hunger;
-    }
-
-    public int getExperience() {
-        return this.experience;
-    }
-
-    public void addExperience(int addedExperience) throws LevelUpException {
+    public void addExperience(int addedExperience) {
         this.experience += addedExperience;
         if(this.experience >= this.experienceToNextLevel) {
             this.levelUp();
-            throw new LevelUpException();
         }
     }
 
     public void levelUp() {
-        this.level+=1;
-        this.experienceToNextLevel *= 2;
+        this.maxHealth *= 1.2;
+        this.health = this.maxHealth;
         this.experience = this.experience - this.experienceToNextLevel;
+        this.experienceToNextLevel *= 2;
+        this.level+=1;
+        this.statPoints += 5;
     }
 
     public char getIcon() {
@@ -100,7 +87,7 @@ public class Player extends Mob {
     }
 
     public int getTotalDexterity() {
-        int output = this.strength;
+        int output = this.dexterity;
         if(this.equippedHeadArmor != null) {
             output += this.equippedHeadArmor.getAddedDexterity();
         }
@@ -116,8 +103,8 @@ public class Player extends Mob {
         return output;
     }
 
-    public int getTotalIntelligence() {
-        int output = this.strength;
+    public int getTotalDefense() {
+        int output = this.defense;
         if(this.equippedHeadArmor != null) {
             output += this.equippedHeadArmor.getAddedDefense();
         }
@@ -239,6 +226,42 @@ public class Player extends Mob {
         UnequipItem(item.getType());
     }
 
+    public void increaseStrengthBy(int points) {
+        this.strength += points;
+    }
+
+    public void increaseDexterityBy(int points) {
+        this.dexterity += points;
+    }
+
+    public void increaseDefenseBy(int points) {
+        this.defense += points;
+    }
+
+    public void decreaseStatPointsBy(int points) {
+        this.statPoints -= points;
+    }
+
+    public int getX() {
+        return posX;
+    }
+
+    public int getY() {
+        return posY;
+    }
+
+    public int getHunger() {
+        return this.hunger;
+    }
+
+    public int getExperience() {
+        return this.experience;
+    }
+
+    public int getExperienceToNextLevel() {
+        return experienceToNextLevel;
+    }
+
     public ArrayList<InventoryItem> getInventory() {
         return inventory;
     }
@@ -257,6 +280,10 @@ public class Player extends Mob {
 
     public InventoryItem getEquippedWeapon() {
         return equippedWeapon;
+    }
+
+    public int getStatPoints() {
+        return statPoints;
     }
 
 }

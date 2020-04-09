@@ -3,6 +3,8 @@ package gui.fightPanel;
 import exceptions.ExceptionAlert;
 import exceptions.MobDiedException;
 import gameLogic.entities.mobs.Mob;
+import gameLogic.inventory.InventoryItem;
+import gui.Main;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -70,34 +72,23 @@ public class FightPanelController implements Initializable {
 
     @FXML
     private void fastAttack() {
-        try {
-            double playersChanceToHit = calculateChanceToHit(AttackType.FAST, player.getTotalDexterity(), fightingEnemy.getDexterity());
-            int playersDamage = calculateInflictedDamage(AttackType.FAST, player.getTotalStrength());
-            attackMob(player, fightingEnemy, playersDamage, playersChanceToHit);
-            if(fightingEnemy.getHealth() > 0) {
-                double enemysChanceToHit = calculateChanceToHit(AttackType.NORMAL, fightingEnemy.getDexterity(), player.getTotalDexterity());
-                int enemysDamage = calculateInflictedDamage(AttackType.NORMAL, fightingEnemy.getStrength());
-                attackMob(fightingEnemy, player, enemysDamage, enemysChanceToHit);
-            } else {
-                throw new ExceptionAlert("Victory", "The enemy has perished!", fightingEnemy.getDisplayName() + " has died! Reap the spoils!");
-            }
-            refreshGUI();
-        } catch (ExceptionAlert exceptionAlert) {
-            callAlert(exceptionAlert);
-        } catch (MobDiedException mobDiedException) {
-            try {
-                endBattle();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        attack(AttackType.FAST);
     }
 
     @FXML
     private void normalAttack() {
+        attack(AttackType.NORMAL);
+    }
+
+    @FXML
+    private void strongAttack() {
+        attack(AttackType.STRONG);
+    }
+
+    private void attack(AttackType chosenAttackType) {
         try {
-            double chanceToHit = calculateChanceToHit(AttackType.NORMAL, player.getTotalDexterity(), fightingEnemy.getDexterity());
-            int damage = calculateInflictedDamage(AttackType.NORMAL, player.getTotalStrength());
+            double chanceToHit = calculateChanceToHit(chosenAttackType, player.getTotalDexterity(), fightingEnemy.getDexterity());
+            int damage = calculateInflictedDamage(chosenAttackType, player.getTotalStrength());
             attackMob(player, fightingEnemy, damage, chanceToHit);
             if(fightingEnemy.getHealth() > 0) {
                 double enemysChanceToHit = calculateChanceToHit(AttackType.NORMAL, fightingEnemy.getDexterity(), player.getTotalDexterity());
@@ -105,31 +96,6 @@ public class FightPanelController implements Initializable {
                 attackMob(fightingEnemy, player, enemysDamage, enemysChanceToHit);
             } else {
                 throw new ExceptionAlert("Victory", "The enemy has perished!", fightingEnemy.getDisplayName() + " has died! Reap the spoils!");
-            }
-            refreshGUI();
-        } catch (ExceptionAlert exceptionAlert) {
-            callAlert(exceptionAlert);
-        } catch (MobDiedException mobDiedException) {
-            try {
-                endBattle();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    @FXML
-    private void strongAttack() {
-        try {
-            double chanceToHit = calculateChanceToHit(AttackType.STRONG, player.getTotalDexterity(), fightingEnemy.getDexterity());
-            int damage = calculateInflictedDamage(AttackType.STRONG, player.getTotalStrength());
-            attackMob(player, fightingEnemy, damage, chanceToHit);
-            if(fightingEnemy.getHealth() > 0) {
-                double enemysChanceToHit = calculateChanceToHit(AttackType.NORMAL, fightingEnemy.getDexterity(), player.getTotalDexterity());
-                int enemysDamage = calculateInflictedDamage(AttackType.NORMAL, fightingEnemy.getStrength());
-                attackMob(fightingEnemy, player, enemysDamage, enemysChanceToHit);
-            } else {
-                throw new MobDiedException(fightingEnemy);
             }
             refreshGUI();
         } catch (ExceptionAlert exceptionAlert) {
@@ -167,7 +133,7 @@ public class FightPanelController implements Initializable {
 
     // Calculates the chance for Mob with attackerDexterity to hit Mob with defenderDexterity
     // chanceToHit = -(chanceMarginOfType / (attackerDexterity/defenderDexterity + 1)) + maxChanceOfType
-    // TODO - its either an infinite or a negative value wth
+
     private double calculateChanceToHit(AttackType type, int attackerDexterity, int defenderDexterity) throws ExceptionAlert {
         double margin;
         double topChance;
@@ -214,19 +180,29 @@ public class FightPanelController implements Initializable {
     // Called when the battle is over
     private void endBattle() throws IOException {
         if(fightingEnemy.getHealth() <= 0) {
+            // Give player the XP and items the monster has
+            StringBuilder lootMessage = new StringBuilder("Loot has dropped:\n");
+            for(InventoryItem item : fightingEnemy.getDroppedItems()) {
+                player.pickUpItem(item);
+                lootMessage.append(item.getDisplayName()).append("\n");
+            }
+            lootMessage.append("Experience (").append(fightingEnemy.getYieldedXP()).append(")");
+            player.addExperience(fightingEnemy.getYieldedXP());
             currentMap.getTileByCoords(player.getX(), player.getY()).getEntities().remove(fightingEnemy);
-            // TODO - give xp to player, drop loot etc.
-            callAlert(new ExceptionAlert("Victory", "You have won! " + fightingEnemy.getDisplayName() + " is no more!", "Loot has dropped"));
+
+            callAlert(new ExceptionAlert("Victory", "You have won! " + fightingEnemy.getDisplayName() + " is no more!", lootMessage.toString()));
+
+            // Return back to game screen
             Stage stage = (Stage) gridPaneGlobal.getScene().getWindow();
             stage.close();
             Parent root = FXMLLoader.load(getClass().getResource("../gamePanel/GamePanel.fxml"));
             Stage gameStage = new Stage();
             gameStage.setTitle("Hexer IV: Lidl edition");
-            gameStage.setScene(new Scene(root, 650, 630));
-            gameStage.setMinHeight(630);
-            gameStage.setMinWidth(650);
-            gameStage.setMaxHeight(630);
-            gameStage.setMaxWidth(650);
+            gameStage.setScene(new Scene(root, Main.GAME_PANEL_WIDTH, Main.GAME_PANEL_HEIGHT));
+            gameStage.setMinWidth(Main.GAME_PANEL_WIDTH);
+            gameStage.setMinHeight(Main.GAME_PANEL_HEIGHT);
+            gameStage.setMaxWidth(Main.GAME_PANEL_WIDTH);
+            gameStage.setMaxHeight(Main.GAME_PANEL_HEIGHT);
             gameStage.getScene().getStylesheets().add("gui/hivle.css");
             gameStage.show();
         } else if(player.getHealth() <= 0) {
@@ -234,9 +210,9 @@ public class FightPanelController implements Initializable {
             Parent root = FXMLLoader.load(getClass().getResource("../mainMenu/MainMenu.fxml"));
             Stage gameStage = new Stage();
             gameStage.setTitle("Hexer IV: Lidl edition");
-            gameStage.setScene(new Scene(root, 600, 600));
-            gameStage.setMinHeight(600);
-            gameStage.setMinWidth(600);
+            gameStage.setScene(new Scene(root, Main.MAIN_MENU_WIDTH, Main.MAIN_MENU_HEIGHT));
+            gameStage.setMinWidth(Main.MAIN_MENU_WIDTH);
+            gameStage.setMinHeight(Main.MAIN_MENU_HEIGHT);
             gameStage.getScene().getStylesheets().add("gui/hivle.css");
             gameStage.show();
             player = null;

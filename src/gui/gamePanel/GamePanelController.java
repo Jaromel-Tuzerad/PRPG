@@ -12,6 +12,7 @@ import gameLogic.entities.objects.Item;
 import gameLogic.inventory.Equipment;
 import gameLogic.inventory.Food;
 import gameLogic.inventory.InventoryItem;
+import gui.Main;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
@@ -48,11 +49,15 @@ public class GamePanelController implements Initializable {
     private ProgressBar progressBarHealth;
     @FXML
     private ProgressBar progressBarHunger;
+    @FXML
+    private ProgressBar progressBarExperience;
 
     @FXML
     private Label labelHealth;
     @FXML
     private Label labelHunger;
+    @FXML
+    private Label labelExperience;
 
     // Game map (0, 2)
     @FXML
@@ -141,9 +146,11 @@ public class GamePanelController implements Initializable {
             Parent root = FXMLLoader.load(getClass().getResource("../inventory/Inventory.fxml"));
             Stage inventoryStage = new Stage();
             inventoryStage.setTitle("Inventory");
-            inventoryStage.setScene(new Scene(root, 600, 600));
-            inventoryStage.setMinWidth(600);
-            inventoryStage.setMinHeight(600);
+            inventoryStage.setScene(new Scene(root, Main.INVENTORY_WIDTH, Main.INVENTORY_HEIGHT));
+            inventoryStage.setMinWidth(Main.INVENTORY_WIDTH);
+            inventoryStage.setMinHeight(Main.INVENTORY_HEIGHT);
+            inventoryStage.setMaxWidth(Main.INVENTORY_WIDTH);
+            inventoryStage.setMaxHeight(Main.INVENTORY_HEIGHT);
             inventoryStage.getScene().getStylesheets().add("gui/hivle.css");
             inventoryStage.show();
             gridPaneGlobal.getScene().getWindow().hide();
@@ -220,6 +227,8 @@ public class GamePanelController implements Initializable {
         progressBarHealth.setProgress((double) player.getHealth() / player.getMaxHealth());
         labelHunger.setText("Hunger (" + player.getHunger() + " %)");
         progressBarHunger.setProgress(((double) player.getHunger()) / 100);
+        labelExperience.setText("Experience (" + (int)((double) player.getExperience() / player.getExperienceToNextLevel() * 100) + " %)");
+        progressBarExperience.setProgress((double) player.getExperience() / player.getExperienceToNextLevel());
     }
 
     // Refreshes detected entities
@@ -295,11 +304,11 @@ public class GamePanelController implements Initializable {
             Parent root = FXMLLoader.load(getClass().getResource("../fightPanel/FightPanel.fxml"));
             Stage gameStage = new Stage();
             gameStage.setTitle("Hexer IV: Lidl edition");
-            gameStage.setScene(new Scene(root, 650, 510));
-            gameStage.setMinWidth(650);
-            gameStage.setMinHeight(510);
-            gameStage.setMaxWidth(650);
-            gameStage.setMaxHeight(510);
+            gameStage.setScene(new Scene(root, Main.FIGHT_PANEL_WIDTH, Main.FIGHT_PANEL_HEIGHT));
+            gameStage.setMinWidth(Main.FIGHT_PANEL_WIDTH);
+            gameStage.setMinHeight(Main.FIGHT_PANEL_HEIGHT);
+            gameStage.setMaxWidth(Main.FIGHT_PANEL_WIDTH);
+            gameStage.setMaxHeight(Main.FIGHT_PANEL_HEIGHT);
             gameStage.getScene().getStylesheets().add("gui/hivle.css");
             gameStage.show();
             Stage stage = (Stage) gridPaneGlobal.getScene().getWindow();
@@ -342,7 +351,7 @@ public class GamePanelController implements Initializable {
 
         // Initial entities and the GamePanelController.player are created
         if(player == null) {
-            player = new Player(4, 4, "Sharpain", 50, 5, 5, 5);
+            player = new Player(4, 4, "Sharpain", 5, 5, 5);
         }
 
         // TODO - map generation
@@ -354,10 +363,10 @@ public class GamePanelController implements Initializable {
             currentMap.getTileByCoords(1, 2).addEntity(new NPC("Adam", "Adam is walking around here", '¥', 10));
             currentMap.getTileByCoords(1, 2).addEntity(new NPC("Michael", "Michael is walking around here", '¥', 10));
             currentMap.getTileByCoords(4, 4).addEntity(new NPC("Petr", "Petr is walking around here", '¥', 10));
-            currentMap.getTileByCoords(4, 4).addEntity(new Item("Food", "Food is floating in the river", new Food("Food", 25)));
-            currentMap.getTileByCoords(4, 4).addEntity(new Item("Food", "Food is floating in the river", new Food("Food", 25)));
-            currentMap.getTileByCoords(4, 4).addEntity(new Item("Spoon of Doom", "Spoon of Doom is laying on the beach", new Equipment("Spoon of Doom", 25, 25, 25, InventoryItem.ItemType.WEAPON)));
-            currentMap.getTileByCoords(4, 4).addEntity(new Item("Fiddlestick", "Fiddlestick is laying on the beach", new Equipment("Fiddlestick", -3, -3, 99, InventoryItem.ItemType.WEAPON)));
+            currentMap.getTileByCoords(4, 4).addEntity(new Item("Food", new Food("Food", 25)));
+            currentMap.getTileByCoords(4, 4).addEntity(new Item("Food", new Food("Food", 25)));
+            currentMap.getTileByCoords(4, 4).addEntity(new Item("Spoon of Doom", new Equipment("Spoon of Doom", 25, 25, 25, InventoryItem.ItemType.WEAPON)));
+            currentMap.getTileByCoords(4, 4).addEntity(new Item("Fiddlestick", new Equipment("Fiddlestick", -3, -3, 99, InventoryItem.ItemType.WEAPON)));
 
         }
 

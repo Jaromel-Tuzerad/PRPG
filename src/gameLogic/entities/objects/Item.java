@@ -7,8 +7,8 @@ public class Item extends GameObject {
 
     private InventoryItem item;
 
-    public Item(String displayName, String description, InventoryItem item) {
-        super(displayName, description);
+    public Item(String displayName, InventoryItem item) {
+        super(displayName, item.getDisplayName() + " is laying on the ground");
         this.item = item;
     }
 

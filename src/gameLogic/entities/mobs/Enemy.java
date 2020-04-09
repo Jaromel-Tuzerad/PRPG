@@ -16,4 +16,12 @@ public class Enemy extends Mob {
         this.yieldedXP = yieldedXP;
     }
 
+    public int getYieldedXP() {
+        return yieldedXP;
+    }
+
+    public ArrayList<InventoryItem> getDroppedItems() {
+        return droppedItems;
+    }
+
 }

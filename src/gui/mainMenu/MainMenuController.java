@@ -1,5 +1,6 @@
 package gui.mainMenu;
 
+import gui.Main;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -24,11 +25,11 @@ public class MainMenuController implements Initializable {
         Parent root = FXMLLoader.load(getClass().getResource("../gamePanel/GamePanel.fxml"));
         Stage gameStage = new Stage();
         gameStage.setTitle("Hexer IV: Lidl edition");
-        gameStage.setScene(new Scene(root, 650, 630));
-        gameStage.setMinHeight(630);
-        gameStage.setMinWidth(650);
-        gameStage.setMaxHeight(630);
-        gameStage.setMaxWidth(650);
+        gameStage.setScene(new Scene(root, Main.GAME_PANEL_WIDTH, Main.GAME_PANEL_HEIGHT));
+        gameStage.setMinWidth(Main.GAME_PANEL_WIDTH);
+        gameStage.setMinHeight(Main.GAME_PANEL_HEIGHT);
+        gameStage.setMaxWidth(Main.GAME_PANEL_WIDTH);
+        gameStage.setMaxHeight(Main.GAME_PANEL_HEIGHT);
         gameStage.getScene().getStylesheets().add("gui/hivle.css");
         gameStage.show();
         exit();

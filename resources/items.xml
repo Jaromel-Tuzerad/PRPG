@@ -36,4 +36,11 @@
     <displayName>Honey</displayName>
     <saturationValue>20</saturationValue>
   </item>
+  <item type="WEAPON">
+    <id>4</id>
+    <displayName>Spoon of Doom</displayName>
+    <addedStrength>20</addedStrength>
+    <addedDexterity>20</addedDexterity>
+    <addedDefense>20</addedDefense>
+  </item>
 </items>
