@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<!DOCTYPE tiles [
+    <!ELEMENT tiles (tile+)>
+        <!ELEMENT tile (id, name, icon, description, entities)>
+            <!ELEMENT id  (#PCDATA)>
+            <!ELEMENT name  (#PCDATA)>
+            <!ELEMENT icon  (#PCDATA)>
+            <!ELEMENT description  (#PCDATA)>
+            <!ELEMENT entities  (entity*)>
+                <!ELEMENT entity (entityId, chanceToAppear)>
+                    <!ELEMENT entityId (#PCDATA)>
+                    <!ELEMENT chanceToAppear (#PCDATA)>
+
+                <!ATTLIST entity type (NPC|ENEMY|RESOURCE|ITEM|SHOP) "NPC">
+]>
+<tiles>
+    <tile>
+        <id>0</id>
+        <name>Plains</name>
+        <icon>…</icon>
+        <description>Strong wind is blowing in your face</description>
+        <entities>
+            <entity type="ENEMY">
+                <entityId>0</entityId>
+                <chanceToAppear>0.25</chanceToAppear>
+            </entity>
+            <entity type="ENEMY">
+                <entityId>1</entityId>
+                <chanceToAppear>0.25</chanceToAppear>
+            </entity>
+        </entities>
+    </tile>
+    <tile>
+        <id>1</id>
+        <name>River</name>
+        <icon>~</icon>
+        <description>The river is flowing</description>
+        <entities>
+        </entities>
+    </tile>
+    <tile>
+        <id>2</id>
+        <name>Forest</name>
+        <icon>Δ</icon>
+        <description>The forest is dark and scary</description>
+        <entities>
+            <entity type="ENEMY">
+                <entityId>0</entityId>
+                <chanceToAppear>0.25</chanceToAppear>
+            </entity>
+            <entity type="ENEMY">
+                <entityId>1</entityId>
+                <chanceToAppear>0.25</chanceToAppear>
+            </entity>
+            <entity type="ENEMY">
+                <entityId>2</entityId>
+                <chanceToAppear>0.25</chanceToAppear>
+            </entity>
+            <entity type="ENEMY">
+                <entityId>3</entityId>
+                <chanceToAppear>0.25</chanceToAppear>
+            </entity>
+        </entities>
+    </tile>
+    <tile>
+        <id>3</id>
+        <name>Town</name>
+        <icon>$</icon>
+        <description>The town is bustling with activity</description>
+        <entities>
+            <entity type="SHOP">
+                <entityId>0</entityId>
+                <chanceToAppear>1</chanceToAppear>
+            </entity>
+        </entities>
+    </tile>
+</tiles>
