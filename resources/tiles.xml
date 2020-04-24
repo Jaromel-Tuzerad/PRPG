@@ -11,7 +11,7 @@
                     <!ELEMENT entityId (#PCDATA)>
                     <!ELEMENT chanceToAppear (#PCDATA)>
 
-                <!ATTLIST entity type (NPC|ENEMY|RESOURCE|ITEM|SHOP) "NPC">
+                <!ATTLIST entity type (ENEMY|NPC|SHOP|EQUIPMENT|FOOD|QUESTITEM) "QUESTITEM">
 ]>
 <tiles>
     <tile>
@@ -70,6 +70,14 @@
         <entities>
             <entity type="SHOP">
                 <entityId>0</entityId>
+                <chanceToAppear>1</chanceToAppear>
+            </entity>
+            <entity type="NPC">
+                <entityId>0</entityId>
+                <chanceToAppear>1</chanceToAppear>
+            </entity>
+            <entity type="NPC">
+                <entityId>1</entityId>
                 <chanceToAppear>1</chanceToAppear>
             </entity>
         </entities>

@@ -1,29 +1,25 @@
 package prpg.gameLogic.entities;
 
-public class Entity {
+public abstract class Entity {
 
-    protected static int numberOfEntities;
-    protected int id;
+    protected String name;
     protected String description;
-    protected String displayName;
 
-    public Entity(String displayName, String description) {
+    public Entity(String name, String description) {
+        this.name = name;
         this.description = description;
-        this.displayName = displayName;
-        this.id = numberOfEntities;
-        numberOfEntities+=1;
     }
 
     public String getDescription() {
-        return description;
+        return this.description;
     }
 
-    public int getId() {
-        return this.id;
+    public String getName() {
+        return this.name;
     }
 
-    public String getDisplayName() {
-        return this.displayName;
-    }
+    public abstract String getDisplayName();
+    
+    public abstract String getActionName();
 
 }

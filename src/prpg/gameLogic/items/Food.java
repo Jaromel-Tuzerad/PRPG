@@ -1,6 +1,6 @@
 package prpg.gameLogic.items;
 
-public class Food extends InventoryItem {
+public class Food extends InventoryItem implements Tradeable  {
 
     int saturationValue;
 
@@ -15,12 +15,12 @@ public class Food extends InventoryItem {
 
     @Override
     public String getDisplayName() {
-        return this.displayName + " (" + this.saturationValue + ")";
+        return this.name + " (" + this.saturationValue + ")";
     }
 
     @Override
     public String getDescription() {
-        return (this.displayName + "\nEdible food\nSaturation value: " + this.saturationValue);
+        return (this.name + "\nEdible food\nSaturation value: " + this.saturationValue);
     }
 
     @Override

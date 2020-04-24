@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<!DOCTYPE foods [
+<!ELEMENT foods (food+)>
+  <!ELEMENT food (id, displayName, saturationValue)>
+    <!ELEMENT id  (#PCDATA)>
+    <!ELEMENT displayName  (#PCDATA)>
+    <!ELEMENT saturationValue  (#PCDATA)>
+]>
+<foods>
+  <food>
+    <id>0</id>
+    <displayName>Rabbit meat</displayName> 
+    <saturationValue>15</saturationValue>
+  </food>
+  <food>
+    <id>1</id>
+    <displayName>Deer meat</displayName>
+    <saturationValue>20</saturationValue>
+  </food>
+  <food>
+    <id>2</id>
+    <displayName>Bear meat</displayName>
+    <saturationValue>30</saturationValue>
+  </food>
+  <food>
+    <id>3</id>
+    <displayName>Honey</displayName>
+    <saturationValue>20</saturationValue>
+  </food>
+  <food>
+    <id>4</id>
+    <displayName>Wolf meat</displayName>
+    <saturationValue>25</saturationValue>
+  </food>
+  <food>
+    <id>5</id>
+    <displayName>Rations</displayName>
+    <saturationValue>30</saturationValue>
+  </food>
+  <food>
+    <id>6</id>
+    <displayName>Boar meat</displayName>
+    <saturationValue>30</saturationValue>
+  </food>
+</foods>

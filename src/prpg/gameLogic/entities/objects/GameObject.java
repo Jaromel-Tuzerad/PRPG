@@ -2,10 +2,10 @@ package prpg.gameLogic.entities.objects;
 
 import prpg.gameLogic.entities.Entity;
 
-public class GameObject extends Entity {
+public abstract class GameObject extends Entity {
 
-    public GameObject(String displayName, String description) {
-        super(displayName, description);
+    public GameObject(String name, String description) {
+        super(name, description);
     }
 
 }

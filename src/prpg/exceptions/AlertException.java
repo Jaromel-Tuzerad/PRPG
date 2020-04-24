@@ -1,12 +1,12 @@
 package prpg.exceptions;
 
-public class ExceptionAlert extends Exception {
+public class AlertException extends Exception {
 
     private String alertTitle;
     private String alertHeader;
     private String alertMessage;
 
-    public ExceptionAlert(String alertTitle, String alertHeader, String alertMessage) {
+    public AlertException(String alertTitle, String alertHeader, String alertMessage) {
         super("Call alert message");
         this.alertTitle = alertTitle;
         this.alertHeader = alertHeader;

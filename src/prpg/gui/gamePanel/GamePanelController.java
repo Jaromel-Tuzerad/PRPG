@@ -1,6 +1,6 @@
 package prpg.gui.gamePanel;
 
-import prpg.exceptions.ExceptionAlert;
+import prpg.exceptions.AlertException;
 import prpg.exceptions.MobDiedException;
 import prpg.exceptions.XMLException;
 import prpg.gameLogic.GameFactory;
@@ -14,6 +14,10 @@ import prpg.gameLogic.entities.objects.Shop;
 import prpg.gameLogic.items.Equipment;
 import prpg.gameLogic.items.Food;
 import prpg.gameLogic.items.InventoryItem;
+import prpg.gameLogic.items.QuestItem;
+import prpg.gameLogic.quests.FetchQuest;
+import prpg.gameLogic.quests.Quest;
+import prpg.gui.Main;
 import prpg.gui.fightPanel.FightPanelController;
 import prpg.gui.inventory.InventoryController;
 import javafx.application.Platform;
@@ -28,8 +32,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import prpg.gui.journal.JournalController;
+import prpg.gui.mainMenu.MainMenuController;
 import prpg.gui.shop.ShopController;
 import prpg.mapping.Map;
+import prpg.mapping.Tile;
 
 import java.io.IOException;
 import java.net.URL;
@@ -81,6 +88,7 @@ public class GamePanelController implements Initializable {
     private ListView listViewEntityActions;
     private ObservableList<String> entityActions;
 
+    // Methods for move/wait buttons
     @FXML
     private void moveNorth() {
         try {
@@ -88,7 +96,7 @@ public class GamePanelController implements Initializable {
                 movePlayer(0, -1);
             }
         } catch (MobDiedException mobDiedException) {
-            callAlert(new ExceptionAlert("Player is dead", player.getDisplayName() + " has starved to death", "Better luck next time!"));
+            callAlert(new AlertException("Player is dead", player.getDisplayName() + " has starved to death", "Better luck next time!"));
             gameOver();
         }
     }
@@ -100,7 +108,7 @@ public class GamePanelController implements Initializable {
                 movePlayer(0, 1);
             }
         } catch (MobDiedException mobDiedException) {
-            callAlert(new ExceptionAlert("Player is dead", player.getDisplayName() + " has starved to death", "Better luck next time!"));
+            callAlert(new AlertException("Player is dead", player.getDisplayName() + " has starved to death", "Better luck next time!"));
             gameOver();
         }
     }
@@ -112,7 +120,7 @@ public class GamePanelController implements Initializable {
                 movePlayer(1, 0);
             }
         } catch (MobDiedException mobDiedException) {
-            callAlert(new ExceptionAlert("Player is dead", player.getDisplayName() + " has starved to death", "Better luck next time!"));
+            callAlert(new AlertException("Player is dead", player.getDisplayName() + " has starved to death", "Better luck next time!"));
             gameOver();
         }
     }
@@ -124,7 +132,7 @@ public class GamePanelController implements Initializable {
                 movePlayer(-1, 0);
             }
         } catch (MobDiedException mobDiedException) {
-            callAlert(new ExceptionAlert("Player is dead", player.getDisplayName() + " has starved to death", "Better luck next time!"));
+            callAlert(new AlertException("Player is dead", player.getDisplayName() + " has starved to death", "Better luck next time!"));
             gameOver();
         }
     }
@@ -137,12 +145,13 @@ public class GamePanelController implements Initializable {
         } catch(XMLException xmle) {
             System.out.println(xmle.getMessage());
         } catch(MobDiedException mde) {
-            callAlert(new ExceptionAlert("Player is dead", player.getDisplayName() + " has starved to death", "Better luck next time!"));
+            callAlert(new AlertException("Player is dead", player.getDisplayName() + " has starved to death", "Better luck next time!"));
             gameOver();
         }
 
     }
 
+    // Opens the inventory and closes current window
     @FXML
     private void openInventory() {
         try {
@@ -157,6 +166,25 @@ public class GamePanelController implements Initializable {
             gridPaneGlobal.getScene().getWindow().hide();
         } catch(Exception ex1) {
             ex1.printStackTrace();
+        }
+    }
+
+    // Opens the quest journal
+    @FXML
+    private void openJournal() {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("../journal/Journal.fxml"));
+            Stage gameStage = new Stage();
+            gameStage.setTitle(Main.gameTitle);
+            gameStage.setScene(new Scene(root, JournalController.JOURNAL_WIDTH, JournalController.JOURNAL_HEIGHT));
+            gameStage.setMinWidth(JournalController.JOURNAL_WIDTH);
+            gameStage.setMinHeight(JournalController.JOURNAL_HEIGHT);
+            gameStage.getScene().getStylesheets().add("prpg/gui/hivle.css");
+            gameStage.show();
+            Stage stage = (Stage) gridPaneGlobal.getScene().getWindow();
+            stage.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -177,7 +205,7 @@ public class GamePanelController implements Initializable {
     }
 
     // Calls an alert when an error arises
-    public static void callAlert(ExceptionAlert exc) {
+    public static void callAlert(AlertException exc) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(exc.getAlertTitle());
         alert.setHeaderText(exc.getAlertHeader());
@@ -247,11 +275,13 @@ public class GamePanelController implements Initializable {
     }
 
     // Refreshes tile description
-    private void refreshDescription() {
-        StringBuilder tileDescription = new StringBuilder(currentMap.getTileByCoords(player.getX(), player.getY()).getName()).append("\n");
-        tileDescription.append(currentMap.getTileByCoords(player.getX(), player.getY()).getDescription());
-        if (!currentMap.getTileByCoords(player.getX(), player.getY()).getEntities().isEmpty()) {
-            for (Entity e : currentMap.getTileByCoords(player.getX(), player.getY()).getEntities()) {
+    private void refreshTileDescription() {
+        Tile tile = currentMap.getTileByCoords(player.getX(), player.getY());
+        StringBuilder tileDescription = new StringBuilder(tile.getName()).append(" [").append(player.getX()).append(
+                ", ").append(player.getY()).append("]").append("\n");
+        tileDescription.append(tile.getDescription());
+        if (!tile.getEntities().isEmpty()) {
+            for (Entity e : tile.getEntities()) {
                 tileDescription.append("\n").append(e.getDescription());
             }
         }
@@ -263,46 +293,60 @@ public class GamePanelController implements Initializable {
 
         refreshProgressBars();
         refreshEntities();
-        refreshDescription();
+        refreshTileDescription();
 
     }
 
     // Lists actions in listViewActions for the selected entity according to it's type
     private void displayActionsForEntity(Entity entity) {
         entityActions.clear();
-        if (entity instanceof Enemy) {
-            entityActions.add("Fight");
-        } else if (entity instanceof Item) {
-            entityActions.add("Pick up");
-        } else if (entity instanceof NPC) {
-            entityActions.add("Talk");
-        } else if(entity instanceof Shop) {
-            entityActions.add("Shop");
+        if(entity != null) {
+            entityActions.add(entity.getActionName());
+            listViewEntityActions.setItems(entityActions);
         }
-        listViewEntityActions.setItems(entityActions);
         listViewEntityActions.refresh();
+
     }
 
     //Executes selected action on specified entity
     private void executeActionOnEntity(String actionName, Entity entity) {
-        if (actionName != null) {
+        if(actionName != null) {
             switch (actionName) {
                 case "Talk":
-                    ((NPC) entity).talk();
+                    try {
+                        if(((NPC) entity).getActiveQuest() != null) {
+                            finishQuestOfNPC((NPC) entity);
+                        } else {
+                            startNewQuestFor((NPC) entity);
+                        }
+                    } catch(XMLException e) {System.out.println(e.getMessage());}
                     break;
                 case "Fight":
                     fight((Enemy) entity);
                     break;
                 case "Pick up":
-                    player.addItem(((Item) entity).getItem());
+                    InventoryItem inventoryItem = ((Item)entity).getItem();
+                    if(inventoryItem instanceof QuestItem) {
+                        for(Quest q : player.getQuestJournal()) {
+                            if(q.getQuestType() == Quest.QuestType.FETCH) {
+                                if(((FetchQuest) q).getRequiredItem().equals(inventoryItem)) {
+                                    ((FetchQuest) q).setInInventory(true);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    player.addToInventory(inventoryItem);
                     currentMap.getTileByCoords(player.getX(), player.getY()).removeEntity(entity);
-                    refreshDescription();
+                    refreshTileDescription();
                     refreshEntities();
                     break;
                 case "Shop":
                     openShop((Shop) entity);
+                    break;
             }
         }
+
     }
 
     // Starts fighting with an enemy
@@ -311,7 +355,7 @@ public class GamePanelController implements Initializable {
         try {
             Parent root = FXMLLoader.load(getClass().getResource("../fightPanel/FightPanel.fxml"));
             Stage gameStage = new Stage();
-            gameStage.setTitle("Hexer IV: Lydl Edyschön");
+            gameStage.setTitle(Main.gameTitle);
             gameStage.setScene(new Scene(root, FightPanelController.FIGHT_PANEL_WIDTH, FightPanelController.FIGHT_PANEL_HEIGHT));
             gameStage.setMinWidth(FightPanelController.FIGHT_PANEL_WIDTH);
             gameStage.setMinHeight(FightPanelController.FIGHT_PANEL_HEIGHT);
@@ -330,12 +374,12 @@ public class GamePanelController implements Initializable {
         FightPanelController.currentEnemy = null;
         currentMap = null;
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("../fightPanel/Shop.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("../mainMenu/MainMenu.fxml"));
             Stage gameStage = new Stage();
-            gameStage.setTitle("Hexer IV: Lydl Edyschön");
-            gameStage.setScene(new Scene(root, FightPanelController.FIGHT_PANEL_WIDTH, FightPanelController.FIGHT_PANEL_HEIGHT));
-            gameStage.setMinWidth(FightPanelController.FIGHT_PANEL_WIDTH);
-            gameStage.setMinHeight(FightPanelController.FIGHT_PANEL_HEIGHT);
+            gameStage.setTitle(Main.gameTitle);
+            gameStage.setScene(new Scene(root, MainMenuController.MAIN_MENU_WIDTH, MainMenuController.MAIN_MENU_HEIGHT));
+            gameStage.setMinWidth(MainMenuController.MAIN_MENU_WIDTH);
+            gameStage.setMinHeight(MainMenuController.MAIN_MENU_HEIGHT);
             gameStage.getScene().getStylesheets().add("prpg/gui/hivle.css");
             gameStage.show();
             Stage stage = (Stage) gridPaneGlobal.getScene().getWindow();
@@ -351,7 +395,7 @@ public class GamePanelController implements Initializable {
         try {
             Parent root = FXMLLoader.load(getClass().getResource("../shop/Shop.fxml"));
             Stage gameStage = new Stage();
-            gameStage.setTitle("Hexer IV: Lydl Edyschön");
+            gameStage.setTitle(Main.gameTitle);
             gameStage.setScene(new Scene(root, ShopController.SHOP_WIDTH, ShopController.SHOP_HEIGHT));
             gameStage.setMinWidth(ShopController.SHOP_WIDTH);
             gameStage.setMinHeight(ShopController.SHOP_HEIGHT);
@@ -364,14 +408,40 @@ public class GamePanelController implements Initializable {
         }
     }
 
+    public void startNewQuestFor(NPC questgiver) throws XMLException {
+        Quest newQuest = gameFactory.getNewQuest(questgiver);
+        if(newQuest instanceof FetchQuest) {
+            currentMap.getTileByCoords(((FetchQuest) newQuest).getPosX(), ((FetchQuest) newQuest).getPosY()).addEntity(((FetchQuest) newQuest).getRequiredItem().toItem());
+        }
+        questgiver.startQuest(newQuest);
+        player.startQuest(newQuest);
+        callAlert(new AlertException("Quest", "You've been given a new quest!", newQuest.getNPCText()));
+    }
+
+    public void finishQuestOfNPC(NPC questgiver) {
+        if(questgiver.getActiveQuest().isFinished()) {
+            try {
+                player.finishQuest(questgiver.getActiveQuest());
+                StringBuilder itemsList = new StringBuilder();
+                for(InventoryItem item : questgiver.getActiveQuest().getRewardItems()) {
+                    itemsList.append(item.getName()).append("\n");
+                }
+                callAlert(new AlertException("Quest", "Quest has been finished!", "You've obtained:" +
+                        "\n" + questgiver.getActiveQuest().getRewardXP() + " experience" +
+                        "\n" + questgiver.getActiveQuest().getRewardGold() + " gold" +
+                        "\n" + itemsList.toString()));
+                questgiver.endQuest();
+                refreshProgressBars();
+            } catch(AlertException e) {callAlert(e);}
+        } else {
+            callAlert(new AlertException("Quest", "Quest is not finished!", questgiver.getActiveQuest().getDescription()));
+        }
+    }
+
     public void initialize(URL url, ResourceBundle rb) {
 
         if(gameFactory == null) {
-            try {
-                gameFactory = new GameFactory();
-            } catch(IOException e) {
-                e.printStackTrace();
-            }
+            gameFactory = new GameFactory();
         }
 
         // Initial entities and the GamePanelController.player are created
@@ -385,14 +455,8 @@ public class GamePanelController implements Initializable {
                 for(int i = 0; i < 10; i++) {
                     currentMap.getTileByCoords(RandomFunctions.getRandomNumberInRange(0, 8), RandomFunctions.getRandomNumberInRange(0, 8)).addEntity(gameFactory.getRandomEnemyOfLevel(RandomFunctions.getRandomNumberInRange(0, 1)));
                 }
-                currentMap.getTileByCoords(4, 4).addEntity(new Item("Food", new Food("Food", 25)));
-                currentMap.getTileByCoords(4, 4).addEntity(new Item("Food", new Food("Food", 25)));
-                currentMap.getTileByCoords(4, 4).addEntity(gameFactory.getShopWithID(0));
-                currentMap.getTileByCoords(4, 4).addEntity(new Item("Spoon of Doom", new Equipment("Spoon of Doom", 25, 25, 25, InventoryItem.ItemType.WEAPON)));
             } catch(XMLException xmle) {
                 System.out.println(xmle.getMessage());
-            } catch(IOException ioe) {
-                ioe.printStackTrace();
             }
         }
 
@@ -410,7 +474,7 @@ public class GamePanelController implements Initializable {
         });
         listViewEntityActions.getSelectionModel().selectedItemProperty().addListener((ChangeListener<String>) (observable, oldValue, newValue) -> {
             // What is supposed to happen when the selected item changes
-            Platform.runLater(() -> executeActionOnEntity(newValue, (Entity) listViewEntities.getSelectionModel().getSelectedItem()) );
+            Platform.runLater(() -> executeActionOnEntity(newValue, (Entity) listViewEntities.getSelectionModel().getSelectedItem()));
         });
 
         // Resets the GUI look according to current values

@@ -1,39 +1,54 @@
 package prpg.gameLogic.entities.objects;
 
-import prpg.exceptions.ExceptionAlert;
+import prpg.exceptions.AlertException;
+import prpg.gameLogic.entities.Storing;
 import prpg.gameLogic.items.InventoryItem;
 
 import java.util.ArrayList;
 
-public class Shop extends GameObject {
+public class Shop extends GameObject implements Storing {
 
     private int typeId;
     private ArrayList<InventoryItem> inventory;
     private int restockCost;
 
-    public Shop(int typeId, String displayName, String description, int restockCost) {
-        super(displayName, description);
+    public Shop(int typeId, String name, String description, int restockCost) {
+        super(name, description);
         this.typeId = typeId;
         this.restockCost = restockCost;
         this.inventory = new ArrayList<>();
     }
 
-    public void addItem(InventoryItem item) {
+    @Override
+    public String getDisplayName() {
+        return "[S] " + this.name;
+    }
+
+    @Override
+    public String getActionName() {
+        return "Shop";
+    }
+
+    @Override
+    public void addToInventory(InventoryItem item) {
         this.inventory.add(item);
     }
 
-    public void addItems(ArrayList<InventoryItem> items) {
+    @Override
+    public void addToInventory(ArrayList<InventoryItem> items) {
         this.inventory.addAll(items);
     }
 
-    public void removeItem(InventoryItem item) throws ExceptionAlert {
+    @Override
+    public void removeFromInventory(InventoryItem item) throws AlertException {
         if(this.inventory.contains(item)) {
             this.inventory.remove(item);
         } else {
-            throw new ExceptionAlert("Inventory error", "An error occured while trying to remove an item", "The shop does not have the specified item in it's inventory");
+            throw new AlertException("Inventory error", "An error occured while trying to remove an item", "The shop does not have the specified item in it's inventory");
         }
     }
 
+    @Override
     public ArrayList<InventoryItem> getInventory() {
         return inventory;
     }
@@ -45,5 +60,6 @@ public class Shop extends GameObject {
     public int getTypeId() {
         return typeId;
     }
+
 
 }

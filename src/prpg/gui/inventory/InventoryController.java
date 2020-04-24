@@ -1,11 +1,12 @@
 package prpg.gui.inventory;
 
-import prpg.exceptions.ExceptionAlert;
+import prpg.exceptions.AlertException;
 import prpg.exceptions.MobDiedException;
 import prpg.gameLogic.entities.objects.Item;
 import prpg.gameLogic.items.Equipment;
 import prpg.gameLogic.items.Food;
 import prpg.gameLogic.items.InventoryItem;
+import prpg.gui.Main;
 import prpg.gui.gamePanel.GamePanelController;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -94,7 +95,7 @@ public class InventoryController implements Initializable {
         try {
             Stage primaryStage = new Stage();
             Parent root = FXMLLoader.load(getClass().getResource("../gamePanel/GamePanel.fxml"));
-            primaryStage.setTitle("Hexer IV: Lidl edition");
+            primaryStage.setTitle(Main.gameTitle);
             primaryStage.setScene(new Scene(root, GamePanelController.GAME_PANEL_WIDTH, GamePanelController.GAME_PANEL_HEIGHT));
             primaryStage.setMinWidth(GamePanelController.GAME_PANEL_WIDTH);
             primaryStage.setMinHeight(GamePanelController.GAME_PANEL_HEIGHT);
@@ -110,9 +111,9 @@ public class InventoryController implements Initializable {
     @FXML
     private void unequipHead() {
         try {
-            GamePanelController.player.UnequipItem(InventoryItem.ItemType.HEADWEAR);
+            GamePanelController.player.unequipItemInSlotType(InventoryItem.ItemType.HEADWEAR);
             refreshGUI();
-        } catch(ExceptionAlert e) {
+        } catch(AlertException e) {
             GamePanelController.callAlert(e);
         }
 
@@ -121,9 +122,9 @@ public class InventoryController implements Initializable {
     @FXML
     private void unequipBody() {
         try {
-            GamePanelController.player.UnequipItem(InventoryItem.ItemType.BODYWEAR);
+            GamePanelController.player.unequipItemInSlotType(InventoryItem.ItemType.BODYWEAR);
             refreshGUI();
-        } catch(ExceptionAlert e) {
+        } catch(AlertException e) {
             GamePanelController.callAlert(e);
         }
 
@@ -132,9 +133,9 @@ public class InventoryController implements Initializable {
     @FXML
     private void unequipWeapon() {
         try {
-            GamePanelController.player.UnequipItem(InventoryItem.ItemType.WEAPON);
+            GamePanelController.player.unequipItemInSlotType(InventoryItem.ItemType.WEAPON);
             refreshGUI();
-        } catch(ExceptionAlert e) {
+        } catch(AlertException e) {
             GamePanelController.callAlert(e);
         }
     }
@@ -142,9 +143,9 @@ public class InventoryController implements Initializable {
     @FXML
     private void unequipLegs() {
         try {
-            GamePanelController.player.UnequipItem(InventoryItem.ItemType.LEGWEAR);
+            GamePanelController.player.unequipItemInSlotType(InventoryItem.ItemType.LEGWEAR);
             refreshGUI();
-        } catch(ExceptionAlert e) {
+        } catch(AlertException e) {
             GamePanelController.callAlert(e);
         }
 
@@ -269,7 +270,7 @@ public class InventoryController implements Initializable {
     }
 
     //Executes selected action for the selected item
-    private void executeActionOnItem(String actionName, InventoryItem item) throws ExceptionAlert, MobDiedException {
+    private void executeActionOnItem(String actionName, InventoryItem item) throws AlertException, MobDiedException {
         if (actionName != null) {
             switch (actionName) {
                 case "Eat":
@@ -279,7 +280,7 @@ public class InventoryController implements Initializable {
                     GamePanelController.player.equipItem((Equipment)item);
                     break;
                 case "Drop":
-                    GamePanelController.player.removeItem(item);
+                    GamePanelController.player.removeFromInventory(item);
                     GamePanelController.currentMap.getTileByCoords(
                             GamePanelController.player.getX(),
                             GamePanelController.player.getY()
@@ -311,8 +312,8 @@ public class InventoryController implements Initializable {
                 try {
                     executeActionOnItem(newValue, (InventoryItem) listViewInventory.getSelectionModel().getSelectedItem());
                     refreshGUI();
-                } catch (ExceptionAlert exceptionAlert) {
-                    GamePanelController.callAlert(exceptionAlert);
+                } catch (AlertException alertException) {
+                    GamePanelController.callAlert(alertException);
                 } catch(MobDiedException mobDead) {
                     System.out.println(mobDead.getMessage());
                 }

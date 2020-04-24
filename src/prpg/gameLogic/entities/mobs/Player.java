@@ -1,15 +1,18 @@
 package prpg.gameLogic.entities.mobs;
 
-import prpg.exceptions.ExceptionAlert;
+import prpg.exceptions.AlertException;
 import prpg.exceptions.MobDiedException;
+import prpg.gameLogic.entities.Storing;
 import prpg.gameLogic.items.Equipment;
 import prpg.gameLogic.items.Food;
 import prpg.gameLogic.items.InventoryItem;
 import prpg.gameLogic.RandomFunctions;
+import prpg.gameLogic.quests.FetchQuest;
+import prpg.gameLogic.quests.Quest;
 
 import java.util.ArrayList;
 
-public class Player extends Mob {
+public class Player extends Mob implements Storing {
 
     private int hunger;
     private int experience;
@@ -21,6 +24,7 @@ public class Player extends Mob {
     private Equipment equippedLegArmor;
     private Equipment equippedWeapon;
     private ArrayList<InventoryItem> inventory;
+    private ArrayList<Quest> questJournal;
     private char icon = '@';
     private int posX;
     private int posY;
@@ -33,8 +37,43 @@ public class Player extends Mob {
         this.statPoints = 0;
         this.gold = 0;
         this.inventory = new ArrayList<>();
+        this.questJournal = new ArrayList<>();
         this.posX = x;
         this.posY = y;
+    }
+
+    @Override
+    public String getDisplayName() {
+        return "[P] " + this.name + " (" + this.level + ")";
+    }
+
+    @Override
+    public String getActionName() {
+        return "";
+    }
+
+    @Override
+    public void removeFromInventory(InventoryItem item) throws AlertException {
+        if(this.inventory.contains(item)) {
+            this.inventory.remove(item);
+        } else {
+            throw new AlertException("Inventory error", "An error occured while trying to remove an item from player's inventory", "The player does not have the specified item in their inventory");
+        }
+    }
+
+    @Override
+    public void addToInventory(InventoryItem item) {
+        this.inventory.add(item);
+    }
+
+    @Override
+    public void addToInventory(ArrayList<InventoryItem> items) {
+        this.inventory.addAll(items);
+    }
+
+    @Override
+    public ArrayList<InventoryItem> getInventory() {
+        return inventory;
     }
 
     public void setPos(int x, int y) {
@@ -67,17 +106,6 @@ public class Player extends Mob {
         return this.icon;
     }
 
-    public void addItem(InventoryItem item) {
-        this.inventory.add(item);
-    }
-
-    public void removeItem(InventoryItem item) throws ExceptionAlert {
-        if(this.inventory.contains(item)) {
-            this.inventory.remove(item);
-        } else {
-            throw new ExceptionAlert("Inventory error", "An error occured while trying to remove an item from player's inventory", "The player does not have the specified item in their inventory");
-        }
-    }
     public int getTotalStrength() {
         int output = this.strength;
         if(this.equippedHeadArmor != null) {
@@ -142,7 +170,7 @@ public class Player extends Mob {
         this.addHealth(0- (int) Math.ceil(((double) this.maxHealth)/20));
     }
 
-    public void eat(Food food) throws ExceptionAlert, MobDiedException {
+    public void eat(Food food) throws AlertException, MobDiedException {
         if(this.inventory.contains(food)) {
             int saturationValue = food.getSaturationValue();
             if(this.hunger + saturationValue <= 100) {
@@ -153,11 +181,11 @@ public class Player extends Mob {
             }
             this.inventory.remove(food);
         } else {
-            throw new ExceptionAlert("Item error", "An error occurred while trying to eat food", "Selected food is not in player's inventory");
+            throw new AlertException("Item error", "An error occurred while trying to eat food", "Selected food is not in player's inventory");
         }
     }
 
-    public void equipItem(Equipment item) throws ExceptionAlert {
+    public void equipItem(Equipment item) throws AlertException {
         if(this.inventory.contains(item)) {
             switch(item.getType()) {
                 case HEADWEAR:
@@ -185,22 +213,22 @@ public class Player extends Mob {
                     this.equippedWeapon = item;
                     break;
                 default:
-                    throw new ExceptionAlert("Item error", "An error occurred while trying to equip item " + item.getDisplayName(), "Item is not equipable");
+                    throw new AlertException("Item error", "An error occurred while trying to equip item " + item.getName(), "Item is not equipable");
             }
             this.inventory.remove(item);
         } else {
-            throw new ExceptionAlert("Equipment error", "An error occurred while trying to equip item " + item.getDisplayName(), "Item is not in player's inventory");
+            throw new AlertException("Equipment error", "An error occurred while trying to equip item " + item.getName(), "Item is not in player's inventory");
         }
     }
 
-    public void UnequipItem(InventoryItem.ItemType type) throws ExceptionAlert {
+    public void unequipItemInSlotType(InventoryItem.ItemType type) throws AlertException {
         switch(type) {
             case HEADWEAR:
                 if(this.equippedHeadArmor != null) {
                     this.inventory.add(this.equippedHeadArmor);
                     this.equippedHeadArmor = null;
                 } else {
-                    throw new ExceptionAlert("Equipment error", "An error occurred while trying to deequip item in slot " + type, "There is no item equipped in that slot");
+                    throw new AlertException("Equipment error", "An error occurred while trying to deequip item in slot " + type, "There is no item equipped in that slot");
                 }
                 break;
             case BODYWEAR:
@@ -208,7 +236,7 @@ public class Player extends Mob {
                     this.inventory.add(this.equippedBodyArmor);
                     this.equippedBodyArmor = null;
                 } else {
-                    throw new ExceptionAlert("Equipment error", "An error occurred while trying to deequip item in slot " + type, "There is no item equipped in that slot");
+                    throw new AlertException("Equipment error", "An error occurred while trying to deequip item in slot " + type, "There is no item equipped in that slot");
                 }
                 break;
             case WEAPON:
@@ -216,7 +244,7 @@ public class Player extends Mob {
                     this.inventory.add(this.equippedWeapon);
                     this.equippedWeapon = null;
                 } else {
-                    throw new ExceptionAlert("Equipment error", "An error occurred while trying to deequip item in slot " + type, "There is no item equipped in that slot");
+                    throw new AlertException("Equipment error", "An error occurred while trying to deequip item in slot " + type, "There is no item equipped in that slot");
                 }
                 break;
             case LEGWEAR:
@@ -224,16 +252,16 @@ public class Player extends Mob {
                     this.inventory.add(this.equippedLegArmor);
                     this.equippedLegArmor = null;
                 } else {
-                    throw new ExceptionAlert("Equipment error", "An error occurred while trying to deequip item in slot " + type, "There is no item equipped in that slot");
+                    throw new AlertException("Equipment error", "An error occurred while trying to deequip item in slot " + type, "There is no item equipped in that slot");
                 }
                 break;
             default:
-                throw new ExceptionAlert("Equipment error", "An error occurred while trying to deequip item in slot " + type, "Selected slot type is not equipment");
+                throw new AlertException("Equipment error", "An error occurred while trying to deequip item in slot " + type, "Selected slot type is not equipment");
         }
     }
 
-    public void UnequipItem(InventoryItem item) throws ExceptionAlert {
-        UnequipItem(item.getType());
+    public void unequipItem(InventoryItem item) throws AlertException {
+        unequipItemInSlotType(item.getType());
     }
 
     public void increaseStrengthBy(int points) {
@@ -276,20 +304,12 @@ public class Player extends Mob {
         return gold;
     }
 
-    public void addGold(int gold) {
-        this.gold+=gold;
-    }
-
-    public void removeGold(int gold) throws ExceptionAlert {
-        if(this.gold - gold >= 0) {
-            this.gold -= gold;
+    public void addGold(int gold) throws AlertException {
+        if(this.gold + gold >= 0) {
+            this.gold += gold;
         } else {
-            throw new ExceptionAlert("Purse", "Insufficient amount of gold", "You don't have enough gold for this transaction to take place.");
+            throw new AlertException("Purse", "Insufficient amount of gold", "You don't have enough gold for this transaction to take place.");
         }
-    }
-
-    public ArrayList<InventoryItem> getInventory() {
-        return inventory;
     }
 
     public InventoryItem getEquippedHeadArmor() {
@@ -310,6 +330,28 @@ public class Player extends Mob {
 
     public int getStatPoints() {
         return statPoints;
+    }
+
+    public ArrayList<Quest> getQuestJournal() {
+        return this.questJournal;
+    }
+
+    public void startQuest(Quest quest) {
+        this.questJournal.add(quest);
+    }
+
+    public void finishQuest(Quest quest) throws AlertException {
+        if (this.questJournal.contains(quest)) {
+            if(quest.getQuestType() == Quest.QuestType.FETCH) {
+                this.removeFromInventory(((FetchQuest)quest).getRequiredItem());
+            }
+            this.addExperience(quest.getRewardXP());
+            this.addGold(quest.getRewardGold());
+            this.addToInventory(quest.getRewardItems());
+            this.questJournal.remove(quest);
+        } else {
+            throw new AlertException("Quests error", "There was an error while trying to finish a quest", "The specified quest is not in the player's journal");
+        }
     }
 
 }

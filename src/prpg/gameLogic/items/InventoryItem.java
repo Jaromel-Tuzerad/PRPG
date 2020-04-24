@@ -1,5 +1,7 @@
 package prpg.gameLogic.items;
 
+import prpg.gameLogic.entities.objects.Item;
+
 public abstract class InventoryItem {
 
     public enum ItemType {
@@ -11,30 +13,28 @@ public abstract class InventoryItem {
         FOOD
     }
 
-    private static int numberOfItems = 0;
-    protected int id;
-    protected String displayName;
+    protected String name;
     protected ItemType type;
 
-    public InventoryItem(String displayName, ItemType type) {
-        this.id = numberOfItems;
-        numberOfItems += 1;
-        this.displayName = displayName;
+    public InventoryItem(String name, ItemType type) {
+        this.name = name;
         this.type = type;
-    }
-
-    public int getId() {
-        return this.id;
-    }
-
-    public ItemType getType() {
-        return this.type;
     }
 
     public abstract String getDisplayName();
 
     public abstract String getDescription();
 
-    public abstract int getWorth();
+    public Item toItem() {
+        return new Item(this.name, this);
+    }
+
+    public ItemType getType() {
+        return this.type;
+    }
+
+    public String getName() {
+        return this.name;
+    }
 
 }

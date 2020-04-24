@@ -1,10 +1,13 @@
 package prpg.gui.fightPanel;
 
-import prpg.exceptions.ExceptionAlert;
+import prpg.exceptions.AlertException;
 import prpg.exceptions.MobDiedException;
 import prpg.gameLogic.entities.mobs.Enemy;
 import prpg.gameLogic.entities.mobs.Mob;
 import prpg.gameLogic.items.InventoryItem;
+import prpg.gameLogic.quests.KillQuest;
+import prpg.gameLogic.quests.Quest;
+import prpg.gui.Main;
 import prpg.gui.gamePanel.GamePanelController;
 import prpg.gui.mainMenu.MainMenuController;
 import javafx.fxml.FXML;
@@ -95,7 +98,7 @@ public class FightPanelController implements Initializable {
     // Calculates the damage that the attacker with attackerStrength inflicts on the victim with defenderDefense
     // damage = (attackerStrength*attackerStrength) / (attackerStrength+defenderDefense)
 
-    private int rollInflictedDamage(AttackType type, int attackerStrength, int defenderDefense) throws ExceptionAlert {
+    private int rollInflictedDamage(AttackType type, int attackerStrength, int defenderDefense) throws AlertException {
         double damageModifier;
         switch(type) {
             case FAST:
@@ -108,7 +111,7 @@ public class FightPanelController implements Initializable {
                 damageModifier = ThreadLocalRandom.current().nextDouble(1.4, 1.6);
                 break;
             default:
-                throw new ExceptionAlert("Attack type error", "The selected attack type is invalid", "Selected attack type:" + type);
+                throw new AlertException("Attack type error", "The selected attack type is invalid", "Selected attack type:" + type);
         }
         return (int) Math.round(damageModifier * (attackerStrength*attackerStrength) / (attackerStrength+defenderDefense));
     }
@@ -116,7 +119,7 @@ public class FightPanelController implements Initializable {
     // Calculates the chance for Mob with attackerDexterity to hit Mob with defenderDexterity
     // chanceToHit = -(chanceMarginOfType / (attackerDexterity/defenderDexterity + 1)) + maxChanceOfType
 
-    private double calculateChanceToHit(AttackType type, int attackerDexterity, int defenderDexterity) throws ExceptionAlert {
+    private double calculateChanceToHit(AttackType type, int attackerDexterity, int defenderDexterity) throws AlertException {
         double margin;
         double topChance;
         switch(type) {
@@ -133,7 +136,7 @@ public class FightPanelController implements Initializable {
                 topChance = 100;
                 break;
             default:
-                throw new ExceptionAlert("Attack type error", "The selected attack type is invalid", "Selected attack type:" + type);
+                throw new AlertException("Attack type error", "The selected attack type is invalid", "Selected attack type:" + type);
         }
         return (-margin / (((double) attackerDexterity/defenderDexterity)+1) + topChance)/100;
     }
@@ -148,16 +151,18 @@ public class FightPanelController implements Initializable {
                 int enemyDamage = rollInflictedDamage(AttackType.NORMAL, currentEnemy.getStrength(), player.getTotalDefense());
                 attackMob(currentEnemy, player, enemyDamage, enemyChanceToHit);
             } else {
-                throw new ExceptionAlert("Victory", "The enemy has perished!", currentEnemy.getDisplayName() + " has died! Reap the spoils!");
+                throw new AlertException("Victory", "The enemy has perished!", currentEnemy.getDisplayName() + " has died! Reap the spoils!");
             }
             refreshGUI();
-        } catch (ExceptionAlert exceptionAlert) {
-            callAlert(exceptionAlert);
+        } catch (AlertException alertException) {
+            callAlert(alertException);
         } catch (MobDiedException mobDiedException) {
             try {
                 endBattle();
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            } catch(AlertException ae) {
+                callAlert(ae);
             }
         }
     }
@@ -188,38 +193,45 @@ public class FightPanelController implements Initializable {
     }
 
     // Called when the battle is over
-    private void endBattle() throws IOException {
+    private void endBattle() throws IOException, AlertException {
         if(currentEnemy.getHealth() <= 0) {
             // Give player the XP and items the monster has
             StringBuilder lootMessage = new StringBuilder("Loot has dropped:\n");
-            for(InventoryItem item : currentEnemy.getDroppedItems()) {
-                player.addItem(item);
-                lootMessage.append(item.getDisplayName()).append("\n");
+            for(InventoryItem item : currentEnemy.getInventory()) {
+                player.addToInventory(item);
+                lootMessage.append(item.getName()).append("\n");
             }
             lootMessage.append("Experience (").append(currentEnemy.getYieldedXP()).append(")").append("\n");
             player.addExperience(currentEnemy.getYieldedXP());
             lootMessage.append("Gold (").append(currentEnemy.getYieldedGold()).append(")");
             player.addGold(currentEnemy.getYieldedGold());
             currentMap.getTileByCoords(player.getX(), player.getY()).getEntities().remove(currentEnemy);
-
-            callAlert(new ExceptionAlert("Victory", "You have won! " + currentEnemy.getDisplayName() + " is no more!", lootMessage.toString()));
+            for(Quest q : player.getQuestJournal()) {
+                if(q.getQuestType() == Quest.QuestType.KILL) {
+                    if(((KillQuest) q).getEnemyType().getEnemyTypeID() == currentEnemy.getEnemyTypeID()) {
+                        ((KillQuest) q).incrementKillProgress();
+                    }
+                }
+            }
+            callAlert(new AlertException("Victory", "You have won! " + currentEnemy.getDisplayName() + " is no more!", lootMessage.toString()));
+            currentEnemy = null;
 
             // Return back to game screen
             Stage stage = (Stage) gridPaneGlobal.getScene().getWindow();
             stage.close();
             Parent root = FXMLLoader.load(getClass().getResource("../gamePanel/GamePanel.fxml"));
             Stage gameStage = new Stage();
-            gameStage.setTitle("Hexer IV: Lidl edition");
+            gameStage.setTitle(Main.gameTitle);
             gameStage.setScene(new Scene(root, GamePanelController.GAME_PANEL_WIDTH, GamePanelController.GAME_PANEL_HEIGHT));
             gameStage.setMinWidth(GamePanelController.GAME_PANEL_WIDTH);
             gameStage.setMinHeight(GamePanelController.GAME_PANEL_HEIGHT);
             gameStage.getScene().getStylesheets().add("prpg/gui/hivle.css");
             gameStage.show();
         } else if(player.getHealth() <= 0) {
-            callAlert(new ExceptionAlert("Player is dead", player.getDisplayName() + " has been killed and eaten by " + currentEnemy.getDisplayName(), "Better luck next time!"));
+            callAlert(new AlertException("Player is dead", player.getDisplayName() + " has been killed and eaten by " + currentEnemy.getDisplayName(), "Better luck next time!"));
             Parent root = FXMLLoader.load(getClass().getResource("../mainMenu/MainMenu.fxml"));
             Stage gameStage = new Stage();
-            gameStage.setTitle("Hexer IV: Lidl edition");
+            gameStage.setTitle(Main.gameTitle);
             gameStage.setScene(new Scene(root, MainMenuController.MAIN_MENU_WIDTH, MainMenuController.MAIN_MENU_HEIGHT));
             gameStage.setMinWidth(MainMenuController.MAIN_MENU_WIDTH);
             gameStage.setMinHeight(MainMenuController.MAIN_MENU_HEIGHT);
@@ -251,8 +263,8 @@ public class FightPanelController implements Initializable {
             labelAttackNormalDamage.setText((int)Math.round(0.9 * (player.getTotalStrength()*player.getTotalStrength()) / (player.getTotalStrength()+ currentEnemy.getDefense())) + " - " + (int)Math.round(1.1 * (player.getTotalStrength() * player.getTotalStrength()) / (player.getTotalStrength() + currentEnemy.getDefense())));
             labelAttackStrongChance.setText((int)(Math.round(calculateChanceToHit(AttackType.STRONG, player.getTotalDexterity(), currentEnemy.getDexterity())*100)) + " %");
             labelAttackStrongDamage.setText((int)Math.round(1.4 * (player.getTotalStrength()*player.getTotalStrength()) / (player.getTotalStrength()+ currentEnemy.getDefense())) + " - " + (int)Math.round(1.6 * (player.getTotalStrength() * player.getTotalStrength()) / (player.getTotalStrength() + currentEnemy.getDefense())));
-        } catch (ExceptionAlert exceptionAlert) {
-            callAlert(exceptionAlert);
+        } catch (AlertException alertException) {
+            callAlert(alertException);
         }
 
         refreshGUI();

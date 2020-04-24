@@ -461,22 +461,15 @@
       <GridPane GridPane.columnSpan="2">
         <columnConstraints>
             <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" />
-            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" />
           <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" />
             <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" />
             <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" />
-          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" />
         </columnConstraints>
         <rowConstraints>
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Button mnemonicParsing="false" onAction="#openMainMenu" text="Main menu">
-               <GridPane.margin>
-                  <Insets />
-               </GridPane.margin>
-            </Button>
-            <Button mnemonicParsing="false" text="Load game" GridPane.columnIndex="1">
+            <Button mnemonicParsing="false" onAction="#openMainMenu" text="Main menu" GridPane.columnIndex="3">
                <GridPane.margin>
                   <Insets />
                </GridPane.margin>
@@ -486,17 +479,16 @@
                   <Insets />
                </GridPane.margin>
             </Button>
-            <Button mnemonicParsing="false" onAction="#openInventory" text="Inventory" GridPane.columnIndex="3">
+            <Button mnemonicParsing="false" onAction="#openInventory" text="Inventory" GridPane.columnIndex="1">
                <GridPane.margin>
                   <Insets />
                </GridPane.margin>
             </Button>
-            <Button mnemonicParsing="false" text="Quests" GridPane.columnIndex="4">
+            <Button mnemonicParsing="false" onAction="#openJournal" text="Quests">
                <GridPane.margin>
                   <Insets />
                </GridPane.margin>
             </Button>
-            <Button mnemonicParsing="false" text="Cheats" GridPane.columnIndex="5" />
          </children>
       </GridPane>
       <ProgressBar fx:id="progressBarHealth" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="550.0" progress="0.0" GridPane.columnSpan="2" GridPane.rowIndex="1">

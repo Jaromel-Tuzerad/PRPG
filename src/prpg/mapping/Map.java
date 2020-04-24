@@ -3,15 +3,12 @@ package prpg.mapping;
 import prpg.exceptions.XMLException;
 import prpg.gameLogic.GameFactory;
 import prpg.gameLogic.RandomFunctions;
-import prpg.gui.gamePanel.GamePanelController;
-
-import java.io.IOException;
 
 public class Map {
     private Tile[][] tileMap = new Tile[9][9];
 
     //Generates a new map based on the difficulty level
-    public Map() throws IOException, XMLException {
+    public Map() throws XMLException {
         GameFactory gameFactory = new GameFactory();
         int[] tileIDs = {0, 2};
         this.tileMap[RandomFunctions.getRandomNumberInRange(0, 8)][RandomFunctions.getRandomNumberInRange(0, 8)] = gameFactory.getTileWithID(3);

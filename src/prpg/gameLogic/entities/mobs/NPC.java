@@ -1,15 +1,36 @@
 package prpg.gameLogic.entities.mobs;
 
-import prpg.exceptions.ExceptionAlert;
-import prpg.gui.gamePanel.GamePanelController;
+import prpg.gameLogic.quests.Quest;
 
 public class NPC extends Mob {
-    public NPC(String name, String description, int maxHealth) {
-        super(name, description, maxHealth, 0, 0, 0, 0);
+
+    private Quest activeQuest;
+
+    public NPC(String name, int level) {
+        super(name, name + " is standing here", 1, level, 0, 0, 0);
+        this.activeQuest = null;
     }
 
-    public void talk() {
-        GamePanelController.callAlert(new ExceptionAlert("Conversation", this.displayName + " tells you:", "Hi, it is a lovely day, isn't it?"));
+    @Override
+    public String getDisplayName() {
+        return "[N] " + this.name;
     }
 
+    @Override
+    public String getActionName() {
+        return "Talk";
+    }
+
+    public Quest getActiveQuest() {
+        return this.activeQuest;
+    }
+
+    public void endQuest() {
+        this.activeQuest = null;
+        this.level++;
+    }
+
+    public void startQuest(Quest quest) {
+        this.activeQuest = quest;
+    }
 }

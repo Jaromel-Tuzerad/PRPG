@@ -4,5 +4,4 @@ playerHealth = 100 * 1.2^playerLevel
 
 MonsterStatPoints = 10 + 5*MonsterLevel - Health/10
 PlayerStatPoints = 15 + 5*PlayerLevel
-MonsterXP ~= 20 * 1.5^monsterLevel
 EquipmentStatPoints = 3*dropMonsterLevel

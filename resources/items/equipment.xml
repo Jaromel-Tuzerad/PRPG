@@ -1,0 +1,118 @@
+<?xml version="1.0"?>
+<!DOCTYPE equipment [
+<!ELEMENT equipment (equipmentPiece+)>
+  <!ELEMENT equipmentPiece (id, displayName, addedStrength, addedDexterity, addedDefense, equipmentLevel)>
+    <!ELEMENT id  (#PCDATA)>
+    <!ELEMENT displayName  (#PCDATA)>
+    <!ELEMENT addedStrength  (#PCDATA)>
+    <!ELEMENT addedDexterity  (#PCDATA)>
+    <!ELEMENT addedDefense  (#PCDATA)>
+    <!ELEMENT equipmentLevel  (#PCDATA)>
+    <!ATTLIST equipmentPiece type (BODYWEAR|HEADWEAR|LEGWEAR|WEAPON) "WEAPON">
+]>
+<equipment>
+  <equipmentPiece type="WEAPON">
+    <id>0</id>
+    <displayName>Spoon of Doom</displayName>
+    <addedStrength>20</addedStrength>
+    <addedDexterity>20</addedDexterity>
+    <addedDefense>20</addedDefense>
+    <equipmentLevel>666</equipmentLevel>
+  </equipmentPiece>
+  <equipmentPiece type="WEAPON">
+    <id>1</id>
+    <displayName>Wolf tooth</displayName>
+    <addedStrength>1</addedStrength>
+    <addedDexterity>1</addedDexterity>
+    <addedDefense>1</addedDefense>
+    <equipmentLevel>1</equipmentLevel>
+  </equipmentPiece>
+  <equipmentPiece type="WEAPON">
+    <id>2</id>
+    <displayName>Bear paw</displayName>
+    <addedStrength>3</addedStrength>
+    <addedDexterity>0</addedDexterity>
+    <addedDefense>0</addedDefense>
+    <equipmentLevel>1</equipmentLevel>
+  </equipmentPiece>
+  <equipmentPiece type="WEAPON">
+    <id>3</id>
+    <displayName>Dagger</displayName>
+    <addedStrength>3</addedStrength>
+    <addedDexterity>2</addedDexterity>
+    <addedDefense>1</addedDefense>
+    <equipmentLevel>2</equipmentLevel>
+  </equipmentPiece>
+  <equipmentPiece type="LEGWEAR">
+    <id>4</id>
+    <displayName>Leather leggings</displayName>
+    <addedStrength>0</addedStrength>
+    <addedDexterity>2</addedDexterity>
+    <addedDefense>4</addedDefense>
+    <equipmentLevel>2</equipmentLevel>
+  </equipmentPiece>
+  <equipmentPiece type="HEADWEAR">
+    <id>5</id>
+    <displayName>Leather helmet</displayName>
+    <addedStrength>0</addedStrength>
+    <addedDexterity>2</addedDexterity>
+    <addedDefense>4</addedDefense>
+    <equipmentLevel>2</equipmentLevel>
+  </equipmentPiece>
+  <equipmentPiece type="WEAPON">
+    <id>6</id>
+    <displayName>Short sword</displayName>
+    <addedStrength>5</addedStrength>
+    <addedDexterity>3</addedDexterity>
+    <addedDefense>3</addedDefense>
+    <equipmentLevel>3</equipmentLevel>
+  </equipmentPiece>
+  <equipmentPiece type="BODYWEAR">
+    <id>7</id>
+    <displayName>Leather chestplate</displayName>
+    <addedStrength>0</addedStrength>
+    <addedDexterity>2</addedDexterity>
+    <addedDefense>4</addedDefense>
+    <equipmentLevel>2</equipmentLevel>
+  </equipmentPiece>
+  <equipmentPiece type="LEGWEAR">
+    <id>8</id>
+    <displayName>Iron greaves</displayName>
+    <addedStrength>0</addedStrength>
+    <addedDexterity>3</addedDexterity>
+    <addedDefense>6</addedDefense>
+    <equipmentLevel>3</equipmentLevel>
+  </equipmentPiece>
+  <equipmentPiece type="WEAPON">
+    <id>9</id>
+    <displayName>Fiddlestick</displayName>
+    <addedStrength>-25</addedStrength>
+    <addedDexterity>-25</addedDexterity>
+    <addedDefense>-25</addedDefense>
+    <equipmentLevel>-25</equipmentLevel>
+  </equipmentPiece>
+  <equipmentPiece type="WEAPON">
+    <id>10</id>
+    <displayName>Rusty axe</displayName>
+    <addedStrength>7</addedStrength>
+    <addedDexterity>2</addedDexterity>
+    <addedDefense>4</addedDefense>
+    <equipmentLevel>5</equipmentLevel>
+  </equipmentPiece>
+  <equipmentPiece type="WEAPON">
+    <id>11</id>
+    <displayName>Boar tusk</displayName>
+    <addedStrength>2</addedStrength>
+    <addedDexterity>0</addedDexterity>
+    <addedDefense>1</addedDefense>
+    <equipmentLevel>1</equipmentLevel>
+  </equipmentPiece>
+  <equipmentPiece type="BODYWEAR">
+    <id>12</id>
+    <displayName>Ragged cloth</displayName>
+    <addedStrength>0</addedStrength>
+    <addedDexterity>1</addedDexterity>
+    <addedDefense>1</addedDefense>
+    <equipmentLevel>1</equipmentLevel>
+  </equipmentPiece>
+</equipment>

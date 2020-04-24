@@ -5,10 +5,11 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
-import prpg.exceptions.ExceptionAlert;
+import prpg.exceptions.AlertException;
 import prpg.exceptions.XMLException;
 import prpg.gameLogic.entities.objects.Shop;
 import prpg.gameLogic.items.InventoryItem;
+import prpg.gameLogic.items.Tradeable;
 import prpg.gui.gamePanel.GamePanelController;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -80,11 +81,11 @@ public class ShopController implements Initializable {
     @FXML
     private void restockItems() {
         try {
-            GamePanelController.player.removeGold(currentShop.getRestockCost());
+            GamePanelController.player.addGold(-currentShop.getRestockCost());
             currentShop.getInventory().clear();
-            currentShop.getInventory().addAll(GamePanelController.gameFactory.getNewStockFromShopWithId(currentShop.getTypeId()));
+            currentShop.getInventory().addAll(GamePanelController.gameFactory.getNewShopStockWithId(currentShop.getTypeId()));
             refreshGUI();
-        } catch(ExceptionAlert ea) {
+        } catch(AlertException ea) {
             GamePanelController.callAlert(ea);
         } catch(XMLException xmle) {
             System.out.println(xmle.getMessage());
@@ -93,12 +94,12 @@ public class ShopController implements Initializable {
 
     private void sellItem(InventoryItem item) {
         try {
-            currentShop.addItem(item);
-            GamePanelController.player.removeItem(item);
+            currentShop.addToInventory(item);
+            GamePanelController.player.removeFromInventory(item);
             // When selling an item, itemWorth is halved
-            GamePanelController.player.addGold(item.getWorth()/2);
+            GamePanelController.player.addGold(((Tradeable)item).getWorth()/2);
             refreshGUI();
-        } catch(ExceptionAlert ex) {
+        } catch(AlertException ex) {
             GamePanelController.callAlert(ex);
         }
 
@@ -106,11 +107,11 @@ public class ShopController implements Initializable {
 
     private void buyItem(InventoryItem item) {
         try {
-            GamePanelController.player.removeGold(item.getWorth());
-            currentShop.removeItem(item);
-            GamePanelController.player.addItem(item);
+            GamePanelController.player.addGold(-((Tradeable)item).getWorth());
+            currentShop.removeFromInventory(item);
+            GamePanelController.player.addToInventory(item);
             refreshGUI();
-        } catch(ExceptionAlert ex) {
+        } catch(AlertException ex) {
             GamePanelController.callAlert(ex);
         }
     }
@@ -118,7 +119,11 @@ public class ShopController implements Initializable {
     // Refreshes inventory items
     private void refreshInventoryItems() {
         inventoryItems.clear();
-        inventoryItems.addAll(GamePanelController.player.getInventory());
+        for(InventoryItem item : GamePanelController.player.getInventory()) {
+            if(item instanceof Tradeable) {
+                inventoryItems.add(item);
+            }
+        }
         listViewInventory.setItems(inventoryItems);
         listViewInventory.refresh();
     }
@@ -151,13 +156,13 @@ public class ShopController implements Initializable {
         listViewInventory.getSelectionModel().selectedItemProperty().addListener((ChangeListener<InventoryItem>) (observable, oldValue, newValue) -> {
             // What is supposed to happen when the selected item changes
             if(newValue != null) {
-                Platform.runLater(() -> buttonSell.setText("Sell (" + newValue.getWorth() / 2 + "g)"));
+                Platform.runLater(() -> buttonSell.setText("Sell (" + ((Tradeable) newValue).getWorth() / 2 + "g)"));
             }
         });
         listViewShop.getSelectionModel().selectedItemProperty().addListener((ChangeListener<InventoryItem>) (observable, oldValue, newValue) -> {
             // What is supposed to happen when the selected item changes
             if(newValue != null) {
-                Platform.runLater(() -> buttonBuy.setText("Buy (" + newValue.getWorth() + "g)") );
+                Platform.runLater(() -> buttonBuy.setText("Buy (" + ((Tradeable) newValue).getWorth() + "g)") );
             }
         });
 
@@ -169,7 +174,7 @@ public class ShopController implements Initializable {
                 if (empty) {
                     setText(null);
                 } else {
-                    String text = item.getDisplayName();
+                    String text = item.getName();
                     setText(text);
                 }
             }
@@ -181,7 +186,7 @@ public class ShopController implements Initializable {
                 if (empty) {
                     setText(null);
                 } else {
-                    String text = item.getDisplayName();
+                    String text = item.getName();
                     setText(text);
                 }
             }

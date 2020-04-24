@@ -3,7 +3,7 @@ package prpg.gameLogic.entities.mobs;
 import prpg.exceptions.MobDiedException;
 import prpg.gameLogic.entities.Entity;
 
-public class Mob extends Entity {
+public abstract class Mob extends Entity {
 
     // Stats
     protected int health;
@@ -49,17 +49,12 @@ public class Mob extends Entity {
         return this.defense;
     }
 
-    // TODO - what happens when an entity dies
-    public void die() throws MobDiedException {
-        throw new MobDiedException(this);
-    }
-
     public void addHealth(int points) throws MobDiedException {
         this.health += points;
         if(this.health > this.maxHealth) {
             this.health = this.maxHealth;
         } else if(this.health <= 0) {
-            this.die();
+            throw new MobDiedException(this);
         }
     }
 
