@@ -1,5 +1,6 @@
 package prpg.gameLogic;
 
+import javafx.fxml.FXMLLoader;
 import prpg.exceptions.XMLException;
 import prpg.gameLogic.entities.Entity;
 import prpg.gameLogic.entities.mobs.Enemy;
@@ -40,21 +41,13 @@ public class GameFactory implements Serializable {
             // an instance of builder to parse the specified xml file
             DocumentBuilder db = dbf.newDocumentBuilder();
 
-            File enemiesFile = new File("resources/entities/enemies.xml");
-            File npcsFile = new File("resources/entities/npcs.xml");
-            File shopsFile = new File("resources/entities/shops.xml");
-            File equipmentFile = new File("resources/items/equipment.xml");
-            File foodsFile = new File("resources/items/foods.xml");
-            File questItemsFile = new File("resources/items/questItems.xml");
-            File tilesFile = new File("resources/tiles.xml");
-
-            this.enemiesDoc = db.parse(enemiesFile);
-            this.npcsDoc = db.parse(npcsFile);
-            this.shopsDoc = db.parse(shopsFile);
-            this.equipmentDoc = db.parse(equipmentFile);
-            this.foodsDoc = db.parse(foodsFile);
-            this.questItemsDoc = db.parse(questItemsFile);
-            this.tilesDoc = db.parse(tilesFile);
+            this.enemiesDoc = db.parse(getClass().getResourceAsStream("/entities/enemies.xml"));
+            this.npcsDoc = db.parse(getClass().getResourceAsStream("/entities/npcs.xml"));
+            this.shopsDoc = db.parse(getClass().getResourceAsStream("/entities/shops.xml"));
+            this.equipmentDoc = db.parse(getClass().getResourceAsStream("/items/equipment.xml"));
+            this.foodsDoc = db.parse(getClass().getResourceAsStream("/items/foods.xml"));
+            this.questItemsDoc = db.parse(getClass().getResourceAsStream("/items/questItems.xml"));
+            this.tilesDoc = db.parse(getClass().getResourceAsStream("/tiles.xml"));
 
             this.enemiesDoc.getDocumentElement().normalize();
             this.npcsDoc.getDocumentElement().normalize();

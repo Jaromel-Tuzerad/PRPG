@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<GridPane fx:id="gridPaneGlobal" minHeight="-Infinity" minWidth="-Infinity" prefHeight="430.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="prpg.gui.fightPanel.FightPanelController">
+<GridPane fx:id="gridPaneGlobal" minHeight="-Infinity" minWidth="-Infinity" prefHeight="430.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="prpg.gui.FightPanelController">
   <columnConstraints>
     <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="-Infinity" prefWidth="300.0" />
     <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="-Infinity" prefWidth="300.0" />
@@ -20,7 +20,7 @@
     <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="150.0" valignment="CENTER" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <ProgressBar fx:id="progressBarPlayerHealth" maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="250.0" progress="0.0" stylesheets="@../hivle.css" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+      <ProgressBar fx:id="progressBarPlayerHealth" maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="250.0" progress="0.0" stylesheets="@hivle.css" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
          <opaqueInsets>
             <Insets />
          </opaqueInsets></ProgressBar>

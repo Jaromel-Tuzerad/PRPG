@@ -1,4 +1,4 @@
-package prpg.gui.fightPanel;
+package prpg.gui;
 
 import prpg.exceptions.AlertException;
 import prpg.exceptions.MobDiedException;
@@ -16,16 +16,13 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-import prpg.gui.Main;
-import prpg.gui.gamePanel.GamePanelController;
-import prpg.gui.mainMenu.MainMenuController;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static prpg.gui.gamePanel.GamePanelController.*;
+import static prpg.gui.GamePanelController.*;
 import static prpg.gameLogic.RandomFunctions.*;
 
 public class FightPanelController implements Initializable {
@@ -219,13 +216,13 @@ public class FightPanelController implements Initializable {
         // Return back to game screen
         Stage stage = (Stage) gridPaneGlobal.getScene().getWindow();
         stage.close();
-        Parent root = FXMLLoader.load(getClass().getResource("../gamePanel/GamePanel.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/gui/GamePanel.fxml"));
         Stage gameStage = new Stage();
         gameStage.setTitle(Main.gameTitle);
         gameStage.setScene(new Scene(root, GamePanelController.GAME_PANEL_WIDTH, GamePanelController.GAME_PANEL_HEIGHT));
         gameStage.setMinWidth(GamePanelController.GAME_PANEL_WIDTH);
         gameStage.setMinHeight(GamePanelController.GAME_PANEL_HEIGHT);
-        gameStage.getScene().getStylesheets().add("prpg/gui/hivle.css");
+        gameStage.getScene().getStylesheets().add("/gui/hivle.css");
         gameStage.show();
     }
 
@@ -233,13 +230,13 @@ public class FightPanelController implements Initializable {
         callAlert(new AlertException("Player is dead",
                 GamePanelController.currentGame.getCurrentPlayer().getDisplayName() + " has been killed and eaten by " + GamePanelController.currentGame.getCurrentEnemy().getDisplayName(),
                 "Better luck next time!"));
-        Parent root = FXMLLoader.load(getClass().getResource("../mainMenu/MainMenu.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/gui/MainMenu.fxml"));
         Stage gameStage = new Stage();
         gameStage.setTitle(Main.gameTitle);
         gameStage.setScene(new Scene(root, MainMenuController.MAIN_MENU_WIDTH, MainMenuController.MAIN_MENU_HEIGHT));
         gameStage.setMinWidth(MainMenuController.MAIN_MENU_WIDTH);
         gameStage.setMinHeight(MainMenuController.MAIN_MENU_HEIGHT);
-        gameStage.getScene().getStylesheets().add("prpg/gui/hivle.css");
+        gameStage.getScene().getStylesheets().add("/gui/hivle.css");
         gameStage.show();
         GamePanelController.currentGame = null;
         Stage stage = (Stage) gridPaneGlobal.getScene().getWindow();

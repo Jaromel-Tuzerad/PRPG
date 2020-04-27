@@ -1,4 +1,4 @@
-package prpg.gui.mainMenu;
+package prpg.gui;
 
 import prpg.exceptions.AlertException;
 import prpg.gameLogic.Game;
@@ -8,9 +8,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
-import prpg.gui.gamePanel.GamePanelController;
-import prpg.gui.Main;
-import prpg.gui.newGamePanel.NewGamePanelController;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,13 +25,13 @@ public class MainMenuController {
 
     @FXML
     public void startGame() throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("../newGamePanel/NewGamePanel.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/gui/NewGamePanel.fxml"));
         Stage gameStage = new Stage();
         gameStage.setTitle(Main.gameTitle);
         gameStage.setScene(new Scene(root, NewGamePanelController.NEW_GAME_PANEL_WIDTH, NewGamePanelController.NEW_GAME_PANEL_HEIGHT));
         gameStage.setMinWidth(NewGamePanelController.NEW_GAME_PANEL_WIDTH);
         gameStage.setMinHeight(NewGamePanelController.NEW_GAME_PANEL_HEIGHT);
-        gameStage.getScene().getStylesheets().add("prpg/gui/hivle.css");
+        gameStage.getScene().getStylesheets().add("/gui/hivle.css");
         gameStage.show();
         exit();
     }
@@ -56,13 +53,13 @@ public class MainMenuController {
             in.close();
             file.close();
 
-            Parent root = FXMLLoader.load(getClass().getResource("../gamePanel/GamePanel.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("/gui/GamePanel.fxml"));
             Stage gameStage = new Stage();
             gameStage.setTitle(Main.gameTitle);
             gameStage.setScene(new Scene(root, GamePanelController.GAME_PANEL_WIDTH, GamePanelController.GAME_PANEL_HEIGHT));
             gameStage.setMinWidth(GamePanelController.GAME_PANEL_WIDTH);
             gameStage.setMinHeight(GamePanelController.GAME_PANEL_HEIGHT);
-            gameStage.getScene().getStylesheets().add("prpg/gui/hivle.css");
+            gameStage.getScene().getStylesheets().add("/gui/hivle.css");
             gameStage.show();
             exit();
         } catch(Exception e) { GamePanelController.callAlert(new AlertException("Loading game",

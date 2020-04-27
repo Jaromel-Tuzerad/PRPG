@@ -5,7 +5,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import prpg.gui.mainMenu.MainMenuController;
 
 public class Main extends Application {
 
@@ -13,12 +12,12 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("./mainMenu/MainMenu.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/gui/MainMenu.fxml"));
         primaryStage.setTitle(gameTitle);
         primaryStage.setScene(new Scene(root, MainMenuController.MAIN_MENU_WIDTH, MainMenuController.MAIN_MENU_HEIGHT));
         primaryStage.setMinWidth(MainMenuController.MAIN_MENU_WIDTH);
         primaryStage.setMinHeight(MainMenuController.MAIN_MENU_HEIGHT);
-        primaryStage.getScene().getStylesheets().add("prpg/gui/hivle.css");
+        primaryStage.getScene().getStylesheets().add("/gui/hivle.css");
         primaryStage.show();
     }
 

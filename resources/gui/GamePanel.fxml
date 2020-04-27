@@ -13,7 +13,7 @@
 
 <GridPane fx:id="gridPaneGlobal" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
           prefHeight="630.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1"
-          xmlns:fx="http://javafx.com/fxml/1" fx:controller="prpg.gui.gamePanel.GamePanelController">
+          xmlns:fx="http://javafx.com/fxml/1" fx:controller="prpg.gui.GamePanelController">
     <columnConstraints>
         <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="-Infinity" prefWidth="300.0"/>
         <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="-Infinity" prefWidth="300.0"/>

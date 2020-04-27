@@ -1,4 +1,4 @@
-package prpg.gui.gamePanel;
+package prpg.gui;
 
 import prpg.exceptions.AlertException;
 import prpg.exceptions.MobDiedException;
@@ -27,12 +27,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import prpg.gameLogic.mapping.Tile;
-import prpg.gui.fightPanel.FightPanelController;
-import prpg.gui.journal.JournalController;
-import prpg.gui.Main;
-import prpg.gui.inventory.InventoryController;
-import prpg.gui.mainMenu.MainMenuController;
-import prpg.gui.shop.ShopController;
 
 import java.io.*;
 import java.net.URL;
@@ -128,13 +122,13 @@ public class GamePanelController implements Initializable {
     @FXML
     private void openInventory() {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("../inventory/Inventory.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("/gui/Inventory.fxml"));
             Stage inventoryStage = new Stage();
             inventoryStage.setTitle("Inventory");
             inventoryStage.setScene(new Scene(root, InventoryController.INVENTORY_WIDTH, InventoryController.INVENTORY_HEIGHT));
             inventoryStage.setMinWidth(InventoryController.INVENTORY_WIDTH);
             inventoryStage.setMinHeight(InventoryController.INVENTORY_HEIGHT);
-            inventoryStage.getScene().getStylesheets().add("prpg/gui/hivle.css");
+            inventoryStage.getScene().getStylesheets().add("/gui/hivle.css");
             inventoryStage.show();
             gridPaneGlobal.getScene().getWindow().hide();
         } catch(Exception ex1) {
@@ -146,13 +140,13 @@ public class GamePanelController implements Initializable {
     @FXML
     private void openJournal() {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("../journal/Journal.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("/gui/Journal.fxml"));
             Stage gameStage = new Stage();
             gameStage.setTitle(Main.gameTitle);
             gameStage.setScene(new Scene(root, JournalController.JOURNAL_WIDTH, JournalController.JOURNAL_HEIGHT));
             gameStage.setMinWidth(JournalController.JOURNAL_WIDTH);
             gameStage.setMinHeight(JournalController.JOURNAL_HEIGHT);
-            gameStage.getScene().getStylesheets().add("prpg/gui/hivle.css");
+            gameStage.getScene().getStylesheets().add("/gui/hivle.css");
             gameStage.show();
             Stage stage = (Stage) gridPaneGlobal.getScene().getWindow();
             stage.close();
@@ -342,13 +336,13 @@ public class GamePanelController implements Initializable {
     private void fight(Enemy enemy) {
         currentGame.setCurrentEnemy(enemy);
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("../fightPanel/FightPanel.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("/gui/FightPanel.fxml"));
             Stage gameStage = new Stage();
             gameStage.setTitle(Main.gameTitle);
             gameStage.setScene(new Scene(root, FightPanelController.FIGHT_PANEL_WIDTH, FightPanelController.FIGHT_PANEL_HEIGHT));
             gameStage.setMinWidth(FightPanelController.FIGHT_PANEL_WIDTH);
             gameStage.setMinHeight(FightPanelController.FIGHT_PANEL_HEIGHT);
-            gameStage.getScene().getStylesheets().add("prpg/gui/hivle.css");
+            gameStage.getScene().getStylesheets().add("/gui/hivle.css");
             gameStage.show();
             Stage stage = (Stage) gridPaneGlobal.getScene().getWindow();
             stage.close();
@@ -361,13 +355,13 @@ public class GamePanelController implements Initializable {
     private void endGame() {
         currentGame = null;
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("../mainMenu/MainMenu.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("/gui/MainMenu.fxml"));
             Stage gameStage = new Stage();
             gameStage.setTitle(Main.gameTitle);
             gameStage.setScene(new Scene(root, MainMenuController.MAIN_MENU_WIDTH, MainMenuController.MAIN_MENU_HEIGHT));
             gameStage.setMinWidth(MainMenuController.MAIN_MENU_WIDTH);
             gameStage.setMinHeight(MainMenuController.MAIN_MENU_HEIGHT);
-            gameStage.getScene().getStylesheets().add("prpg/gui/hivle.css");
+            gameStage.getScene().getStylesheets().add("/gui/hivle.css");
             gameStage.show();
             Stage stage = (Stage) gridPaneGlobal.getScene().getWindow();
             stage.close();
@@ -380,13 +374,13 @@ public class GamePanelController implements Initializable {
     private void openShop(Shop shop) {
         currentGame.setCurrentShop(shop);
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("../shop/Shop.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("/gui/Shop.fxml"));
             Stage gameStage = new Stage();
             gameStage.setTitle(Main.gameTitle);
             gameStage.setScene(new Scene(root, ShopController.SHOP_WIDTH, ShopController.SHOP_HEIGHT));
             gameStage.setMinWidth(ShopController.SHOP_WIDTH);
             gameStage.setMinHeight(ShopController.SHOP_HEIGHT);
-            gameStage.getScene().getStylesheets().add("prpg/gui/hivle.css");
+            gameStage.getScene().getStylesheets().add("/gui/hivle.css");
             gameStage.show();
             Stage stage = (Stage) gridPaneGlobal.getScene().getWindow();
             stage.close();

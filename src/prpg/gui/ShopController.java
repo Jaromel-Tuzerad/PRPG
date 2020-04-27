@@ -1,4 +1,4 @@
-package prpg.gui.shop;
+package prpg.gui;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -9,7 +9,6 @@ import prpg.exceptions.AlertException;
 import prpg.exceptions.XMLException;
 import prpg.gameLogic.items.InventoryItem;
 import prpg.gameLogic.items.Tradeable;
-import prpg.gui.gamePanel.GamePanelController;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -19,7 +18,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
-import prpg.gui.Main;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -49,12 +47,12 @@ public class ShopController implements Initializable {
     private void returnToMap() {
         try {
             Stage primaryStage = new Stage();
-            Parent root = FXMLLoader.load(getClass().getResource("../gamePanel/GamePanel.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("/gui/GamePanel.fxml"));
             primaryStage.setTitle(Main.gameTitle);
             primaryStage.setScene(new Scene(root, GamePanelController.GAME_PANEL_WIDTH, GamePanelController.GAME_PANEL_HEIGHT));
             primaryStage.setMinWidth(GamePanelController.GAME_PANEL_WIDTH);
             primaryStage.setMinHeight(GamePanelController.GAME_PANEL_HEIGHT);
-            primaryStage.getScene().getStylesheets().add("prpg/gui/hivle.css");
+            primaryStage.getScene().getStylesheets().add("/gui/hivle.css");
             primaryStage.show();
             listViewInventory.getScene().getWindow().hide();
         } catch(Exception ex) {

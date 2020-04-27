@@ -1,4 +1,4 @@
-package prpg.gui.inventory;
+package prpg.gui;
 
 import prpg.exceptions.AlertException;
 import prpg.exceptions.MobDiedException;
@@ -17,8 +17,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import prpg.gui.gamePanel.GamePanelController;
-import prpg.gui.Main;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -96,12 +94,12 @@ public class InventoryController implements Initializable {
     private void returnToMap() {
         try {
             Stage primaryStage = new Stage();
-            Parent root = FXMLLoader.load(getClass().getResource("../gamePanel/GamePanel.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("/gui/GamePanel.fxml"));
             primaryStage.setTitle(Main.gameTitle);
             primaryStage.setScene(new Scene(root, GamePanelController.GAME_PANEL_WIDTH, GamePanelController.GAME_PANEL_HEIGHT));
             primaryStage.setMinWidth(GamePanelController.GAME_PANEL_WIDTH);
             primaryStage.setMinHeight(GamePanelController.GAME_PANEL_HEIGHT);
-            primaryStage.getScene().getStylesheets().add("prpg/gui/hivle.css");
+            primaryStage.getScene().getStylesheets().add("/gui/hivle.css");
             primaryStage.show();
             listViewInventory.getScene().getWindow().hide();
         } catch(Exception ex2) {
