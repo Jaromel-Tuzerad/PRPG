@@ -67,7 +67,4 @@ public class Enemy extends Mob implements Storing {
         return yieldedGold;
     }
 
-
-
-
 }

@@ -3,23 +3,17 @@ package prpg.gui.gamePanel;
 import prpg.exceptions.AlertException;
 import prpg.exceptions.MobDiedException;
 import prpg.exceptions.XMLException;
-import prpg.gameLogic.GameFactory;
+import prpg.gameLogic.Game;
 import prpg.gameLogic.RandomFunctions;
 import prpg.gameLogic.entities.mobs.Enemy;
 import prpg.gameLogic.entities.Entity;
 import prpg.gameLogic.entities.mobs.NPC;
-import prpg.gameLogic.entities.mobs.Player;
 import prpg.gameLogic.entities.objects.Item;
 import prpg.gameLogic.entities.objects.Shop;
-import prpg.gameLogic.items.Equipment;
-import prpg.gameLogic.items.Food;
 import prpg.gameLogic.items.InventoryItem;
 import prpg.gameLogic.items.QuestItem;
 import prpg.gameLogic.quests.FetchQuest;
 import prpg.gameLogic.quests.Quest;
-import prpg.gui.Main;
-import prpg.gui.fightPanel.FightPanelController;
-import prpg.gui.inventory.InventoryController;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
@@ -32,13 +26,15 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import prpg.gameLogic.mapping.Tile;
+import prpg.gui.fightPanel.FightPanelController;
 import prpg.gui.journal.JournalController;
+import prpg.gui.Main;
+import prpg.gui.inventory.InventoryController;
 import prpg.gui.mainMenu.MainMenuController;
 import prpg.gui.shop.ShopController;
-import prpg.mapping.Map;
-import prpg.mapping.Tile;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -47,11 +43,8 @@ public class GamePanelController implements Initializable {
     public static final int GAME_PANEL_WIDTH = 650;
     public static final int GAME_PANEL_HEIGHT = 630;
 
-    public static Player player;
-    public static Map currentMap;
+    public static Game currentGame;
 
-    public static GameFactory gameFactory;
-    
     // Global
     @FXML
     private GridPane gridPaneGlobal;
@@ -91,49 +84,29 @@ public class GamePanelController implements Initializable {
     // Methods for move/wait buttons
     @FXML
     private void moveNorth() {
-        try {
-            if (player.getY() > 0) {
-                movePlayer(0, -1);
-            }
-        } catch (MobDiedException mobDiedException) {
-            callAlert(new AlertException("Player is dead", player.getDisplayName() + " has starved to death", "Better luck next time!"));
-            gameOver();
+        if (currentGame.getCurrentPlayer().getY() > 0) {
+            movePlayer(0, -1);
         }
     }
 
     @FXML
     private void moveSouth() {
-        try {
-            if (player.getY() < 8) {
-                movePlayer(0, 1);
-            }
-        } catch (MobDiedException mobDiedException) {
-            callAlert(new AlertException("Player is dead", player.getDisplayName() + " has starved to death", "Better luck next time!"));
-            gameOver();
+        if (currentGame.getCurrentPlayer().getY() < 8) {
+            movePlayer(0, 1);
         }
     }
 
     @FXML
     private void moveEast() {
-        try {
-            if (player.getX() < 8) {
-                movePlayer(1, 0);
-            }
-        } catch (MobDiedException mobDiedException) {
-            callAlert(new AlertException("Player is dead", player.getDisplayName() + " has starved to death", "Better luck next time!"));
-            gameOver();
+        if (currentGame.getCurrentPlayer().getX() < 8) {
+            movePlayer(1, 0);
         }
     }
 
     @FXML
     private void moveWest() {
-        try {
-            if (player.getX() > 0) {
-                movePlayer(-1, 0);
-            }
-        } catch (MobDiedException mobDiedException) {
-            callAlert(new AlertException("Player is dead", player.getDisplayName() + " has starved to death", "Better luck next time!"));
-            gameOver();
+        if (currentGame.getCurrentPlayer().getX() > 0) {
+            movePlayer(-1, 0);
         }
     }
 
@@ -145,8 +118,8 @@ public class GamePanelController implements Initializable {
         } catch(XMLException xmle) {
             System.out.println(xmle.getMessage());
         } catch(MobDiedException mde) {
-            callAlert(new AlertException("Player is dead", player.getDisplayName() + " has starved to death", "Better luck next time!"));
-            gameOver();
+            callAlert(new AlertException("Player is dead", currentGame.getCurrentPlayer().getDisplayName() + " has starved to death", "Better luck next time!"));
+            endGame();
         }
 
     }
@@ -190,18 +163,34 @@ public class GamePanelController implements Initializable {
 
     @FXML
     private void saveGame() {
-        // TODO - serialize
-    }
+        // Serialization
+        try {
+            //Saving of object in a file
+            File directory = new File(System.getProperty("user.home") + "/Documents/PRPG SaveGameData");
+            if(!directory.isDirectory()) {
+                directory.mkdirs();
+            }
+            FileOutputStream file = new FileOutputStream(System.getProperty("user.home") + "/Documents/PRPG SaveGameData/savedGameData.txt");
+            ObjectOutputStream out = new ObjectOutputStream(file);
 
-    @FXML
-    private void loadGame() {
-        // TODO
+            // Method for serialization of object
+            out.writeObject(currentGame);
+
+            out.close();
+            file.close();
+
+            callAlert(new AlertException("Game",
+                    "The game has been saved",
+                    "Your progress has been saved to " + System.getProperty("user.home") +
+                            "PRPG SaveGameData/savedGameData.txt"));
+        } catch(IOException ex) {
+            System.out.println(ex.getMessage());
+        }
     }
 
     @FXML
     private void openMainMenu() {
-        // TODO
-        gameOver();
+        endGame();
     }
 
     // Calls an alert when an error arises
@@ -218,8 +207,8 @@ public class GamePanelController implements Initializable {
         for (int i = 0; i < gridPaneMap.getChildren().size(); i++) {
             int y = i % 9;
             int x = i / 9;
-            if(currentMap.getTileByCoords(x, y).isExplored()) {
-                setTileChar(x, y, currentMap.getTileByCoords(x, y).getIcon());
+            if(currentGame.getCurrentMap().getTileByCoords(x, y).isExplored()) {
+                setTileChar(x, y, currentGame.getCurrentMap().getTileByCoords(x, y).getIcon());
             } else {
                 setTileChar(x, y, '?');
             }
@@ -231,54 +220,54 @@ public class GamePanelController implements Initializable {
         ((Label) gridPaneMap.getChildren().get(x * 9 + y)).setText("[" + c + "]");
     }
 
-    // Move GamePanelController.player in a relative direction, passes a turn and refreshes the GUI
-    private void movePlayer(int dX, int dY) throws MobDiedException {
-        setTileChar(player.getX(), player.getY(), currentMap.getTileByCoords(player.getX(), player.getY()).getIcon());
-        player.moveBy(dX, dY);
-        currentMap.getTileByCoords(player.getX(), player.getY()).setExplored(true);
-        setTileChar(player.getX(), player.getY(), player.getIcon());
+    // Move GamePanelController.currentGame.getCurrentPlayer() in a relative direction, passes a turn and refreshes the GUI
+    private void movePlayer(int dX, int dY) {
+        setTileChar(currentGame.getCurrentPlayer().getX(), currentGame.getCurrentPlayer().getY(), currentGame.getCurrentMap().getTileByCoords(currentGame.getCurrentPlayer().getX(), currentGame.getCurrentPlayer().getY()).getIcon());
+        currentGame.getCurrentPlayer().moveBy(dX, dY);
+        currentGame.getCurrentMap().getTileByCoords(currentGame.getCurrentPlayer().getX(), currentGame.getCurrentPlayer().getY()).setExplored(true);
+        setTileChar(currentGame.getCurrentPlayer().getX(), currentGame.getCurrentPlayer().getY(), currentGame.getCurrentPlayer().getIcon());
         waitTurn();
     }
 
-    //This happens when a turn passes - GamePanelController.player either moves or waits
+    //This happens when a turn passes - GamePanelController.currentGame.getCurrentPlayer() either moves or waits
     private void passTurn() throws MobDiedException, XMLException {
-        if (player.getHunger() > 0) {
-            player.decreaseHunger();
+        if (currentGame.getCurrentPlayer().getHunger() > 0) {
+            currentGame.getCurrentPlayer().decreaseHunger();
         } else {
-            player.starve();
+            currentGame.getCurrentPlayer().starve();
         }
         if(turnsPassed % 10 == 0) {
             int tileX = RandomFunctions.getRandomNumberInRange(0, 8);
             int tileY = RandomFunctions.getRandomNumberInRange(0, 8);
-            int level = RandomFunctions.getRandomNumberInRange(player.getLevel()-1, player.getLevel()+1);
-            currentMap.getTileByCoords(tileX, tileY).addEntity(gameFactory.getRandomEnemyOfLevel(level));
+            int level = RandomFunctions.getRandomNumberInRange(currentGame.getCurrentPlayer().getLevel()-1, currentGame.getCurrentPlayer().getLevel()+1);
+            currentGame.getCurrentMap().getTileByCoords(tileX, tileY).addEntity(currentGame.getGameFactory().getRandomEnemyOfLevel(level));
         }
         turnsPassed += 1;
     }
 
     // Refreshes progress bars
     private void refreshProgressBars() {
-        labelHealth.setText("Health (" + (int)((double) player.getHealth() / player.getMaxHealth() * 100) + " %)");
-        progressBarHealth.setProgress((double) player.getHealth() / player.getMaxHealth());
-        labelHunger.setText("Hunger (" + player.getHunger() + " %)");
-        progressBarHunger.setProgress(((double) player.getHunger()) / 100);
-        labelExperience.setText("Experience (" + (int)((double) player.getExperience() / player.getExperienceToNextLevel() * 100) + " %)");
-        progressBarExperience.setProgress((double) player.getExperience() / player.getExperienceToNextLevel());
+        labelHealth.setText("Health (" + (int)((double) currentGame.getCurrentPlayer().getHealth() / currentGame.getCurrentPlayer().getMaxHealth() * 100) + " %)");
+        progressBarHealth.setProgress((double) currentGame.getCurrentPlayer().getHealth() / currentGame.getCurrentPlayer().getMaxHealth());
+        labelHunger.setText("Hunger (" + currentGame.getCurrentPlayer().getHunger() + " %)");
+        progressBarHunger.setProgress(((double) currentGame.getCurrentPlayer().getHunger()) / 100);
+        labelExperience.setText("Experience (" + (int)((double) currentGame.getCurrentPlayer().getExperience() / currentGame.getCurrentPlayer().getExperienceToNextLevel() * 100) + " %)");
+        progressBarExperience.setProgress((double) currentGame.getCurrentPlayer().getExperience() / currentGame.getCurrentPlayer().getExperienceToNextLevel());
     }
 
     // Refreshes detected entities
     private void refreshEntities() {
         tileEntities.clear();
-        tileEntities.addAll(currentMap.getTileByCoords(player.getX(), player.getY()).getEntities());
+        tileEntities.addAll(currentGame.getCurrentMap().getTileByCoords(currentGame.getCurrentPlayer().getX(), currentGame.getCurrentPlayer().getY()).getEntities());
         listViewEntities.setItems(tileEntities);
         listViewEntities.refresh();
     }
 
     // Refreshes tile description
     private void refreshTileDescription() {
-        Tile tile = currentMap.getTileByCoords(player.getX(), player.getY());
-        StringBuilder tileDescription = new StringBuilder(tile.getName()).append(" [").append(player.getX()).append(
-                ", ").append(player.getY()).append("]").append("\n");
+        Tile tile = currentGame.getCurrentMap().getTileByCoords(currentGame.getCurrentPlayer().getX(), currentGame.getCurrentPlayer().getY());
+        StringBuilder tileDescription = new StringBuilder(tile.getName()).append(" [").append(currentGame.getCurrentPlayer().getX()).append(
+                ", ").append(currentGame.getCurrentPlayer().getY()).append("]").append("\n");
         tileDescription.append(tile.getDescription());
         if (!tile.getEntities().isEmpty()) {
             for (Entity e : tile.getEntities()) {
@@ -327,7 +316,7 @@ public class GamePanelController implements Initializable {
                 case "Pick up":
                     InventoryItem inventoryItem = ((Item)entity).getItem();
                     if(inventoryItem instanceof QuestItem) {
-                        for(Quest q : player.getQuestJournal()) {
+                        for(Quest q : currentGame.getCurrentPlayer().getQuestJournal()) {
                             if(q.getQuestType() == Quest.QuestType.FETCH) {
                                 if(((FetchQuest) q).getRequiredItem().equals(inventoryItem)) {
                                     ((FetchQuest) q).setInInventory(true);
@@ -336,8 +325,8 @@ public class GamePanelController implements Initializable {
                             }
                         }
                     }
-                    player.addToInventory(inventoryItem);
-                    currentMap.getTileByCoords(player.getX(), player.getY()).removeEntity(entity);
+                    currentGame.getCurrentPlayer().addToInventory(inventoryItem);
+                    currentGame.getCurrentMap().getTileByCoords(currentGame.getCurrentPlayer().getX(), currentGame.getCurrentPlayer().getY()).removeEntity(entity);
                     refreshTileDescription();
                     refreshEntities();
                     break;
@@ -351,7 +340,7 @@ public class GamePanelController implements Initializable {
 
     // Starts fighting with an enemy
     private void fight(Enemy enemy) {
-        FightPanelController.currentEnemy = enemy;
+        currentGame.setCurrentEnemy(enemy);
         try {
             Parent root = FXMLLoader.load(getClass().getResource("../fightPanel/FightPanel.fxml"));
             Stage gameStage = new Stage();
@@ -368,11 +357,9 @@ public class GamePanelController implements Initializable {
         }
     }
 
-    // Called when the game ends (The player dies)
-    private void gameOver() {
-        player = null;
-        FightPanelController.currentEnemy = null;
-        currentMap = null;
+    // Called when the game ends (The currentGame.getCurrentPlayer() dies)
+    private void endGame() {
+        currentGame = null;
         try {
             Parent root = FXMLLoader.load(getClass().getResource("../mainMenu/MainMenu.fxml"));
             Stage gameStage = new Stage();
@@ -391,7 +378,7 @@ public class GamePanelController implements Initializable {
 
     // Opens shop menu
     private void openShop(Shop shop) {
-        ShopController.currentShop = shop;
+        currentGame.setCurrentShop(shop);
         try {
             Parent root = FXMLLoader.load(getClass().getResource("../shop/Shop.fxml"));
             Stage gameStage = new Stage();
@@ -409,19 +396,19 @@ public class GamePanelController implements Initializable {
     }
 
     public void startNewQuestFor(NPC questgiver) throws XMLException {
-        Quest newQuest = gameFactory.getNewQuest(questgiver);
+        Quest newQuest = currentGame.getGameFactory().getNewQuest(questgiver);
         if(newQuest instanceof FetchQuest) {
-            currentMap.getTileByCoords(((FetchQuest) newQuest).getPosX(), ((FetchQuest) newQuest).getPosY()).addEntity(((FetchQuest) newQuest).getRequiredItem().toItem());
+            currentGame.getCurrentMap().getTileByCoords(((FetchQuest) newQuest).getPosX(), ((FetchQuest) newQuest).getPosY()).addEntity(((FetchQuest) newQuest).getRequiredItem().toItem());
         }
         questgiver.startQuest(newQuest);
-        player.startQuest(newQuest);
+        currentGame.getCurrentPlayer().startQuest(newQuest);
         callAlert(new AlertException("Quest", "You've been given a new quest!", newQuest.getNPCText()));
     }
 
     public void finishQuestOfNPC(NPC questgiver) {
         if(questgiver.getActiveQuest().isFinished()) {
             try {
-                player.finishQuest(questgiver.getActiveQuest());
+                currentGame.getCurrentPlayer().finishQuest(questgiver.getActiveQuest());
                 StringBuilder itemsList = new StringBuilder();
                 for(InventoryItem item : questgiver.getActiveQuest().getRewardItems()) {
                     itemsList.append(item.getName()).append("\n");
@@ -440,24 +427,11 @@ public class GamePanelController implements Initializable {
 
     public void initialize(URL url, ResourceBundle rb) {
 
-        if(gameFactory == null) {
-            gameFactory = new GameFactory();
-        }
-
-        // Initial entities and the GamePanelController.player are created
-        if(player == null) {
-            player = new Player(4, 4, "Sharpain", 5, 5, 5);
-        }
-
-        if(currentMap == null) {
-            try {
-                currentMap = new Map();
-                for(int i = 0; i < 10; i++) {
-                    currentMap.getTileByCoords(RandomFunctions.getRandomNumberInRange(0, 8), RandomFunctions.getRandomNumberInRange(0, 8)).addEntity(gameFactory.getRandomEnemyOfLevel(RandomFunctions.getRandomNumberInRange(0, 1)));
-                }
-            } catch(XMLException xmle) {
-                System.out.println(xmle.getMessage());
-            }
+        if(currentGame == null) {
+            callAlert(new AlertException("Game error",
+                    "An error occured while trying to load current game progress", 
+                    "Going back to main menu"));
+            endGame();
         }
 
         // Map render
@@ -480,8 +454,8 @@ public class GamePanelController implements Initializable {
         // Resets the GUI look according to current values
         refreshGUI();
 
-        // Sets the tile which the GamePanelController.player is initially on to display his icon
-        setTileChar(player.getX(), player.getY(), player.getIcon());
+        // Sets the tile which the GamePanelController.currentGame.getCurrentPlayer() is initially on to display his icon
+        setTileChar(currentGame.getCurrentPlayer().getX(), currentGame.getCurrentPlayer().getY(), currentGame.getCurrentPlayer().getIcon());
 
         // Enables movement using the keyboard by binding key pressed events to buttons
         gridPaneGlobal.setOnKeyPressed(event -> {

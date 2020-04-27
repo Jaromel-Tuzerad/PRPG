@@ -16,14 +16,14 @@ import prpg.gameLogic.items.QuestItem;
 import prpg.gameLogic.quests.FetchQuest;
 import prpg.gameLogic.quests.KillQuest;
 import prpg.gameLogic.quests.Quest;
-import prpg.mapping.Tile;
+import prpg.gameLogic.mapping.Tile;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.*;
 import java.util.ArrayList;
 
-public class GameFactory {
+public class GameFactory implements Serializable {
 
     private Document enemiesDoc;
     private Document npcsDoc;
@@ -40,7 +40,6 @@ public class GameFactory {
             // an instance of builder to parse the specified xml file
             DocumentBuilder db = dbf.newDocumentBuilder();
 
-            // creating a constructor of file class and parsing an XML file
             File enemiesFile = new File("resources/entities/enemies.xml");
             File npcsFile = new File("resources/entities/npcs.xml");
             File shopsFile = new File("resources/entities/shops.xml");

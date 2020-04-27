@@ -146,7 +146,7 @@
          </Button>
       </children>
    </GridPane>
-   <Label text="Stats" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="2">
+   <Label fx:id="labelPlayerName" text="Player" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="2">
       <GridPane.margin>
          <Insets top="10.0" />
       </GridPane.margin>

@@ -3,11 +3,12 @@ package prpg.gameLogic.quests;
 import prpg.gameLogic.entities.mobs.NPC;
 import prpg.gameLogic.items.InventoryItem;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public abstract class Quest {
+public abstract class Quest implements Serializable {
 
-    public static enum QuestType {
+    public enum QuestType {
         KILL,
         FETCH
     }

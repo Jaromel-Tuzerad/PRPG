@@ -57,7 +57,7 @@ public class JournalController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
 
         quests = FXCollections.observableArrayList();
-        quests.addAll(GamePanelController.player.getQuestJournal());
+        quests.addAll(GamePanelController.currentGame.getCurrentPlayer().getQuestJournal());
         listViewQuests.setItems(quests);
         listViewQuests.refresh();
 

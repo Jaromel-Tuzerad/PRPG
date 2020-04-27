@@ -1,6 +1,8 @@
 package prpg.gameLogic.entities;
 
-public abstract class Entity {
+import java.io.Serializable;
+
+public abstract class Entity implements Serializable {
 
     protected String name;
     protected String description;

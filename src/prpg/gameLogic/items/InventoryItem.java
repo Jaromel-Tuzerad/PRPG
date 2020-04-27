@@ -2,7 +2,9 @@ package prpg.gameLogic.items;
 
 import prpg.gameLogic.entities.objects.Item;
 
-public abstract class InventoryItem {
+import java.io.Serializable;
+
+public abstract class InventoryItem implements Serializable {
 
     public enum ItemType {
         QUEST,

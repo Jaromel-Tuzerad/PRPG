@@ -2,14 +2,10 @@ package prpg.gui.fightPanel;
 
 import prpg.exceptions.AlertException;
 import prpg.exceptions.MobDiedException;
-import prpg.gameLogic.entities.mobs.Enemy;
 import prpg.gameLogic.entities.mobs.Mob;
 import prpg.gameLogic.items.InventoryItem;
 import prpg.gameLogic.quests.KillQuest;
 import prpg.gameLogic.quests.Quest;
-import prpg.gui.Main;
-import prpg.gui.gamePanel.GamePanelController;
-import prpg.gui.mainMenu.MainMenuController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -20,6 +16,9 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import prpg.gui.Main;
+import prpg.gui.gamePanel.GamePanelController;
+import prpg.gui.mainMenu.MainMenuController;
 
 import java.io.IOException;
 import java.net.URL;
@@ -33,8 +32,6 @@ public class FightPanelController implements Initializable {
 
     public static final int FIGHT_PANEL_WIDTH = 630;
     public static final int FIGHT_PANEL_HEIGHT = 600;
-
-    public static Enemy currentEnemy;
 
     // Global
     @FXML
@@ -143,22 +140,26 @@ public class FightPanelController implements Initializable {
 
     private void attack(AttackType chosenAttackType) {
         try {
-            double chanceToHit = calculateChanceToHit(chosenAttackType, player.getTotalDexterity(), currentEnemy.getDexterity());
-            int damage = rollInflictedDamage(chosenAttackType, player.getTotalStrength(), currentEnemy.getDefense());
-            attackMob(player, currentEnemy, damage, chanceToHit);
-            if(currentEnemy.getHealth() > 0) {
-                double enemyChanceToHit = calculateChanceToHit(AttackType.NORMAL, currentEnemy.getDexterity(), player.getTotalDexterity());
-                int enemyDamage = rollInflictedDamage(AttackType.NORMAL, currentEnemy.getStrength(), player.getTotalDefense());
-                attackMob(currentEnemy, player, enemyDamage, enemyChanceToHit);
+            double chanceToHit = calculateChanceToHit(chosenAttackType, GamePanelController.currentGame.getCurrentPlayer().getTotalDexterity(), GamePanelController.currentGame.getCurrentEnemy().getDexterity());
+            int damage = rollInflictedDamage(chosenAttackType, GamePanelController.currentGame.getCurrentPlayer().getTotalStrength(), GamePanelController.currentGame.getCurrentEnemy().getDefense());
+            attackMob(GamePanelController.currentGame.getCurrentPlayer(), GamePanelController.currentGame.getCurrentEnemy(), damage, chanceToHit);
+            if(GamePanelController.currentGame.getCurrentEnemy().getHealth() > 0) {
+                double enemyChanceToHit = calculateChanceToHit(AttackType.NORMAL, GamePanelController.currentGame.getCurrentEnemy().getDexterity(), GamePanelController.currentGame.getCurrentPlayer().getTotalDexterity());
+                int enemyDamage = rollInflictedDamage(AttackType.NORMAL, GamePanelController.currentGame.getCurrentEnemy().getStrength(), GamePanelController.currentGame.getCurrentPlayer().getTotalDefense());
+                attackMob(GamePanelController.currentGame.getCurrentEnemy(), GamePanelController.currentGame.getCurrentPlayer(), enemyDamage, enemyChanceToHit);
             } else {
-                throw new AlertException("Victory", "The enemy has perished!", currentEnemy.getDisplayName() + " has died! Reap the spoils!");
+                throw new AlertException("Victory", "The enemy has perished!", GamePanelController.currentGame.getCurrentEnemy().getDisplayName() + " has died! Reap the spoils!");
             }
             refreshGUI();
-        } catch (AlertException alertException) {
+        } catch(AlertException alertException) {
             callAlert(alertException);
-        } catch (MobDiedException mobDiedException) {
+        } catch(MobDiedException mde){
             try {
-                endBattle();
+                if(GamePanelController.currentGame.getCurrentEnemy().getHealth() <= 0) {
+                    endBattle();
+                } else if(GamePanelController.currentGame.getCurrentPlayer().getHealth() <= 0) {
+                    gameOver();
+                }
             } catch (IOException ioe) {
                 ioe.printStackTrace();
             } catch(AlertException ae) {
@@ -185,84 +186,84 @@ public class FightPanelController implements Initializable {
     private void refreshGUI() {
 
         // Refreshes health bars
-        labelPlayerHealth.setText("Health (" + (int)((double) (player.getHealth()) / player.getMaxHealth() * 100) + " %)");
-        progressBarPlayerHealth.setProgress(((double) player.getHealth() / player.getMaxHealth()));
-        labelMonsterHealth.setText("Health (" + (int)((double) (currentEnemy.getHealth()) / currentEnemy.getMaxHealth() * 100) + " %)");
-        progressBarMonsterHealth.setProgress((double) (currentEnemy.getHealth()) / currentEnemy.getMaxHealth());
+        labelPlayerHealth.setText("Health (" + (int)((double) (GamePanelController.currentGame.getCurrentPlayer().getHealth()) / GamePanelController.currentGame.getCurrentPlayer().getMaxHealth() * 100) + " %)");
+        progressBarPlayerHealth.setProgress(((double) GamePanelController.currentGame.getCurrentPlayer().getHealth() / GamePanelController.currentGame.getCurrentPlayer().getMaxHealth()));
+        labelMonsterHealth.setText("Health (" + (int)((double) (GamePanelController.currentGame.getCurrentEnemy().getHealth()) / GamePanelController.currentGame.getCurrentEnemy().getMaxHealth() * 100) + " %)");
+        progressBarMonsterHealth.setProgress((double) (GamePanelController.currentGame.getCurrentEnemy().getHealth()) / GamePanelController.currentGame.getCurrentEnemy().getMaxHealth());
 
     }
 
     // Called when the battle is over
     private void endBattle() throws IOException, AlertException {
-        if(currentEnemy.getHealth() <= 0) {
-            // Give player the XP and items the monster has
-            StringBuilder lootMessage = new StringBuilder("Loot has dropped:\n");
-            for(InventoryItem item : currentEnemy.getInventory()) {
-                player.addToInventory(item);
-                lootMessage.append(item.getName()).append("\n");
-            }
-            lootMessage.append("Experience (").append(currentEnemy.getYieldedXP()).append(")").append("\n");
-            player.addExperience(currentEnemy.getYieldedXP());
-            lootMessage.append("Gold (").append(currentEnemy.getYieldedGold()).append(")");
-            player.addGold(currentEnemy.getYieldedGold());
-            currentMap.getTileByCoords(player.getX(), player.getY()).getEntities().remove(currentEnemy);
-            for(Quest q : player.getQuestJournal()) {
-                if(q.getQuestType() == Quest.QuestType.KILL) {
-                    if(((KillQuest) q).getEnemyType().getEnemyTypeID() == currentEnemy.getEnemyTypeID()) {
-                        ((KillQuest) q).incrementKillProgress();
-                    }
+        // Give the player the XP and items the monster has
+        StringBuilder lootMessage = new StringBuilder("Loot has dropped:\n");
+        for(InventoryItem item : GamePanelController.currentGame.getCurrentEnemy().getInventory()) {
+            GamePanelController.currentGame.getCurrentPlayer().addToInventory(item);
+            lootMessage.append(item.getName()).append("\n");
+        }
+        lootMessage.append("Experience (").append(GamePanelController.currentGame.getCurrentEnemy().getYieldedXP()).append(")").append("\n");
+        GamePanelController.currentGame.getCurrentPlayer().addExperience(GamePanelController.currentGame.getCurrentEnemy().getYieldedXP());
+        lootMessage.append("Gold (").append(GamePanelController.currentGame.getCurrentEnemy().getYieldedGold()).append(")");
+        GamePanelController.currentGame.getCurrentPlayer().addGold(GamePanelController.currentGame.getCurrentEnemy().getYieldedGold());
+        GamePanelController.currentGame.getCurrentMap().getTileByCoords(GamePanelController.currentGame.getCurrentPlayer().getX(), GamePanelController.currentGame.getCurrentPlayer().getY()).getEntities().remove(GamePanelController.currentGame.getCurrentEnemy());
+        for(Quest q : GamePanelController.currentGame.getCurrentPlayer().getQuestJournal()) {
+            if(q.getQuestType() == Quest.QuestType.KILL) {
+                if(((KillQuest) q).getEnemyType().getEnemyTypeID() == GamePanelController.currentGame.getCurrentEnemy().getEnemyTypeID()) {
+                    ((KillQuest) q).incrementKillProgress();
                 }
             }
-            callAlert(new AlertException("Victory", "You have won! " + currentEnemy.getDisplayName() + " is no more!", lootMessage.toString()));
-            currentEnemy = null;
-
-            // Return back to game screen
-            Stage stage = (Stage) gridPaneGlobal.getScene().getWindow();
-            stage.close();
-            Parent root = FXMLLoader.load(getClass().getResource("../gamePanel/GamePanel.fxml"));
-            Stage gameStage = new Stage();
-            gameStage.setTitle(Main.gameTitle);
-            gameStage.setScene(new Scene(root, GamePanelController.GAME_PANEL_WIDTH, GamePanelController.GAME_PANEL_HEIGHT));
-            gameStage.setMinWidth(GamePanelController.GAME_PANEL_WIDTH);
-            gameStage.setMinHeight(GamePanelController.GAME_PANEL_HEIGHT);
-            gameStage.getScene().getStylesheets().add("prpg/gui/hivle.css");
-            gameStage.show();
-        } else if(player.getHealth() <= 0) {
-            callAlert(new AlertException("Player is dead", player.getDisplayName() + " has been killed and eaten by " + currentEnemy.getDisplayName(), "Better luck next time!"));
-            Parent root = FXMLLoader.load(getClass().getResource("../mainMenu/MainMenu.fxml"));
-            Stage gameStage = new Stage();
-            gameStage.setTitle(Main.gameTitle);
-            gameStage.setScene(new Scene(root, MainMenuController.MAIN_MENU_WIDTH, MainMenuController.MAIN_MENU_HEIGHT));
-            gameStage.setMinWidth(MainMenuController.MAIN_MENU_WIDTH);
-            gameStage.setMinHeight(MainMenuController.MAIN_MENU_HEIGHT);
-            gameStage.getScene().getStylesheets().add("prpg/gui/hivle.css");
-            gameStage.show();
-            player = null;
-            currentEnemy = null;
-            currentMap = null;
-            Stage stage = (Stage) gridPaneGlobal.getScene().getWindow();
-            stage.close();
         }
+        callAlert(new AlertException("Victory", "You have won! " + GamePanelController.currentGame.getCurrentEnemy().getDisplayName() + " is no more!", lootMessage.toString()));
+        GamePanelController.currentGame.setCurrentEnemy(null);
+
+        // Return back to game screen
+        Stage stage = (Stage) gridPaneGlobal.getScene().getWindow();
+        stage.close();
+        Parent root = FXMLLoader.load(getClass().getResource("../gamePanel/GamePanel.fxml"));
+        Stage gameStage = new Stage();
+        gameStage.setTitle(Main.gameTitle);
+        gameStage.setScene(new Scene(root, GamePanelController.GAME_PANEL_WIDTH, GamePanelController.GAME_PANEL_HEIGHT));
+        gameStage.setMinWidth(GamePanelController.GAME_PANEL_WIDTH);
+        gameStage.setMinHeight(GamePanelController.GAME_PANEL_HEIGHT);
+        gameStage.getScene().getStylesheets().add("prpg/gui/hivle.css");
+        gameStage.show();
+    }
+
+    public void gameOver() throws IOException {
+        callAlert(new AlertException("Player is dead",
+                GamePanelController.currentGame.getCurrentPlayer().getDisplayName() + " has been killed and eaten by " + GamePanelController.currentGame.getCurrentEnemy().getDisplayName(),
+                "Better luck next time!"));
+        Parent root = FXMLLoader.load(getClass().getResource("../mainMenu/MainMenu.fxml"));
+        Stage gameStage = new Stage();
+        gameStage.setTitle(Main.gameTitle);
+        gameStage.setScene(new Scene(root, MainMenuController.MAIN_MENU_WIDTH, MainMenuController.MAIN_MENU_HEIGHT));
+        gameStage.setMinWidth(MainMenuController.MAIN_MENU_WIDTH);
+        gameStage.setMinHeight(MainMenuController.MAIN_MENU_HEIGHT);
+        gameStage.getScene().getStylesheets().add("prpg/gui/hivle.css");
+        gameStage.show();
+        GamePanelController.currentGame = null;
+        Stage stage = (Stage) gridPaneGlobal.getScene().getWindow();
+        stage.close();
     }
 
     public void initialize(URL url, ResourceBundle rb) {
 
-        // Sets the name of the player and the monster above corresponding health bars
-        labelNamePlayer.setText(player.getDisplayName());
-        labelNameMonster.setText(currentEnemy.getDisplayName());
+        // Sets the name of the GamePanelController.currentGame.getCurrentPlayer() and the monster above corresponding health bars
+        labelNamePlayer.setText(GamePanelController.currentGame.getCurrentPlayer().getDisplayName());
+        labelNameMonster.setText(GamePanelController.currentGame.getCurrentEnemy().getDisplayName());
 
         // Log start
         textAreaLog.setText("The battle has started!");
 
         // Looks up chances and damage values of all the attacks
         try {
-            labelAttackFastChance.setText((int)(Math.round(calculateChanceToHit(AttackType.FAST, player.getTotalDexterity(), currentEnemy.getDexterity())*100)) + " %");
-            labelAttackFastDamage.setText((int)Math.round(0.6 * (player.getTotalStrength()*player.getTotalStrength()) / (player.getTotalStrength()+ currentEnemy.getDefense())) + " - " + Math.round((player.getTotalStrength() * player.getTotalStrength()) / (player.getTotalStrength() + currentEnemy.getDefense())));
-            labelAttackNormalChance.setText((int)(Math.round(calculateChanceToHit(AttackType.NORMAL, player.getTotalDexterity(),
-                    currentEnemy.getDexterity())*100)) + " %");
-            labelAttackNormalDamage.setText((int)Math.round(0.9 * (player.getTotalStrength()*player.getTotalStrength()) / (player.getTotalStrength()+ currentEnemy.getDefense())) + " - " + (int)Math.round(1.1 * (player.getTotalStrength() * player.getTotalStrength()) / (player.getTotalStrength() + currentEnemy.getDefense())));
-            labelAttackStrongChance.setText((int)(Math.round(calculateChanceToHit(AttackType.STRONG, player.getTotalDexterity(), currentEnemy.getDexterity())*100)) + " %");
-            labelAttackStrongDamage.setText((int)Math.round(1.4 * (player.getTotalStrength()*player.getTotalStrength()) / (player.getTotalStrength()+ currentEnemy.getDefense())) + " - " + (int)Math.round(1.6 * (player.getTotalStrength() * player.getTotalStrength()) / (player.getTotalStrength() + currentEnemy.getDefense())));
+            labelAttackFastChance.setText((int)(Math.round(calculateChanceToHit(AttackType.FAST, GamePanelController.currentGame.getCurrentPlayer().getTotalDexterity(), GamePanelController.currentGame.getCurrentEnemy().getDexterity())*100)) + " %");
+            labelAttackFastDamage.setText((int)Math.round(0.6 * (GamePanelController.currentGame.getCurrentPlayer().getTotalStrength()*GamePanelController.currentGame.getCurrentPlayer().getTotalStrength()) / (GamePanelController.currentGame.getCurrentPlayer().getTotalStrength()+ GamePanelController.currentGame.getCurrentEnemy().getDefense())) + " - " + Math.round((GamePanelController.currentGame.getCurrentPlayer().getTotalStrength() * GamePanelController.currentGame.getCurrentPlayer().getTotalStrength()) / (GamePanelController.currentGame.getCurrentPlayer().getTotalStrength() + GamePanelController.currentGame.getCurrentEnemy().getDefense())));
+            labelAttackNormalChance.setText((int)(Math.round(calculateChanceToHit(AttackType.NORMAL, GamePanelController.currentGame.getCurrentPlayer().getTotalDexterity(),
+                    GamePanelController.currentGame.getCurrentEnemy().getDexterity())*100)) + " %");
+            labelAttackNormalDamage.setText((int)Math.round(0.9 * (GamePanelController.currentGame.getCurrentPlayer().getTotalStrength()*GamePanelController.currentGame.getCurrentPlayer().getTotalStrength()) / (GamePanelController.currentGame.getCurrentPlayer().getTotalStrength()+ GamePanelController.currentGame.getCurrentEnemy().getDefense())) + " - " + (int)Math.round(1.1 * (GamePanelController.currentGame.getCurrentPlayer().getTotalStrength() * GamePanelController.currentGame.getCurrentPlayer().getTotalStrength()) / (GamePanelController.currentGame.getCurrentPlayer().getTotalStrength() + GamePanelController.currentGame.getCurrentEnemy().getDefense())));
+            labelAttackStrongChance.setText((int)(Math.round(calculateChanceToHit(AttackType.STRONG, GamePanelController.currentGame.getCurrentPlayer().getTotalDexterity(), GamePanelController.currentGame.getCurrentEnemy().getDexterity())*100)) + " %");
+            labelAttackStrongDamage.setText((int)Math.round(1.4 * (GamePanelController.currentGame.getCurrentPlayer().getTotalStrength()*GamePanelController.currentGame.getCurrentPlayer().getTotalStrength()) / (GamePanelController.currentGame.getCurrentPlayer().getTotalStrength()+ GamePanelController.currentGame.getCurrentEnemy().getDefense())) + " - " + (int)Math.round(1.6 * (GamePanelController.currentGame.getCurrentPlayer().getTotalStrength() * GamePanelController.currentGame.getCurrentPlayer().getTotalStrength()) / (GamePanelController.currentGame.getCurrentPlayer().getTotalStrength() + GamePanelController.currentGame.getCurrentEnemy().getDefense())));
         } catch (AlertException alertException) {
             callAlert(alertException);
         }

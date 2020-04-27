@@ -6,8 +6,6 @@ import prpg.gameLogic.entities.objects.Item;
 import prpg.gameLogic.items.Equipment;
 import prpg.gameLogic.items.Food;
 import prpg.gameLogic.items.InventoryItem;
-import prpg.gui.Main;
-import prpg.gui.gamePanel.GamePanelController;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
@@ -19,6 +17,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import prpg.gui.gamePanel.GamePanelController;
+import prpg.gui.Main;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -58,6 +58,8 @@ public class InventoryController implements Initializable {
     private TextArea textAreaItemDescription;
 
     // Character stats (2, 2)
+    @FXML
+    private Label labelPlayerName;
     @FXML
     private Label labelLevel;
     @FXML
@@ -111,7 +113,7 @@ public class InventoryController implements Initializable {
     @FXML
     private void unequipHead() {
         try {
-            GamePanelController.player.unequipItemInSlotType(InventoryItem.ItemType.HEADWEAR);
+            GamePanelController.currentGame.getCurrentPlayer().unequipItemInSlotType(InventoryItem.ItemType.HEADWEAR);
             refreshGUI();
         } catch(AlertException e) {
             GamePanelController.callAlert(e);
@@ -122,7 +124,7 @@ public class InventoryController implements Initializable {
     @FXML
     private void unequipBody() {
         try {
-            GamePanelController.player.unequipItemInSlotType(InventoryItem.ItemType.BODYWEAR);
+            GamePanelController.currentGame.getCurrentPlayer().unequipItemInSlotType(InventoryItem.ItemType.BODYWEAR);
             refreshGUI();
         } catch(AlertException e) {
             GamePanelController.callAlert(e);
@@ -133,7 +135,7 @@ public class InventoryController implements Initializable {
     @FXML
     private void unequipWeapon() {
         try {
-            GamePanelController.player.unequipItemInSlotType(InventoryItem.ItemType.WEAPON);
+            GamePanelController.currentGame.getCurrentPlayer().unequipItemInSlotType(InventoryItem.ItemType.WEAPON);
             refreshGUI();
         } catch(AlertException e) {
             GamePanelController.callAlert(e);
@@ -143,7 +145,7 @@ public class InventoryController implements Initializable {
     @FXML
     private void unequipLegs() {
         try {
-            GamePanelController.player.unequipItemInSlotType(InventoryItem.ItemType.LEGWEAR);
+            GamePanelController.currentGame.getCurrentPlayer().unequipItemInSlotType(InventoryItem.ItemType.LEGWEAR);
             refreshGUI();
         } catch(AlertException e) {
             GamePanelController.callAlert(e);
@@ -153,22 +155,22 @@ public class InventoryController implements Initializable {
 
     @FXML
     private void upgradeStrength() {
-        GamePanelController.player.increaseStrengthBy(1);
-        GamePanelController.player.decreaseStatPointsBy(1);
+        GamePanelController.currentGame.getCurrentPlayer().increaseStrengthBy(1);
+        GamePanelController.currentGame.getCurrentPlayer().decreaseStatPointsBy(1);
         refreshStats();
     }
 
     @FXML
     private void upgradeDexterity() {
-        GamePanelController.player.increaseDexterityBy(1);
-        GamePanelController.player.decreaseStatPointsBy(1);
+        GamePanelController.currentGame.getCurrentPlayer().increaseDexterityBy(1);
+        GamePanelController.currentGame.getCurrentPlayer().decreaseStatPointsBy(1);
         refreshStats();
     }
 
     @FXML
     private void upgradeDefense() {
-        GamePanelController.player.increaseDefenseBy(1);
-        GamePanelController.player.decreaseStatPointsBy(1);
+        GamePanelController.currentGame.getCurrentPlayer().increaseDefenseBy(1);
+        GamePanelController.currentGame.getCurrentPlayer().decreaseStatPointsBy(1);
         refreshStats();
     }
 
@@ -183,7 +185,7 @@ public class InventoryController implements Initializable {
 
     // Refreshes stats
     private void refreshStats() {
-        if(GamePanelController.player.getStatPoints() > 0) {
+        if(GamePanelController.currentGame.getCurrentPlayer().getStatPoints() > 0) {
             buttonIncreaseStrength.setDisable(false);
             buttonIncreaseDexterity.setDisable(false);
             buttonIncreaseDefense.setDisable(false);
@@ -192,53 +194,53 @@ public class InventoryController implements Initializable {
             buttonIncreaseDexterity.setDisable(true);
             buttonIncreaseDefense.setDisable(true);
         }
-        labelLevel.setText(String.valueOf(GamePanelController.player.getLevel()));
-        labelPoints.setText(String.valueOf(GamePanelController.player.getStatPoints()));
-        labelStrength.setText(String.valueOf(GamePanelController.player.getTotalStrength()));
-        labelDexterity.setText(String.valueOf(GamePanelController.player.getTotalDexterity()));
-        labelDefense.setText(String.valueOf(GamePanelController.player.getTotalDefense()));
-        labelHealth.setText(GamePanelController.player.getHealth() + "/" + GamePanelController.player.getMaxHealth());
-        progressBarHealth.setProgress((double) GamePanelController.player.getHealth() / GamePanelController.player.getMaxHealth());
-        labelHunger.setText(GamePanelController.player.getHunger() + " %");
-        progressBarHunger.setProgress(((double) GamePanelController.player.getHunger()) / 100);
-        labelExperience.setText(GamePanelController.player.getExperience() + "/" + GamePanelController.player.getExperienceToNextLevel());
-        progressBarExperience.setProgress((double) GamePanelController.player.getExperience() / GamePanelController.player.getExperienceToNextLevel());
-        labelGold.setText(String.valueOf(GamePanelController.player.getGold()));
+        labelLevel.setText(String.valueOf(GamePanelController.currentGame.getCurrentPlayer().getLevel()));
+        labelPoints.setText(String.valueOf(GamePanelController.currentGame.getCurrentPlayer().getStatPoints()));
+        labelStrength.setText(String.valueOf(GamePanelController.currentGame.getCurrentPlayer().getTotalStrength()));
+        labelDexterity.setText(String.valueOf(GamePanelController.currentGame.getCurrentPlayer().getTotalDexterity()));
+        labelDefense.setText(String.valueOf(GamePanelController.currentGame.getCurrentPlayer().getTotalDefense()));
+        labelHealth.setText(GamePanelController.currentGame.getCurrentPlayer().getHealth() + "/" + GamePanelController.currentGame.getCurrentPlayer().getMaxHealth());
+        progressBarHealth.setProgress((double) GamePanelController.currentGame.getCurrentPlayer().getHealth() / GamePanelController.currentGame.getCurrentPlayer().getMaxHealth());
+        labelHunger.setText(GamePanelController.currentGame.getCurrentPlayer().getHunger() + " %");
+        progressBarHunger.setProgress(((double) GamePanelController.currentGame.getCurrentPlayer().getHunger()) / 100);
+        labelExperience.setText(GamePanelController.currentGame.getCurrentPlayer().getExperience() + "/" + GamePanelController.currentGame.getCurrentPlayer().getExperienceToNextLevel());
+        progressBarExperience.setProgress((double) GamePanelController.currentGame.getCurrentPlayer().getExperience() / GamePanelController.currentGame.getCurrentPlayer().getExperienceToNextLevel());
+        labelGold.setText(String.valueOf(GamePanelController.currentGame.getCurrentPlayer().getGold()));
     }
 
     // Refreshes inventory items
     private void refreshItems() {
         inventoryItems.clear();
-        inventoryItems.addAll(GamePanelController.player.getInventory());
+        inventoryItems.addAll(GamePanelController.currentGame.getCurrentPlayer().getInventory());
         listViewInventory.setItems(inventoryItems);
         listViewInventory.refresh();
     }
 
     // Refreshes equipment
     private void refreshEquipment() {
-        if(GamePanelController.player.getEquippedHeadArmor() != null) {
-            labelHead.setText(GamePanelController.player.getEquippedHeadArmor().getDisplayName());
+        if(GamePanelController.currentGame.getCurrentPlayer().getEquippedHeadArmor() != null) {
+            labelHead.setText(GamePanelController.currentGame.getCurrentPlayer().getEquippedHeadArmor().getDisplayName());
             buttonDeequipHead.setVisible(true);
         } else {
             labelHead.setText("N/A");
             buttonDeequipHead.setVisible(false);
         }
-        if(GamePanelController.player.getEquippedBodyArmor() != null) {
-            labelBody.setText(GamePanelController.player.getEquippedBodyArmor().getDisplayName());
+        if(GamePanelController.currentGame.getCurrentPlayer().getEquippedBodyArmor() != null) {
+            labelBody.setText(GamePanelController.currentGame.getCurrentPlayer().getEquippedBodyArmor().getDisplayName());
             buttonDeequipBody.setVisible(true);
         } else {
             labelBody.setText("N/A");
             buttonDeequipBody.setVisible(false);
         }
-        if(GamePanelController.player.getEquippedLegArmor() != null) {
-            labelLeg.setText(GamePanelController.player.getEquippedLegArmor().getDisplayName());
+        if(GamePanelController.currentGame.getCurrentPlayer().getEquippedLegArmor() != null) {
+            labelLeg.setText(GamePanelController.currentGame.getCurrentPlayer().getEquippedLegArmor().getDisplayName());
             buttonDeequipLeg.setVisible(true);
         } else {
             labelLeg.setText("N/A");
             buttonDeequipLeg.setVisible(false);
         }
-        if(GamePanelController.player.getEquippedWeapon() != null) {
-            labelWeapon.setText(GamePanelController.player.getEquippedWeapon().getDisplayName());
+        if(GamePanelController.currentGame.getCurrentPlayer().getEquippedWeapon() != null) {
+            labelWeapon.setText(GamePanelController.currentGame.getCurrentPlayer().getEquippedWeapon().getDisplayName());
             buttonDeequipWeapon.setVisible(true);
         } else {
             labelWeapon.setText("N/A");
@@ -274,16 +276,16 @@ public class InventoryController implements Initializable {
         if (actionName != null) {
             switch (actionName) {
                 case "Eat":
-                    GamePanelController.player.eat((Food) item);
+                    GamePanelController.currentGame.getCurrentPlayer().eat((Food) item);
                     break;
                 case "Equip":
-                    GamePanelController.player.equipItem((Equipment)item);
+                    GamePanelController.currentGame.getCurrentPlayer().equipItem((Equipment)item);
                     break;
                 case "Drop":
-                    GamePanelController.player.removeFromInventory(item);
-                    GamePanelController.currentMap.getTileByCoords(
-                            GamePanelController.player.getX(),
-                            GamePanelController.player.getY()
+                    GamePanelController.currentGame.getCurrentPlayer().removeFromInventory(item);
+                    GamePanelController.currentGame.getCurrentMap().getTileByCoords(
+                            GamePanelController.currentGame.getCurrentPlayer().getX(),
+                            GamePanelController.currentGame.getCurrentPlayer().getY()
                     ).addEntity(new Item(item.getDisplayName(), item));
                     break;
             }
@@ -291,6 +293,8 @@ public class InventoryController implements Initializable {
     }
 
     public void initialize(URL url, ResourceBundle rb) {
+
+        labelPlayerName.setText(GamePanelController.currentGame.getCurrentPlayer().getName());
 
         // Initialize listView arrayLists
         inventoryItems = FXCollections.observableArrayList();

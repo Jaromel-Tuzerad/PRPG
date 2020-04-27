@@ -7,7 +7,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
 import prpg.exceptions.AlertException;
 import prpg.exceptions.XMLException;
-import prpg.gameLogic.entities.objects.Shop;
 import prpg.gameLogic.items.InventoryItem;
 import prpg.gameLogic.items.Tradeable;
 import prpg.gui.gamePanel.GamePanelController;
@@ -20,6 +19,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
+import prpg.gui.Main;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -28,8 +28,6 @@ public class ShopController implements Initializable {
 
     public static final int SHOP_WIDTH = 500;
     public static final int SHOP_HEIGHT = 260;
-
-    public static Shop currentShop;
 
     @FXML
     private Button buttonRestock;
@@ -52,7 +50,7 @@ public class ShopController implements Initializable {
         try {
             Stage primaryStage = new Stage();
             Parent root = FXMLLoader.load(getClass().getResource("../gamePanel/GamePanel.fxml"));
-            primaryStage.setTitle("Hexer IV: Lidl edition");
+            primaryStage.setTitle(Main.gameTitle);
             primaryStage.setScene(new Scene(root, GamePanelController.GAME_PANEL_WIDTH, GamePanelController.GAME_PANEL_HEIGHT));
             primaryStage.setMinWidth(GamePanelController.GAME_PANEL_WIDTH);
             primaryStage.setMinHeight(GamePanelController.GAME_PANEL_HEIGHT);
@@ -81,9 +79,9 @@ public class ShopController implements Initializable {
     @FXML
     private void restockItems() {
         try {
-            GamePanelController.player.addGold(-currentShop.getRestockCost());
-            currentShop.getInventory().clear();
-            currentShop.getInventory().addAll(GamePanelController.gameFactory.getNewShopStockWithId(currentShop.getTypeId()));
+            GamePanelController.currentGame.getCurrentPlayer().addGold(-GamePanelController.currentGame.getCurrentShop().getRestockCost());
+            GamePanelController.currentGame.getCurrentShop().getInventory().clear();
+            GamePanelController.currentGame.getCurrentShop().getInventory().addAll(GamePanelController.currentGame.getGameFactory().getNewShopStockWithId(GamePanelController.currentGame.getCurrentShop().getTypeId()));
             refreshGUI();
         } catch(AlertException ea) {
             GamePanelController.callAlert(ea);
@@ -94,10 +92,10 @@ public class ShopController implements Initializable {
 
     private void sellItem(InventoryItem item) {
         try {
-            currentShop.addToInventory(item);
-            GamePanelController.player.removeFromInventory(item);
+            GamePanelController.currentGame.getCurrentShop().addToInventory(item);
+            GamePanelController.currentGame.getCurrentPlayer().removeFromInventory(item);
             // When selling an item, itemWorth is halved
-            GamePanelController.player.addGold(((Tradeable)item).getWorth()/2);
+            GamePanelController.currentGame.getCurrentPlayer().addGold(((Tradeable)item).getWorth()/2);
             refreshGUI();
         } catch(AlertException ex) {
             GamePanelController.callAlert(ex);
@@ -107,9 +105,9 @@ public class ShopController implements Initializable {
 
     private void buyItem(InventoryItem item) {
         try {
-            GamePanelController.player.addGold(-((Tradeable)item).getWorth());
-            currentShop.removeFromInventory(item);
-            GamePanelController.player.addToInventory(item);
+            GamePanelController.currentGame.getCurrentPlayer().addGold(-((Tradeable)item).getWorth());
+            GamePanelController.currentGame.getCurrentShop().removeFromInventory(item);
+            GamePanelController.currentGame.getCurrentPlayer().addToInventory(item);
             refreshGUI();
         } catch(AlertException ex) {
             GamePanelController.callAlert(ex);
@@ -119,7 +117,7 @@ public class ShopController implements Initializable {
     // Refreshes inventory items
     private void refreshInventoryItems() {
         inventoryItems.clear();
-        for(InventoryItem item : GamePanelController.player.getInventory()) {
+        for(InventoryItem item : GamePanelController.currentGame.getCurrentPlayer().getInventory()) {
             if(item instanceof Tradeable) {
                 inventoryItems.add(item);
             }
@@ -131,7 +129,7 @@ public class ShopController implements Initializable {
     // Refreshes shop items
     private void refreshShopItems() {
         shopItems.clear();
-        shopItems.addAll(currentShop.getInventory());
+        shopItems.addAll(GamePanelController.currentGame.getCurrentShop().getInventory());
         listViewShop.setItems(shopItems);
         listViewShop.refresh();
     }
@@ -140,8 +138,8 @@ public class ShopController implements Initializable {
     private void refreshGUI() {
         buttonBuy.setText("Buy");
         buttonSell.setText("Sell");
-        buttonRestock.setText("Restock (" + currentShop.getRestockCost() + "g)");
-        labelMoney.setText(GamePanelController.player.getGold() + "g");
+        buttonRestock.setText("Restock (" + GamePanelController.currentGame.getCurrentShop().getRestockCost() + "g)");
+        labelMoney.setText(GamePanelController.currentGame.getCurrentPlayer().getGold() + "g");
         refreshInventoryItems();
         refreshShopItems();
     }
