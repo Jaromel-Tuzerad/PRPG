@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<!DOCTYPE shops [
+<!ELEMENT shops (shop+)>
+  <!ELEMENT shop (id, name, description, restockCost, storage)>
+    <!ELEMENT id  (#PCDATA)>
+    <!ELEMENT name  (#PCDATA)>
+    <!ELEMENT description  (#PCDATA)>
+    <!ELEMENT restockCost  (#PCDATA)>
+    <!ELEMENT storage (item+)>
+      <!ELEMENT item (itemId, availableChance)>
+        <!ELEMENT itemId (#PCDATA)>
+        <!ELEMENT availableChance (#PCDATA)>
+
+      <!ATTLIST item type (EQUIPMENT|FOOD|QUESTITEM) "QUESTITEM">
+]>
+<shops>
+  <shop>
+    <id>0</id>
+    <name>Starter shop</name>
+    <description>A shop that is still open in this pandemic is nearby</description>
+    <restockCost>50</restockCost>
+    <storage>
+      <item type="FOOD">
+        <itemId>5</itemId>
+        <availableChance>1</availableChance>
+      </item>
+      <item type="FOOD">
+        <itemId>5</itemId>
+        <availableChance>0.9</availableChance>
+      </item>
+      <item type="EQUIPMENT">
+        <itemId>3</itemId>
+        <availableChance>0.8</availableChance>
+      </item>
+      <item type="EQUIPMENT">
+        <itemId>4</itemId>
+        <availableChance>0.6</availableChance>
+      </item>
+      <item type="EQUIPMENT">
+        <itemId>5</itemId>
+        <availableChance>0.6</availableChance>
+      </item>
+      <item type="EQUIPMENT">
+        <itemId>6</itemId>
+        <availableChance>0.6</availableChance>
+      </item>
+      <item type="EQUIPMENT">
+        <itemId>7</itemId>
+        <availableChance>0.6</availableChance>
+      </item>
+      <item type="EQUIPMENT">
+        <itemId>8</itemId>
+        <availableChance>0.6</availableChance>
+      </item>
+    </storage>
+  </shop>
+</shops>

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!DOCTYPE npcs [
+<!ELEMENT npcs (npc+)>
+    <!ELEMENT npc (id, level, name)>
+        <!ELEMENT id  (#PCDATA)>
+        <!ELEMENT name  (#PCDATA)>
+        <!ELEMENT level  (#PCDATA)>
+]>
+<npcs>
+  <npc>
+    <id>0</id>
+    <level>1</level>
+    <name>Mayor</name>
+  </npc>
+  <npc>
+    <id>1</id>
+    <level>2</level>
+    <name>Bounty hunter</name>
+  </npc>
+</npcs>

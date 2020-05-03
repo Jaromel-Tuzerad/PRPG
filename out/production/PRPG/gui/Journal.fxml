@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<GridPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="prpg.gui.JournalController">
+    <columnConstraints>
+        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="200.0" />
+      <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="200.0" />
+    </columnConstraints>
+    <rowConstraints>
+      <RowConstraints maxHeight="-Infinity" minHeight="40.0" prefHeight="40.0" valignment="CENTER" vgrow="NEVER" />
+        <RowConstraints maxHeight="1.7976931348623157E308" minHeight="-Infinity" prefHeight="270.0" valignment="CENTER" vgrow="SOMETIMES" />
+    </rowConstraints>
+   <children>
+      <ListView fx:id="listViewQuests" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="270.0" prefWidth="200.0" GridPane.rowIndex="1" />
+      <TextArea fx:id="textAreaQuestDescription" editable="false" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#returnToMap" prefHeight="30.0" text="Back to map" GridPane.halignment="LEFT">
+         <GridPane.margin>
+            <Insets left="10.0" />
+         </GridPane.margin>
+      </Button>
+   </children>
+</GridPane>

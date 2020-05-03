@@ -1,0 +1,339 @@
+<?xml version="1.0"?>
+<!DOCTYPE enemies [
+<!ELEMENT enemies (enemy+)>
+  <!ELEMENT enemy (id, name, description, maxHealth, level, strength, dexterity, defense, droppedItems, yieldsExperience, yieldsGold)>
+    <!ELEMENT id  (#PCDATA)>
+    <!ELEMENT name  (#PCDATA)>
+    <!ELEMENT description  (#PCDATA)>
+    <!ELEMENT maxHealth  (#PCDATA)>
+    <!ELEMENT level  (#PCDATA)>
+    <!ELEMENT strength  (#PCDATA)>
+    <!ELEMENT dexterity  (#PCDATA)>
+    <!ELEMENT defense  (#PCDATA)>
+    <!ELEMENT droppedItems  (item*)>
+      <!ELEMENT item (itemId, dropChance)>
+        <!ELEMENT itemId (#PCDATA)>
+        <!ELEMENT dropChance (#PCDATA)>
+    <!ELEMENT yieldsExperience (#PCDATA)>
+    <!ELEMENT yieldsGold (#PCDATA)>
+
+      <!ATTLIST item type (EQUIPMENT|FOOD|QUESTITEM) "QUESTITEM">
+]>
+<enemies>
+  <enemy>
+    <id>0</id>
+    <name>Rabbit</name> 
+    <description>There is a cute bunny chewing on a carrot</description>
+    <maxHealth>10</maxHealth>
+    <level>0</level>
+    <strength>1</strength>
+    <dexterity>7</dexterity>
+    <defense>1</defense>
+    <droppedItems>
+      <item type="FOOD">
+        <itemId>0</itemId>
+        <dropChance>0.3</dropChance>
+      </item>
+    </droppedItems>
+    <yieldsExperience>10</yieldsExperience>
+    <yieldsGold>0</yieldsGold>
+  </enemy>
+  <enemy>
+    <id>1</id>
+    <name>Deer</name>
+    <description>A deer is having a grass snack</description>
+    <maxHealth>20</maxHealth>
+    <level>0</level>
+    <strength>1</strength>
+    <dexterity>6</dexterity>
+    <defense>1</defense>
+    <droppedItems>
+      <item type="FOOD">
+        <itemId>1</itemId>
+        <dropChance>0.3</dropChance>
+      </item>
+    </droppedItems>
+    <yieldsExperience>10</yieldsExperience>
+    <yieldsGold>0</yieldsGold>
+  </enemy>
+  <enemy>
+    <id>2</id>
+    <name>Bear</name>
+    <description>A bear is feasting on a honeycomb</description>
+    <maxHealth>50</maxHealth>
+    <level>1</level>
+    <strength>4</strength>
+    <dexterity>1</dexterity>
+    <defense>5</defense>
+    <droppedItems>
+      <item type="FOOD">
+        <itemId>2</itemId>
+        <dropChance>0.3</dropChance>
+      </item>
+      <item type="FOOD">
+        <itemId>3</itemId>
+        <dropChance>0.1</dropChance>
+      </item>
+      <item type="EQUIPMENT">
+        <itemId>2</itemId>
+        <dropChance>0.1</dropChance>
+      </item>
+    </droppedItems>
+    <yieldsExperience>20</yieldsExperience>
+    <yieldsGold>0</yieldsGold>
+  </enemy>
+  <enemy>
+    <id>3</id>
+    <name>Wolf</name>
+    <description>A wolf is lurking around</description>
+    <maxHealth>20</maxHealth>
+    <level>1</level>
+    <strength>4</strength>
+    <dexterity>6</dexterity>
+    <defense>3</defense>
+    <droppedItems>
+      <item type="FOOD">
+        <itemId>4</itemId>
+        <dropChance>0.3</dropChance>
+      </item>
+      <item type="EQUIPMENT">
+        <itemId>1</itemId>
+        <dropChance>0.1</dropChance>
+      </item>
+    </droppedItems>
+    <yieldsExperience>20</yieldsExperience>
+    <yieldsGold>0</yieldsGold>
+  </enemy>
+  <enemy>
+    <id>4</id>
+    <name>Goblin</name>
+    <description>A goblin is munching on a sheep carcass</description>
+    <maxHealth>40</maxHealth>
+    <level>2</level>
+    <strength>6</strength>
+    <dexterity>6</dexterity>
+    <defense>4</defense>
+    <droppedItems>
+      <item type="FOOD">
+        <itemId>5</itemId>
+        <dropChance>0.3</dropChance>
+      </item>
+      <item type="EQUIPMENT">
+        <itemId>3</itemId>
+        <dropChance>0.1</dropChance>
+      </item>
+      <item type="EQUIPMENT">
+        <itemId>4</itemId>
+        <dropChance>0.1</dropChance>
+      </item>
+    </droppedItems>
+    <yieldsExperience>40</yieldsExperience>
+    <yieldsGold>5</yieldsGold>
+  </enemy>
+  <enemy>
+    <id>5</id>
+    <name>Goblin archer</name>
+    <description>A goblin archer is holding watch</description>
+    <maxHealth>50</maxHealth>
+    <level>3</level>
+    <strength>8</strength>
+    <dexterity>8</dexterity>
+    <defense>4</defense>
+    <droppedItems>
+      <item type="FOOD">
+        <itemId>5</itemId>
+        <dropChance>0.3</dropChance>
+      </item>
+      <item type="EQUIPMENT">
+        <itemId>5</itemId>
+        <dropChance>0.1</dropChance>
+      </item>
+      <item type="EQUIPMENT">
+        <itemId>4</itemId>
+        <dropChance>0.1</dropChance>
+      </item>
+    </droppedItems>
+    <yieldsExperience>65</yieldsExperience>
+    <yieldsGold>15</yieldsGold>
+  </enemy>
+  <enemy>
+    <id>6</id>
+    <name>Goblin warrior</name>
+    <description>A goblin warrior is marching around</description>
+    <maxHealth>70</maxHealth>
+    <level>4</level>
+    <strength>9</strength>
+    <dexterity>5</dexterity>
+    <defense>9</defense>
+    <droppedItems>
+      <item type="FOOD">
+        <itemId>5</itemId>
+        <dropChance>0.3</dropChance>
+      </item>
+      <item type="EQUIPMENT">
+        <itemId>6</itemId>
+        <dropChance>0.1</dropChance>
+      </item>
+    </droppedItems>
+    <yieldsExperience>90</yieldsExperience>
+    <yieldsGold>35</yieldsGold>
+  </enemy>
+  <enemy>
+    <id>7</id>
+    <name>Orc</name>
+    <description>An orc is sharpening his axe</description>
+    <maxHealth>100</maxHealth>
+    <level>5</level>
+    <strength>11</strength>
+    <dexterity>5</dexterity>
+    <defense>9</defense>
+    <droppedItems>
+      <item type="FOOD">
+        <itemId>5</itemId>
+        <dropChance>0.3</dropChance>
+      </item>
+      <item type="EQUIPMENT">
+        <itemId>10</itemId>
+        <dropChance>0.1</dropChance>
+      </item>
+    </droppedItems>
+    <yieldsExperience>110</yieldsExperience>
+    <yieldsGold>35</yieldsGold>
+  </enemy>
+  <enemy>
+    <id>8</id>
+    <name>Boar</name>
+    <description>A boar is stomping on grass</description>
+    <maxHealth>30</maxHealth>
+    <level>1</level>
+    <strength>6</strength>
+    <dexterity>1</dexterity>
+    <defense>5</defense>
+    <droppedItems>
+      <item type="FOOD">
+        <itemId>6</itemId>
+        <dropChance>0.3</dropChance>
+      </item>
+      <item type="EQUIPMENT">
+        <itemId>11</itemId>
+        <dropChance>0.1</dropChance>
+      </item>
+    </droppedItems>
+    <yieldsExperience>20</yieldsExperience>
+    <yieldsGold>0</yieldsGold>
+  </enemy>
+  <enemy>
+    <id>9</id>
+    <name>Carnivore plant</name>
+    <description>The carnivore plant is catching flies</description>
+    <maxHealth>50</maxHealth>
+    <level>2</level>
+    <strength>7</strength>
+    <dexterity>1</dexterity>
+    <defense>7</defense>
+    <droppedItems>
+      <item type="EQUIPMENT">
+        <itemId>12</itemId>
+        <dropChance>0.1</dropChance>
+      </item>
+    </droppedItems>
+    <yieldsExperience>40</yieldsExperience>
+    <yieldsGold>5</yieldsGold>
+  </enemy>
+  <enemy>
+    <id>10</id>
+    <name>Thief</name>
+    <description>Thief is watching you with suspicion</description>
+    <maxHealth>30</maxHealth>
+    <level>3</level>
+    <strength>9</strength>
+    <dexterity>12</dexterity>
+    <defense>1</defense>
+    <droppedItems>
+      <item type="FOOD">
+        <itemId>5</itemId>
+        <dropChance>0.3</dropChance>
+      </item>
+      <item type="EQUIPMENT">
+        <itemId>3</itemId>
+        <dropChance>0.1</dropChance>
+      </item>
+      <item type="EQUIPMENT">
+        <itemId>12</itemId>
+        <dropChance>0.1</dropChance>
+      </item>
+    </droppedItems>
+    <yieldsExperience>65</yieldsExperience>
+    <yieldsGold>30</yieldsGold>
+  </enemy>
+  <enemy>
+    <id>11</id>
+    <name>Bandit</name>
+    <description>A bandit is grinning at you</description>
+    <maxHealth>50</maxHealth>
+    <level>4</level>
+    <strength>10</strength>
+    <dexterity>10</dexterity>
+    <defense>5</defense>
+    <droppedItems>
+      <item type="FOOD">
+        <itemId>5</itemId>
+        <dropChance>0.3</dropChance>
+      </item>
+      <item type="EQUIPMENT">
+        <itemId>6</itemId>
+        <dropChance>0.1</dropChance>
+      </item>
+      <item type="EQUIPMENT">
+        <itemId>7</itemId>
+        <dropChance>0.1</dropChance>
+      </item>
+    </droppedItems>
+    <yieldsExperience>90</yieldsExperience>
+    <yieldsGold>40</yieldsGold>
+  </enemy>
+  <enemy>
+    <id>12</id>
+    <name>Deserter</name>
+    <description>A soldier who ran away from the army is sitting on a stump</description>
+    <maxHealth>80</maxHealth>
+    <level>5</level>
+    <strength>9</strength>
+    <dexterity>9</dexterity>
+    <defense>9</defense>
+    <droppedItems>
+      <item type="FOOD">
+        <itemId>5</itemId>
+        <dropChance>0.3</dropChance>
+      </item>
+      <item type="EQUIPMENT">
+        <itemId>8</itemId>
+        <dropChance>0.1</dropChance>
+      </item>
+      <item type="EQUIPMENT">
+        <itemId>7</itemId>
+        <dropChance>0.1</dropChance>
+      </item>
+      <item type="EQUIPMENT">
+        <itemId>6</itemId>
+        <dropChance>0.1</dropChance>
+      </item>
+    </droppedItems>
+    <yieldsExperience>100</yieldsExperience>
+    <yieldsGold>35</yieldsGold>
+  </enemy>
+  <enemy>
+    <id>13</id>
+    <name>Werewolf</name>
+    <description>A werewolf is howling at the moon</description>
+    <maxHealth>100</maxHealth>
+    <level>6</level>
+    <strength>11</strength>
+    <dexterity>10</dexterity>
+    <defense>9</defense>
+    <droppedItems>
+    </droppedItems>
+    <yieldsExperience>130</yieldsExperience>
+    <yieldsGold>40</yieldsGold>
+  </enemy>
+</enemies>

@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE questItems [
+<!ELEMENT questItems (questItem+)>
+  <!ELEMENT questItem (id, displayName)>
+    <!ELEMENT id  (#PCDATA)>
+    <!ELEMENT displayName  (#PCDATA)>
+]>
+<questItems>
+  <questItem>
+    <id>0</id>
+    <displayName>Scroll</displayName>
+  </questItem>
+  <questItem>
+    <id>1</id>
+    <displayName>Book of Mormon</displayName>
+  </questItem>
+  <questItem>
+    <id>2</id>
+    <displayName>Needle</displayName>
+  </questItem>
+</questItems>

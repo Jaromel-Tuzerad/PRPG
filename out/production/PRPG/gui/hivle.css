@@ -1,0 +1,24 @@
+.progress-bar .bar {
+    -fx-background-insets: 0;
+}
+#progressBarHealth .bar {
+    -fx-background-color: red;
+}
+#progressBarPlayerHealth .bar {
+    -fx-background-color: red;
+}
+#progressBarMonsterHealth .bar {
+    -fx-background-color: red;
+}
+#progressBarHunger .bar {
+    -fx-background-color: green;
+}
+#progressBarEnergy .bar {
+    -fx-background-color: yellow;
+}
+#progressBarMana .bar {
+    -fx-background-color: blue;
+}
+#progressBarExperience .bar {
+    -fx-background-color: cyan;
+}
